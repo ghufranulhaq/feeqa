@@ -53,11 +53,11 @@ Summarise a business's reputation honestly, with two published numbers. The **Re
 
   | # | Component | Definition | Weight |
   |---|-----------|------------|--------|
-  | T1 | Review Score | `(ReviewScore − 1) / 4 × 100` | 30 |
+  | T1 | Review Score | `(ReviewScore − 1) / 4 × 100` | 25 |
   | T2 | Verification | % of eligible reviews with an active Verified Experience attestation (004) | 15 |
-  | T3 | Complaint resolution | `0.5 × resolution rate + 0.5 × ((avg resolution rating − 1) / 4 × 100)`. Resolution rate = cases the consumer confirmed resolved ÷ cases that were resolved, closed unresolved, or open > 30 days (010) | 15 |
-  | T4 | Refund speed | Median days from "refund requested" to "refund completed" (consumer-confirmed) on cases with refunds; ≤ 7 days → 100, ≥ 60 days → 0, linear in between. Refunds still pending after 60 days count as 60 | 10 |
-  | T5 | Repeat customer satisfaction | Average current rating of reviews that have ≥ 1 lifecycle update **or** come from consumers with ≥ 2 verified experiences with the Business, normalised `(avg − 1)/4 × 100` | 15 |
+  | T3 | Complaint resolution | `0.5 × resolution rate + 0.5 × ((avg resolution rating − 1) / 4 × 100)`. Resolution rate = cases the consumer confirmed resolved ÷ cases that were resolved, closed unresolved, or open > 30 days (010) | 20 |
+  | T4 | Refund speed | Median days from "refund requested" to "refund completed" (consumer-confirmed) on cases with refunds; ≤ 7 days → 100, ≥ 60 days → 0, linear in between. Refunds still pending after 60 days count as 60. Compensation (UK261/EU261) is **not** included here (010) | 15 |
+  | T5 | Repeat customer satisfaction | Average current rating of reviews that have ≥ 1 lifecycle update **or** come from consumers with ≥ 2 verified experiences with the Business, normalised `(avg − 1)/4 × 100` | 10 |
   | T6 | Dispute frequency | Cases escalated to mediation (010) per 100 eligible reviews; 0 → 100, ≥ 10 → 0, linear in between | 15 |
 
 - **FR-008-10** Minimum data per component, within the 12-month window:
@@ -72,6 +72,7 @@ Summarise a business's reputation honestly, with two published numbers. The **Re
   | T6 | same as T1 |
 
   Components below their minimum are **excluded**, and the remaining weights are scaled up proportionally. If the included weights add up to less than **60**, the Trust Index shows "Not enough data yet".
+- **FR-008-10a** **Unclaimed businesses:** case-based components (T3, T4, T6) are calculated normally, but when the Business is `unclaimed`, the breakdown marks them "Unclaimed: this business hasn't joined, so response data may be incomplete". The same notice appears next to the Trust Index on the profile and in comparisons (009).
 - **FR-008-11** Formula: `TrustIndex = round_half_up( Σ(weightₖ × componentₖ) / Σ weightₖ )` over included components.
 - **FR-008-12** The breakdown view must show each component's value, its weight, whether it was included, and a one-sentence plain-language explanation, plus the methodology version and calculation date.
 - **FR-008-13** The Trust Index must be **identical for any plan**. No input may come from data only available to paying businesses. For example, if transaction reference data improves verification, the free equivalent (document proof) must be available to every reviewer.
@@ -119,6 +120,6 @@ Summarise a business's reputation honestly, with two published numbers. The **Re
 
 ## 7. Dependencies & Open Questions
 
-- **Q1:** The client needs to approve the **Trust Index weights**. The weights proposed here are a starting point.
+- **Decided (2026-09-24):** travel-tuned weights T1 25 · T2 15 · T3 20 · T4 15 · T5 10 · T6 15 (sum 100). Unclaimed businesses: complaint data counts, with a notice (FR-008-10a).
 - **Q2:** Should the prior (`m`, `p`) differ per category, e.g., using the category's average? *Proposed:* no, for simplicity and neutrality in v1.
 - **Q3:** Should the Trust Index be shown on search results cards, or only on profiles? *Proposed:* both.

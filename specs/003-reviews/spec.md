@@ -5,13 +5,13 @@
 
 ## 1. Goal
 
-Let consumers write honest, useful reviews of a business, a location, or a product. Category-specific questions make the feedback richer, and follow-up updates show whether the experience held up over time. Every review shows where it came from, and only its author can change it.
+Let consumers write honest, useful reviews of a business or a location (product reviews are deferred beyond Phase 1). Category-specific questions make the feedback richer, and follow-up updates show whether the experience held up over time. Every review shows where it came from, and only its author can change it.
 
 ## 2. User Scenarios
 
 1. **Organic service review.** When a signed-in consumer opens a hotel's profile and clicks "Write a review", they choose 1–5 stars, answer the hotel question set (cleanliness, check-in speed, noise level), write a title and text, set the date of experience, and submit. Within about a minute the review appears on the profile with the label **Organic**, and the Review Score updates.
 2. **Invited review.** When a consumer clicks a unique invitation link from an airline (005), the form opens with the business and reference number pre-filled. After publishing, the review shows **Invited**, and it also shows **Verified Experience** if the invitation came from a transaction-linked method (004).
-3. **Product review.** When a consumer invited after a purchase follows the product review link, they rate each purchased product (stars, title, text). Each product review appears on that product's widget and on the business's product tab.
+3. **Agency booking, airline flight.** When a traveller who booked through an agency writes a review about a delayed flight, they choose which business the review is about (the airline). They can tag the agency that sold the ticket. The review appears on the airline's profile and counts in its scores. It also appears in the agency's "Mentioned in reviews" section, and the agency is notified and may reply once.
 4. **Lifecycle update.** Thirty days after publishing, the consumer gets an email: "Still happy with SkyHop? Add an update." They add a 3-star update saying the refund took too long. The review now shows a timeline (original 5★ on 10 Mar → update 3★ on 9 Apr). The current rating shown and used in scores is 3★.
 5. **Author edits and deletes.** When the author fixes a typo, the review shows "Edited". When the author deletes it, it disappears from the profile and the score is recalculated.
 6. **Useful vote.** A reader who finds a review helpful taps "Useful". The count goes up by one, and tapping again removes the vote.
@@ -20,9 +20,9 @@ Let consumers write honest, useful reviews of a business, a location, or a produ
 ## 3. Functional Requirements
 
 ### Submission
-- **FR-003-01** Review types: **service** (the Business), **location** (a Location of the Business), **product** (a Product of the Business).
+- **FR-003-01** Review types in Phase 1: **service** (the Business) and **location** (a Location of the Business, e.g., an airport desk or agency branch). **Product** reviews are deferred. The data model must allow them to be added later (002 FR-002-17).
 - **FR-003-02** A service or location review must include: star rating (integer 1–5), title (5–100 characters), text (30–5,000 characters), and date of experience. Optional: reference/order number (≤ 64 characters) and answers to the category question set (002).
-- **FR-003-03** A product review must include: star rating, text (10–2,000 characters), and an optional title. Product reviews may be submitted **only** through a product invitation (005) tied to that product.
+- **FR-003-03** *(Deferred.)* Product reviews. When added, they may be submitted only through a product invitation (005).
 - **FR-003-04** The date of experience must not be in the future, and must be within the **last 12 months** of the submission date.
 - **FR-003-05** The form must show the question set for the Business's primary category (or the Location's category, if set). Required questions must be answered, and optional ones may be skipped. Answers are stored with the question-set version.
 - **FR-003-06** The author must confirm, with a checkbox recorded per review, that the review describes their own genuine experience and that they received no incentive from the business.
@@ -64,6 +64,15 @@ Let consumers write honest, useful reviews of a business, a location, or a produ
 - **FR-003-29** Review lists must be paginated with a maximum page size of 50. Each review must have a permanent URL.
 - **FR-003-30** Business Review Scores (008) must be recalculated after every publish, edit, delete, update, or moderation change.
 
+### Tagging a second business (travel: agency ↔ airline)
+- **FR-003-31** When writing a review, the author may optionally **tag one other Business** involved in the same experience (e.g., the agency that sold the ticket, or the airline that operated the flight). The tag must point to an existing Business (or a newly created unclaimed one, 002) and cannot be the reviewed Business itself.
+- **FR-003-32** A tagged review:
+  - appears on the tagged Business's profile under **"Mentioned in reviews"** (002 FR-002-27), clearly marked as a review of the other business;
+  - triggers a notification to the tagged Business's members (007 preferences apply);
+  - may receive **one reply from the tagged Business**, shown under the main business's reply and labelled with the tagged business's name (007 rules apply);
+  - **never** counts toward the tagged Business's Review Score, Trust Index, analytics ratings, or AI summaries.
+- **FR-003-33** The author may add, change, or remove the tag while editing. Removing the tag also hides the tagged business's reply (kept in audit).
+
 ## 4. Edge Cases & Rules
 
 | Case | Rule |
@@ -85,6 +94,8 @@ Let consumers write honest, useful reviews of a business, a location, or a produ
 | Useful vote spam (many votes from new accounts) | Votes from accounts flagged by fraud detection are not counted. |
 | Unauthenticated user submits | Draft kept. Sign-in required before submit. |
 | Question-set answer for a question not in the set | Ignore it and log it. |
+| Author tags the same business they are reviewing, or tags more than one business | Reject. |
+| Tagged business is under Consumer Warning | Tag allowed. The mention shows on its profile as normal. |
 
 ## 5. Out of Scope
 
@@ -97,8 +108,8 @@ Let consumers write honest, useful reviews of a business, a location, or a produ
 
 ## 6. Acceptance Criteria
 
-- [ ] Service, location, and product reviews can be created with all validation rules enforced (a test for each rule in §3 and §4).
-- [ ] Product reviews can only be created through product invitations.
+- [ ] Service and location reviews can be created with all validation rules enforced (a test for each rule in §3 and §4).
+- [ ] Tagging: the mention appears on the tagged profile, the tagged business gets one reply, and the tag has zero score effect (invariance test).
 - [ ] Members of a Business cannot review it.
 - [ ] Source labels are set correctly for the invitation, generic link, and organic paths, and cannot be edited.
 - [ ] Lifecycle windows open and close on the right days (time-travel tests at days 29/30/179/180/364/365/455). The current rating and durability signal are correct.
@@ -109,5 +120,5 @@ Let consumers write honest, useful reviews of a business, a location, or a produ
 
 ## 7. Dependencies & Open Questions
 
-- **Q1:** Should lifecycle milestones count from the **date of experience** or the **publication date**? *Proposed:* publication date, because it is simpler and can't be gamed through the date field.
+- **Decided (2026-09-24):** lifecycle milestones count from the **publication date** (FR-003-17). Product reviews are deferred. Second-business tagging works as in FR-003-31 to 33.
 - **Q2:** Should the **original** rating also stay visible in the header summary (e.g., "Originally 5★")? *Proposed:* yes, on the card only.

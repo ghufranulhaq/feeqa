@@ -2,18 +2,18 @@
 
 **Status:** Draft · **Phase:** 2 · **Depends on:** 001, 003, 004
 **Client requirements:** F6 Review Portability & Ownership ("reviewer passport"), F8 Reward Honest, Detailed Reviews
-**Legal gate:** Rewards need written legal sign-off before launch (constitution L5).
+**Decided (2026-09-24):** rewards are **status-only**: levels, badges, and early access to Platform features. There are no perks with monetary value (constitution L5).
 
 ## 1. Goal
 
-Reviewers own their review history and should get credit for writing helpful, honest reviews. Give each reviewer a portable, verifiable **Reviewer Passport** that summarises their track record and can be exported. Reward review **quality**: helpfulness, detail, verification, and follow-up updates. Never reward volume or sentiment, so rewards cannot buy positive reviews.
+Reviewers own their review history and should get credit for writing helpful, honest reviews. Give each reviewer a portable, verifiable **Reviewer Passport** that summarises their track record and can be exported. Recognise review **quality** (helpfulness, detail, verification, follow-up updates) with **status, not money**. Never reward volume or sentiment, so recognition cannot buy positive reviews.
 
 ## 2. User Scenarios
 
 1. **Reputation profile.** When a consumer opens their profile, they see their passport: member since 2026, 24 published reviews, 83% Verified Experience, 312 "Useful" votes from other members, 9 lifecycle updates, level **Trusted Reviewer**, and "no guideline violations in 12 months".
 2. **Export.** The consumer clicks "Export my reviews" and gets a ZIP with a JSON file (and a readable HTML/CSV version) of all their reviews, updates, answers, media, replies received, and a **signed passport credential**.
 3. **Share passport.** The consumer shares their passport link or credential with another site. That site checks the signature with the Platform's public key and sees the reviewer's stats. Review texts are included only if the reviewer chose to include them.
-4. **Earn quality points.** A consumer's detailed, verified review gets 15 "Useful" votes from distinct established members, and they add a 6-month update. They earn Quality Points and reach the next level, which unlocks a perk from the Platform's rewards catalogue (e.g., early access to features, or a partner discount funded by the Platform).
+4. **Earn quality points.** A consumer's detailed, verified review gets 15 "Useful" votes from distinct established members, and they add a 6-month update. They earn Quality Points and reach the next level. This unlocks a **level badge** on their reviews and passport, and **early access** to new Platform features (e.g., beta comparison tools). Nothing with monetary value is given.
 5. **Rating makes no difference.** Two reviewers write equally detailed, equally verified reviews of the same business, one 1★ and one 5★. They earn exactly the same points.
 
 ## 3. Functional Requirements
@@ -42,7 +42,7 @@ Reviewers own their review history and should get credit for writing helpful, ho
 - **FR-014-09** Levels are recalculated daily. Losing good standing drops the level to Contributor at most until standing is restored.
 - **FR-014-10** Reviewer level must **not** affect Review Score or Trust Index weights (008). It may be shown on review cards, and may be used as a "Most useful" sort signal only (003).
 
-### Quality Points & rewards
+### Quality Points & recognition
 - **FR-014-11** Quality Points are earned **only** from:
   - Useful votes received from distinct eligible voters (account ≥ 30 days old, not flagged, not the reviewed business's members);
   - Verified Experience on a review;
@@ -52,9 +52,10 @@ Reviewers own their review history and should get credit for writing helpful, ho
 - **FR-014-12** Point calculations must **not** use star rating, sentiment, the business reviewed, whether the business replied, or the business's plan. An automated invariance test must prove that flipping a review's rating/sentiment doesn't change the points earned.
 - **FR-014-13** Points from a review are **reversed** if the review is removed for a guideline breach. Points from Useful votes are reversed if the votes are later found fraudulent.
 - **FR-014-14** Daily cap: at most 100 points per day. Votes on a single review count for points up to a maximum of 50.
-- **FR-014-15** Rewards are **funded by the Platform** (or by partners through contracts with the Platform). A **business may never fund rewards linked to reviews of itself**, and a perk from a partner must not be redeemable in a way that is tied to reviewing that partner.
-- **FR-014-16** Rewards catalogue: perks with a points cost, stock, eligibility (level), and expiry. Redemption is recorded, and perks are delivered as codes or feature unlocks.
-- **FR-014-17** Reviews are not labelled individually as rewarded, because rewards are never tied to a specific review. Instead, the Platform discloses the rewards programme publicly in the guidelines and on the Transparency Center (FTC/DMCC disclosure; legal to confirm, see Q1).
+- **FR-014-15** Recognition is **status-only**: level badges, "Trusted/Expert Reviewer" labels, and early access to Platform features (feature flags granted per level). The system must have **no** mechanism to give reviewers discounts, vouchers, cash, points redeemable for goods, or any benefit funded by or linked to a business.
+- **FR-014-16** Quality Points are an internal progress measure toward levels. They cannot be redeemed, transferred, or exchanged.
+- **FR-014-17** The Platform publicly describes the recognition programme (how points and levels work) in the guidelines and on the Transparency Center.
+- **FR-014-18** Adding any benefit with monetary value later requires a constitution amendment (L5), a spec change, and legal sign-off.
 
 ## 4. Edge Cases & Rules
 
@@ -66,10 +67,8 @@ Reviewers own their review history and should get credit for writing helpful, ho
 | Credential tampered with | The check fails. |
 | Vote rings (accounts voting on each other) | Detected by 006. Votes are ignored for points and the rings are sent to the ladder. |
 | Reviewer deletes a review | The points earned from it are removed. |
-| Reviewer tries to redeem more points than they have | Reject. |
-| Perk out of stock | Hide it from the catalogue, or show "Out of stock". |
-| Partner business on the platform funds a perk | Allowed only through the Platform's pool. The partner's own profile reviews are excluded from earning points toward its perks. |
-| Unauthorized: a business attempts to award points | No such endpoint exists. |
+| Business offers reviewers a perk "for being an Expert Reviewer" off-platform | Business guideline breach (006, `incentivised`). |
+| Unauthorized: a business attempts to award points or levels | No such endpoint exists. |
 
 ## 5. Out of Scope
 
@@ -78,6 +77,7 @@ Reviewers own their review history and should get credit for writing helpful, ho
 - Leaderboards that rank reviewers by volume.
 - Public "follow" features.
 - Rewards for writing a review of a specific business.
+- Any perk with monetary value: discounts, vouchers, partner offers, points redemption (not in scope without amendment, FR-014-18).
 
 ## 6. Acceptance Criteria
 
@@ -86,10 +86,8 @@ Reviewers own their review history and should get credit for writing helpful, ho
 - [ ] Levels recalculate daily with the correct thresholds.
 - [ ] Points invariance test passes: rating, sentiment, business, and plan don't change points.
 - [ ] Points reversal on removal works. Caps are enforced.
-- [ ] The rewards programme disclosure is published, and legal sign-off is recorded before the feature flag goes live.
+- [ ] The recognition programme is published. No code path exists to issue monetary benefits (code review + test that the rewards catalogue/redeem endpoints don't exist).
 
 ## 7. Dependencies & Open Questions
 
-- **Q1:** **Legal review** of rewards under the FTC Rule (§465.5: incentives conditioned on sentiment are banned; unconditioned incentives may still need disclosure) and the DMCC Act "concealed incentivised reviews". Do we need to label reviews from reviewers who hold rewards? The design proposes programme-level disclosure. Legal must confirm.
-- **Q2:** Who are the launch perk partners, and what is the budget?
 - **Q3:** Should the credential format follow the W3C Verifiable Credentials data model? *Proposed:* yes; decide in plan.md.

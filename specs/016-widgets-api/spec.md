@@ -22,14 +22,14 @@ Let businesses show their live, authentic reviews anywhere, and let partners bui
   - **Mini badge**: Review Score, stars, label, count, optional Trust Index;
   - **Micro star**: stars + count only;
   - **Review carousel/list**;
-  - **Product rating** (per SKU);
+  - **Product rating** (per SKU), *deferred with product reviews (003)*;
   - **Verified Experience highlight**: count and share of verified reviews;
   - **Case record**: response and resolution metrics.
 - **FR-016-02** Free plan: mini badge and micro star. Other widgets are plan-gated (017).
 - **FR-016-03** Widgets are loaded by a script (≤ 30 KB gzipped, async, no layout shift beyond reserved space) that renders inside an isolated container (shadow DOM or iframe). Widgets must meet WCAG 2.2 AA and support light/dark themes and all launch locales.
 - **FR-016-04** Widget data is served from the Platform with a **signature** (Platform key, 004 key infrastructure) over the data payload and timestamp. The widget shows a "Verify" link that opens a Platform page confirming the signature and freshness.
 - **FR-016-05** Data freshness: widget data must not be more than **15 minutes** old. Stale or unsigned data must render a neutral "Unable to load reviews" state rather than old numbers.
-- **FR-016-06** Widget filters (star rating, topics, tags, location, product, language) are allowed, but **any** filter that excludes ratings must be disclosed inside the widget, with a link to the full profile (DMCC/FTC "not misleading" rule).
+- **FR-016-06** Widget filters (star rating, topics, tags, location, language) are allowed, but **any** filter that excludes ratings must be disclosed inside the widget, with a link to the full profile (DMCC/FTC "not misleading" rule).
 - **FR-016-07** Under Consumer Warning (006), all widgets show the warning and hide scores. Businesses cannot turn this off.
 - **FR-016-08** Widgets are allowed only on domains the business registered (profile domains + up to 20 extra allowed domains). Embeds elsewhere render a "Profile on <Platform>" link only.
 - **FR-016-09** Widget impressions and clicks are counted (without cookies, and without personal data) for analytics (015).
@@ -50,7 +50,7 @@ Let businesses show their live, authentic reviews anywhere, and let partners bui
 ### Data licensing (Phase 2)
 - **FR-016-18** Licensed data products: bulk category exports (scores, metrics, anonymised topic/sentiment aggregates), historical score time series, and aggregated sentiment feeds. **Never** included: reviewer personal data, proofs, insider identities, case messages.
 - **FR-016-19** Licences are contracts with usage terms (attribution to the Platform, no re-identification, no training of review-generating models, display of labels). Each licence has its own keys, quotas, and audit logs.
-- **FR-016-20** Review **texts** in licensed bulk data are included only where the Platform's terms allow it and reviewers are informed in the privacy notice. Otherwise only aggregates are provided (legal to confirm, Q1).
+- **FR-016-20** Licensed bulk data may contain review **excerpts of at most 200 characters**, each with the review's permalink, source label, and verification status. It must **not** contain full review texts. Reviewer terms and the privacy notice must disclose this. Full texts reach partners only through the live display API under FR-016-15/16.
 
 ## 4. Edge Cases & Rules
 
@@ -86,5 +86,5 @@ Let businesses show their live, authentic reviews anywhere, and let partners bui
 
 ## 7. Dependencies & Open Questions
 
-- **Q1:** Legal: can full review texts be licensed to partners, and under what reviewer terms?
+- **Decided (2026-09-24):** licensed data = aggregates + ≤ 200-character excerpts (FR-016-20).
 - **Q2:** Launch partners for data licensing and their required data products.

@@ -18,6 +18,14 @@ We are building an open consumer review platform ("**the Platform**") with the c
 
 We win on **authenticity, transparency, and resolution**, not on review volume.
 
+### Launch scope (decided 2026-09-24)
+| Decision | Value |
+|----------|-------|
+| Launch vertical | **Travel**: airlines, travel agencies / OTAs, airports. Businesses from **any** industry can be listed and reviewed. Only Travel is launched (shown in navigation and rankings) and seeded. Staff open further industries from the console (spec 002). |
+| Launch markets | **UK + EU**. English only (`en-GB`). Prices in GBP and EUR. |
+| Clients | **Responsive web only**: consumer site, business dashboard, staff console. Native apps come later on the same API. |
+| Operator | The Platform is operated by **AeroTickets**, which also sells travel and is listed on the Platform (see P11). |
+
 Key references:
 - Client requirements: [`add-to-trustpilot.md`](add-to-trustpilot.md)
 - Market research: [`docs/research/trustpilot-platform-analysis.md`](docs/research/trustpilot-platform-analysis.md)
@@ -93,6 +101,13 @@ Key references:
 - If a requirement can't be tested, it isn't a requirement. Rewrite it.
 - Every FR must be specific enough that an implementation that ignores it fails a test.
 
+### P11. Operator neutrality
+AeroTickets (the operator) sells travel and competes with businesses listed on the Platform.
+- AeroTickets' own profile is treated **exactly like any other business**: same algorithms, moderation rules, and plan entitlements. Its profile carries a permanent public label, **"Owned by the Platform operator"**.
+- AeroTickets may buy sponsored placements only **at list price**, and its slots are labelled **"Sponsored · Platform operator"**.
+- **Data firewall:** only Platform staff roles (001) can access non-public data (invitations, cases, proofs, private analytics, customer data of any business). AeroTickets' commercial staff get **exactly** the access of a normal business account on the same plan. Every staff access to another business's non-public data is audit-logged, and access is reviewed each quarter.
+- This commitment is published in the Transparency Center (006).
+
 ---
 
 ## 4. Brand, IP & Legal Constraints
@@ -101,9 +116,10 @@ Key references:
 |---|------------|
 | L1 | **No Trustpilot IP.** Do not use the names "Trustpilot", "TrustScore", or "TrustBox", Trustpilot's logos, star artwork, colour scheme, page copy, or help-centre text, and do not use data scraped from Trustpilot. We copy *capabilities*, never *assets*. |
 | L2 | Platform terminology: **Review Score** (1.0–5.0 star-based), **Trust Index** (0–100), **Trust Widgets**, **Verified Experience**. |
-| L3 | Follow the rules on fake reviews: **US FTC 16 CFR Part 465**, **UK DMCC Act 2024 / CMA208**, and **EU DSA + Omnibus Directive** (notice-and-action, statements of reasons, transparency reporting, disclosure of how reviews are verified). |
+| L3 | Follow the rules on fake reviews in the launch markets: **UK DMCC Act 2024 / CMA208** and **EU DSA + Omnibus Directive** (notice-and-action, statements of reasons, transparency reporting, disclosure of how reviews are verified). Design must also satisfy **US FTC 16 CFR Part 465** so that a US launch later needs no redesign. |
+| L3a | Travel passenger-rights context: **UK261 / EU Regulation 261/2004** (delay/cancellation compensation, refunds within 7 days). The Platform does not give legal advice, but cases track refunds and compensation separately (010). |
 | L4 | Follow data protection law: **GDPR / UK GDPR / CCPA-CPRA**. Keep a record of processing activities. Do a DPIA before launching proof uploads, insider verification, or voice/video. |
-| L5 | **Reward features (spec 014) and insider reviews (spec 013) need a written legal sign-off before launch.** Business-funded or sentiment-based incentives are forbidden. |
+| L5 | **Insider reviews (013) and "resolve first" (010) need written UK + EU legal sign-off before their feature flags are switched on in production.** Rewards (014) are **status-only**: no perks with monetary value. Adding monetary perks later needs a constitution amendment and legal sign-off. Business-funded or sentiment-based incentives are always forbidden. |
 | L6 | Reviewers must be **18 or older**. The experience must be within **12 months** of the review, except for lifecycle updates to an existing review. |
 | L7 | Payment, receipt, and employment proofs must never be sent to third parties other than processors named in the privacy notice. |
 
@@ -142,7 +158,8 @@ Key references:
 
 ### 5.5 Internationalisation
 - All user-facing strings are externalised. Dates, numbers, and currencies are formatted per locale.
-- **Launch locale:** English (`en`). The architecture must support adding locales without code changes.
+- **Launch locale:** English (`en-GB`). The architecture must support adding locales (including right-to-left scripts) without code changes.
+- **Currencies:** GBP and EUR at launch (ISO 4217 throughout).
 - Reviews keep their original language. Machine translation, when available, is labelled.
 
 ---
@@ -205,7 +222,8 @@ A task, feature, or spec counts as **done** only when **all** of the following a
 
 | Date | Decision | Spec / Plan |
 |------|----------|-------------|
-| _TBD_ | Technology stack (language, framework, database, hosting) | `specs/001-accounts-identity/plan.md` |
+| _TBD_ | Technology stack (language, framework, database, hosting). No constraints from the client: the first plan proposes one with rationale, and it is recorded here after approval. | `specs/001-accounts-identity/plan.md` |
+| 2026-09-24 | Clients: responsive web only in Phase 1 | Constitution §1 |
 
 ---
 
@@ -237,3 +255,4 @@ A task, feature, or spec counts as **done** only when **all** of the following a
 | Date | Change |
 |------|--------|
 | 2026-09-24 | Constitution v1.0 created. |
+| 2026-09-24 | v1.1 after the client interview: launch scope (travel, UK+EU, English, web only); P11 operator neutrality and data firewall; L3 narrowed to launch markets + UK261/EU261; L5 rewards made status-only and legal gate added for "resolve first". |

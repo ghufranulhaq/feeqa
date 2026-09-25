@@ -40,7 +40,7 @@ Fake reviews are the biggest problem with review sites. Any reviewer can prove t
 - **FR-004-11** Reuse attempts must be rejected and sent to fraud signals (006).
 
 ### Reference matching
-- **FR-004-12** Businesses (or their integrations) may submit transaction records through API or integration: HMAC hash of the reference, HMAC hash of the customer email, transaction date, and optionally product SKUs. Plaintext references are never required.
+- **FR-004-12** Businesses may submit transaction records through the **Business API** or with **BCC** email forwarding (005) in Phase 1. Travel booking-engine/GDS connectors come in Phase 2, after partners are signed. Records contain: HMAC hash of the reference, HMAC hash of the customer email, transaction date, and optionally product SKUs. Plaintext references are never required.
 - **FR-004-13** A consumer-entered reference matches when both the reference hash and the consumer's verified-email hash match a record dated within 12 months. A reference match without an email match goes to human review instead.
 
 ### Attestation (cryptographic tie)
@@ -68,6 +68,7 @@ Fake reviews are the biggest problem with review sites. Any reviewer can prove t
 | Upload is empty, corrupt, password-protected PDF, or > 10 MB | Reject with a specific message. |
 | Proof names a different business | Reject verification. Offer to move the review to the correct business (the author confirms). |
 | Proof date is after the date of experience + 30 days, or > 12 months old | Reject, or send to human review if the difference is ≤ 7 days (timezone or processing delays). |
+| E-ticket or booking confirmation issued by an **agency** for a flight operated by an airline | Accepted for either business: the agency (as seller) or the airline (as operator, matched by flight number/airline code on the document). |
 | Proof shows a **refund or cancellation** only | Accepted for verification (it still shows a real interaction). The method is recorded as `document_proof:refund`. |
 | Same receipt uploaded by two different accounts | Second use rejected. Both accounts go to fraud review. |
 | Reviewer tries to verify a review that is held or removed | Not allowed until it is published. |
@@ -101,6 +102,7 @@ Fake reviews are the biggest problem with review sites. Any reviewer can prove t
 
 ## 7. Dependencies & Open Questions
 
-- **Q1:** Which payment/open-banking or e-commerce partners come first (Phase 2 `payment_link`)? This is a commercial decision.
+- **Decided (2026-09-24):** Phase 1 transaction sources are **document upload + Business API + BCC only**. There are no platform-specific connectors and no special use of the operator's (AeroTickets') booking data (constitution P11).
+- **Q1:** Which travel booking-engine/GDS and payment partners come first in Phase 2? This is a commercial decision.
 - **Q2:** Should document verification use an OCR/extraction vendor (processor under GDPR) or run in-house? Decide in plan.md, and include it in the DPIA.
 - **Q3:** Should reviews verified with a refund-only proof get a distinct public sub-label?

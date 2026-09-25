@@ -72,19 +72,39 @@ Every item in [`add-to-trustpilot.md`](../add-to-trustpilot.md) maps to at least
 | E) Voice/video reviews | 012 |
 | F) Resolution rating | 010, 008 |
 
-## Key Decisions Needed From the Client
+## Decision Log (client interview, 2026-09-24)
 
-These block planning for the specs listed. Each spec's *Open Questions* section has the full list.
+| # | Topic | Decision | Specs |
+|---|-------|----------|-------|
+| D1 | Launch vertical | **Travel**: airlines, travel agencies/OTAs, airports. Content drafted in [`travel-content.md`](002-business-profiles/travel-content.md) *(pending client approval)* | 002, 005, 009, 011 |
+| D2 | Markets & clients | **UK + EU**, English (`en-GB`), GBP/EUR, **responsive web only** | Constitution §1 |
+| D3 | Operator conflict | AeroTickets sells travel and is **listed like any other business**, with an "Owned by the Platform operator" label. **Strict published data firewall.** May buy ads at list price with a disclosed label | Constitution P11, 001, 002, 006, 009, 017 |
+| D4 | Agency vs. airline | The reviewer picks one business and may **tag** the other. The tagged business sees the review and can reply once, with **no score effect** | 003, 002 |
+| D5 | Trust Index weights | Travel-tuned: 25 / 15 / 20 / 15 / 10 / 15 | 008 |
+| D6 | Compensation (UK261/EU261) | A **separate case milestone**. Excluded from refund speed; counts toward resolution. Shown in comparisons | 010, 008, 009 |
+| D7 | Pricing & billing | Starter **£99 / €119**, Pro **£299 / €349**, Enterprise by quote. Monthly + annual (2 months free) | 017 |
+| D8 | Mediation | **In-house, free for everyone** in Phase 1 | 010 |
+| D9 | Rewards | **Status-only** (levels, badges, early access). No monetary perks | 014, Constitution L5 |
+| D10 | Verification sources (Phase 1) | Document upload + Business API + BCC. Connectors in Phase 2 | 004, 005 |
+| D11 | Directory seeding | Seed about 300–500 UK/EU airlines and major agencies/OTAs as unclaimed profiles | 002 |
+| D12 | Moderation team | Small in-house team, SLAs as written | 006 |
+| D13 | Product reviews | **Deferred** beyond Phase 1 | 002, 003, 005, 016 |
+| D14 | Lifecycle clock | Counts from the **publication date** | 003 |
+| D15 | Voice/video | Only on **Verified Experience** reviews | 012 |
+| D16 | Insider reviews | Only businesses with **≥ 50 employees**. Legal-gated flag | 013 |
+| D17 | Tech stack | Proposed in the first plan.md, recorded in Constitution §10 after approval | all |
+| D18 | Unclaimed businesses | One notice to their public contact email. Complaint data counts in the Trust Index, **with an "Unclaimed" notice** | 010, 008, 009 |
+| D19 | Ads model | **Fixed monthly slots**, 3 seats per category × country, even rotation | 017, 009 |
+| D20 | Lead fees | **Flat fee per attributed booking** | 017 |
+| D21 | Data licensing | Aggregates + excerpts of at most 200 characters (no full texts) | 016 |
+| D22 | "Resolve first" | Built behind a feature flag. **Off until UK + EU legal sign-off** | 010, Constitution L5 |
+| D23 | Other industries | Any business from any industry can be listed and reviewed. A full top-level taxonomy ships with only Travel launched. **Staff create and launch new industries from the console with no code change** (readiness checklist, preview, audit) | 002 |
 
-| # | Decision | Blocks |
-|---|----------|--------|
-| D1 | **Launch vertical.** The examples point to travel (airlines/agencies). Please confirm. | 002, 005, 009, 011 |
-| D2 | **Trust Index weights**, proposed 30/15/15/10/15/15 | 008 |
-| D3 | **Plan pricing and limits** for Starter / Pro / Enterprise | 017 |
-| D4 | **Legal sign-off** on rewards (014), insider reviews (013), and "resolve first" (010) | 010, 013, 014 |
-| D5 | Payment/e-commerce **integration partners** for verification and invitations | 004, 005 |
-| D6 | Mediation: free for all businesses, or a paid add-on? | 010, 017 |
-| D7 | Technology stack (recorded in `CLAUDE.md` §10 once decided in the plan phase) | all |
+### Still open (non-blocking for Phase 1 planning)
+- Client approval of `travel-content.md` (question sets, topics, invitation timing).
+- Plan limits (invitations, users, locations) in 017 FR-017-02, sponsored slot list prices, per-booking lead fee.
+- Legal sign-off for insider reviews (013) and "resolve first" (010), which is needed before those flags are switched on.
+- Seed-data source (002 Q1). Phase 2 connector partners (004/005).
 
 ## Trustpilot Parity Traceability
 

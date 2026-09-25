@@ -49,6 +49,7 @@ Give every person a single, secure identity on the Platform. Consumers can revie
 ### Staff
 - **FR-001-14** Staff roles: `Moderator`, `Senior Moderator`, `Mediator`, `Support`, `Admin`. Staff accounts require MFA and may be created only by a staff `Admin`.
 - **FR-001-15** Every staff action on user content or accounts must write an audit event with staff ID, action, target, reason code, and timestamp.
+- **FR-001-15a** **Operator data firewall (constitution P11):** a person who holds a business membership in the operator's Business (AeroTickets) must **not** also hold any staff role, and staff accounts must not be created for such people. The system must reject the conflicting assignment in either direction. Staff reads of any business's non-public data must write an audit event. A quarterly access report must be producible from the audit store.
 
 ### Sessions & security
 - **FR-001-16** Sessions must expire after 30 days of inactivity for consumers and 12 hours for staff. Users must be able to see their active sessions and revoke them.
@@ -97,8 +98,10 @@ Give every person a single, secure identity on the Platform. Consumers can revie
 - [ ] Account deletion hides content right away and erases personal data within 30 days (checked by a scheduled-job test).
 - [ ] Rate limiting and lockout behaviour are verified by tests.
 - [ ] The public profile page never exposes an email or proof data (checked by a test).
+- [ ] An operator-business member cannot be given a staff role, and the reverse is also rejected (test).
 
 ## 7. Dependencies & Open Questions
 
 - **Q1:** Should consumers be allowed to use a **pseudonym only**, or should the Platform ask for (but not show) a real name for the Verified Experience? *Proposed:* do not ask. Proof is linked to the experience, not to a legal identity.
-- **Q2:** Which social providers matter most for the launch vertical?
+- **Q2:** Which social providers matter most for UK + EU travellers? *Default:* Google, Apple, and Facebook as specified. Revisit after the first 3 months of sign-up data.
+- **Decided (2026-09-24):** launch locale `en-GB`, markets UK + EU, responsive web only.

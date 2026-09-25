@@ -27,9 +27,9 @@ Reviews show how an experience felt. Cases show what the business **did about it
 
 ### Case creation
 - **FR-010-01** A signed-in consumer may open a case (a) from their own published review, (b) while writing a review ("resolve first", FR-010-06), or (c) from the business profile without a review ("Raise a complaint").
-- **FR-010-02** Case fields: business, optional location, linked review (optional), category (from a Platform list: refund, cancellation, delay, damaged/missing item, billing, service quality, account/access, other), description (30–5,000 characters), desired outcome (refund, replacement, repair, apology/explanation, compensation, other), optional amount + currency, optional reference number, attachments (≤ 5 files, ≤ 10 MB each).
+- **FR-010-02** Case fields: business, optional location, linked review (optional), category (from a Platform list: refund, cancellation, delay, **denied boarding**, **lost/damaged baggage**, **schedule change**, billing/hidden fees, service quality, account/access, other), description (30–5,000 characters), desired outcome (refund, **statutory compensation (UK261/EU261)**, rebooking, replacement, apology/explanation, goodwill payment, other), optional amount + currency, optional reference number, attachments (≤ 5 files, ≤ 10 MB each).
 - **FR-010-03** A consumer may have at most **one open case per Business per experience** (reference or linked review) and at most **5 open cases in total**.
-- **FR-010-04** The business is notified immediately (email + dashboard) to all members with Responder role or above. Cases can be opened against **unclaimed** businesses. The Platform then tries to reach the business using public contact details, and the timeline shows "Business not yet on the Platform".
+- **FR-010-04** The business is notified immediately (email + dashboard) to all members with Responder role or above. Cases can be opened against **unclaimed** businesses. The Platform then sends **one** notice to the business's **published customer-service email address** (taken from its own website and recorded with its source), inviting it to claim the profile and respond. No reminders are sent. The timeline shows "Business not yet on the Platform", and the case closes under FR-010-11(e) if there is no response in 30 days. If no public address is known, no notice is sent and the timeline says so.
 
 ### Timeline (dispute timeline)
 - **FR-010-05** The system records these **milestones** with timestamps. Each milestone records who set it, and some need confirmation from the other party:
@@ -42,13 +42,17 @@ Reviews show how an experience felt. Cases show what the business **did about it
   | Resolved | consumer (accepts resolution) | none (consumer-only) |
   | Refund requested | consumer (desired outcome = refund) or business | none |
   | Refund issued | business | consumer confirms "received" → **Refund completed** |
+  | Compensation claimed | consumer (desired outcome = statutory compensation) or business | none |
+  | Compensation paid | business | consumer confirms "received" → **Compensation completed** |
+  | Compensation rejected | business (with a reason category: extraordinary circumstances, not eligible, other) | none |
   | Escalated to mediation | consumer or business | none |
   | Mediation outcome | mediator | none |
   | Closed | see FR-010-11 | none |
 
-- **FR-010-06** "Resolve first" mode: the review stays **private** (visible only to the author) while the case is open, for **up to 14 days**. The consumer may publish at any time. When the case closes, or at day 14, the consumer is asked to publish, edit, or discard. After day 14 the review stays a private draft until the consumer acts. The business **cannot** start, extend, or influence this mode, and cannot see the private review's content or rating. The system must record that the review was deferred, and tell the consumer this is their choice (P3, FTC/DMCC anti-suppression).
+- **FR-010-06** "Resolve first" mode (**behind a feature flag that stays off in production until written UK + EU legal sign-off is recorded**, constitution L5): the review stays **private** (visible only to the author) while the case is open, for **up to 14 days**. The consumer may publish at any time. When the case closes, or at day 14, the consumer is asked to publish, edit, or discard. After day 14 the review stays a private draft until the consumer acts. The business **cannot** start, extend, or influence this mode, and cannot see the private review's content or rating. The system must record that the review was deferred, and tell the consumer this is their choice (P3, FTC/DMCC anti-suppression).
 - **FR-010-07** The **public** timeline on a linked review card shows milestone names and dates, the current status, and the resolution rating. It must **never** show messages, attachments, amounts, or reference numbers.
 - **FR-010-08** If "Refund issued" isn't confirmed or disputed by the consumer within 14 days, the timeline shows "Refund issued (reported by business, not confirmed)". It does **not** count as "Refund completed" in any metric.
+- **FR-010-08a** Compensation is tracked **separately** from refunds: it does not count toward refund speed (008 T4) or refund success rate. It **does** count toward resolution (a case whose compensation is paid and confirmed may be marked Resolved by the consumer). The same unconfirmed rule as FR-010-08 applies to "Compensation paid". The Platform must show a neutral link to official passenger-rights information (UK CAA / EU) on compensation cases, and must not judge eligibility.
 
 ### Messaging
 - **FR-010-09** Case messages between consumer, business, and (if escalated) mediator: plain text ≤ 3,000 characters plus attachments (≤ 5 per message, ≤ 10 MB each). They are screened for harmful content and malware (006), private to case participants and staff, and kept for 24 months after closure.
@@ -70,7 +74,7 @@ Reviews show how an experience felt. Cases show what the business **did about it
 
 ### Mediation
 - **FR-010-15** Either party may request mediation when: the business has not responded within **7 days**, or the case has been open **14 days** without resolution, or either party rejected a proposed resolution.
-- **FR-010-16** Mediation is **free** for consumers. For businesses it is included by plan (017). Unclaimed and free-plan businesses may take part at no cost in Phase 1.
+- **FR-010-16** Mediation is performed **in-house** by Platform staff and is **free for both parties in Phase 1**. Later pricing for businesses (e.g., included in Pro/Enterprise, per-case fee for Free/Starter) needs a spec change in 017. It is always free for consumers.
 - **FR-010-17** A mediator (staff with the `Mediator` role, with no conflict of interest) reviews the case and may request information from each party (response window 5 business days). The mediator issues a **non-binding** recommendation within **10 business days** of accepting the case. Each party accepts or declines within 7 days.
 - **FR-010-18** Mediation outcomes: `resolved` (both accept), `not_resolved` (either declines or doesn't answer), `withdrawn`. The outcome and date appear on the public timeline. The recommendation text stays private.
 - **FR-010-19** Mediation must show clear disclaimers: it is not legal advice, it does not replace statutory rights or chargeback/ADR schemes, and either party may leave at any time.
@@ -84,6 +88,7 @@ Reviews show how an experience felt. Cases show what the business **did about it
   - average resolution rating;
   - refund success rate;
   - median refund time;
+  - compensation paid % and median compensation time;
   - mediation escalations per 100 eligible reviews;
   - mediation resolved %.
 - **FR-010-21** The profile must show a **Case record** panel with these metrics (subject to "Not enough data" minimums of ≥ 5 cases).
@@ -128,6 +133,5 @@ Reviews show how an experience felt. Cases show what the business **did about it
 
 ## 7. Dependencies & Open Questions
 
-- **Q1:** Is mediation included for free on all plans at launch, or is it a paid add-on for businesses? (Consumers always free.)
-- **Q2:** Mediator staffing capacity, which sets the 10-business-day SLA.
-- **Q3:** Legal review of "resolve first" in each launch jurisdiction, because it touches anti-suppression rules. The consumer-only control is designed to satisfy them.
+- **Decided (2026-09-24):** mediation is in-house and free for all in Phase 1. SLAs stay as written (small in-house team). Compensation is tracked separately. Unclaimed businesses get one notice to a public contact. "Resolve first" is built behind a legal-gated flag.
+- **Q1:** UK + EU legal sign-off for "resolve first" (owner: client's counsel).

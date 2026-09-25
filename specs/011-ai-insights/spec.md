@@ -86,4 +86,4 @@ Help consumers understand hundreds of reviews in seconds, and help businesses se
 ## 7. Dependencies & Open Questions
 
 - **Q1:** AI provider selection (decided in plan.md). Must meet FR-011-18.
-- **Q2:** Who writes the topic taxonomy for the launch vertical?
+- **Decided (2026-09-24):** the launch topic taxonomy is drafted in [`travel-content.md`](../002-business-profiles/travel-content.md) §3, for client approval.

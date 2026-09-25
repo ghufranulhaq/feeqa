@@ -50,12 +50,14 @@ Help consumers find the right business fast and compare candidates on the things
   - average first response time to reviews (007) and cases (010);
   - refund success rate = refunds completed ÷ refunds requested (010);
   - median refund time;
+  - **compensation paid %** = compensation claims marked paid (consumer-confirmed) ÷ compensation claims closed (010), shown for Airlines and Agencies;
   - resolution rate and average resolution rating (010);
   - **repeat use** = % of verified reviewers with ≥ 2 verified experiences, or who answered "would use again = yes" (where the category question exists);
   - category question averages;
   - top 3 praised topics and top 3 complaint topics (011, Phase 2; hidden in Phase 1).
 - **FR-009-10** Each metric must show "Not enough data" rather than a number when its minimum sample isn't met (same minimums as 008 components; ≥ 5 for rates).
 - **FR-009-11** The best value per row is highlighted, but **no overall winner** is declared.
+- **FR-009-11a** Columns for `unclaimed` businesses show the notice from 008 FR-008-10a. The operator's Business shows its "Owned by the Platform operator" label (002 FR-002-26).
 - **FR-009-12** Comparisons have a shareable URL encoding the business IDs. Opening it computes the latest values.
 - **FR-009-13** Sponsored placements must **never** appear inside a comparison table, and plans must not change comparison values or order (order = the order the consumer chose).
 
@@ -64,7 +66,7 @@ Help consumers find the right business fast and compare candidates on the things
 
 ### Sponsored placements (display rules; commercial side in 017)
 - **FR-009-15** Sponsored slots: up to **1** at the top of a category page, up to **1** in search results (for category-level queries only, never for a query matching a specific business's name/domain). There are **no** sponsored slots on business profile pages in v1 (see Q1).
-- **FR-009-16** Every sponsored slot must show a visible **"Sponsored"** label, be visually distinct, and link to a "Why am I seeing this?" explanation.
+- **FR-009-16** Every sponsored slot must show a visible **"Sponsored"** label (or **"Sponsored · Platform operator"** for the operator's Business, constitution P11), be visually distinct, and link to a "Why am I seeing this?" explanation.
 - **FR-009-17** Sponsored placement must not remove or move the business in organic results. It must not be sold to businesses under Consumer Warning or with a Review Score below 3.0.
 
 ### SEO & discovery
@@ -105,5 +107,4 @@ Help consumers find the right business fast and compare candidates on the things
 
 ## 7. Dependencies & Open Questions
 
-- **Q1:** Are sponsored placements allowed on **competitors' profile pages**? This is common in the industry but could look like it undermines neutrality. *Proposed:* **no** for v1.
-- **Q2:** Launch vertical determines which category-question rows the comparison shows first.
+- **Decided (2026-09-24):** no sponsored slots on profile pages. The operator may buy sponsored slots at list price, with a disclosed label. Launch comparisons use the travel question sets (travel-content.md), with the Airlines rows ordered punctuality, disruption handling, baggage, crew, seat comfort.

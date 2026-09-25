@@ -17,7 +17,7 @@ Some people explain an experience better by talking than by typing, and hearing 
 
 ## 3. Functional Requirements
 
-- **FR-012-01** A review (or a lifecycle update) may include **at most one** media item: a voice note **or** a video.
+- **FR-012-01** A review (or a lifecycle update) may include **at most one** media item: a voice note **or** a video. Media is allowed **only on reviews with an active Verified Experience attestation** (004). If the attestation is revoked, the media is hidden.
 - **FR-012-02** Voice note limits: 5–120 seconds, ≤ 20 MB. Accepted input formats: common audio (AAC/M4A, MP3, Opus/WebM, WAV).
 - **FR-012-03** Video limits: 5–90 seconds, ≤ 200 MB, up to 1080p. Accepted input formats: MP4/H.264, MOV, WebM. Output is transcoded to adaptive streaming renditions.
 - **FR-012-04** In-browser/in-app recording and upload of existing files must both be supported. Uploads must be resumable for files > 20 MB.
@@ -40,6 +40,7 @@ Some people explain an experience better by talking than by typing, and hearing 
 | Corrupt file or unsupported codec | Reject with the list of supported formats. |
 | Upload interrupted | Resumable. Incomplete uploads are deleted after 24 hours. |
 | Two media items on one review | Reject the second. The author must remove the first. |
+| Media added to an unverified review | Reject: "Verify your experience to add a voice note or video". |
 | Video contains the author's own face | Allowed. |
 | Children identifiable in video | Hold. Publish only with blur. |
 | Language not supported by transcription | Hold for manual captioning. The author can type the transcript themselves. |
@@ -68,4 +69,4 @@ Some people explain an experience better by talking than by typing, and hearing 
 ## 7. Dependencies & Open Questions
 
 - **Q1:** Media processing and transcription providers (decided in plan.md, and included in the DPIA because voice is personal data).
-- **Q2:** Should voice/video be restricted to **Verified Experience** reviews to reduce abuse? *Proposed:* yes at launch.
+- **Decided (2026-09-24):** media is only allowed on Verified Experience reviews (FR-012-01).

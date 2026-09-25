@@ -24,6 +24,7 @@ Consumers, B2B buyers, and job seekers want to know how a company behaves from t
   - (b) **document proof** (employment contract, payslip, letter), reviewed by staff and handled under 004's document retention rules;
   - (c) **professional network sign-in** (e.g., LinkedIn), matching the current/past employer, *Phase 2b*;
   - (d) **payroll/HRIS integration**, *later phase*, only if the client confirms a partner.
+- **FR-013-01a** Insider reviews may be written only for Businesses whose employee size band (002 FR-002-25) is **50 or more**. Businesses with `<50` or `unknown` don't show the insider option.
 - **FR-013-02** Insider types: `current_employee`, `former_employee` (left ≤ 3 years ago), `contractor`, `other_insider` (e.g., franchisee, supplier employee). Each is shown in the label.
 - **FR-013-03** Verification is valid for 12 months (current employees) and must be renewed before writing another insider review of the same Business.
 - **FR-013-04** The verification record stores only: account ID, Business ID, insider type, role family, verification method, verified month, and expiry. Work email addresses are stored only as a keyed hash to prevent reuse, and never in plain text after verification.
@@ -83,4 +84,4 @@ Consumers, B2B buyers, and job seekers want to know how a company behaves from t
 
 - **Q1:** Legal sign-off per launch jurisdiction (FTC insider-review disclosure rules, employment-law confidentiality, defamation risk).
 - **Q2:** Does the client have a payroll/HRIS partner in mind for method (d)?
-- **Q3:** Should insider reviews be available for all categories, or only B2B/larger companies (e.g., ≥ 50 employees) to reduce re-identification risk? *Proposed:* only businesses marked "≥ 50 employees" at launch.
+- **Decided (2026-09-24):** only businesses with ≥ 50 employees (FR-013-01a). The feature flag stays off until legal sign-off.

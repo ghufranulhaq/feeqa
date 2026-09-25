@@ -61,6 +61,7 @@ Keep fake, harmful, and manipulated content off the Platform, and make every dec
   - (d) verification methodology (004);
   - (e) a **quarterly transparency report** with: reviews submitted/published/removed by reason code, % detected automatically vs. by flag, flags received and handled by reporter type, median time to action, appeals and overturn rates, Consumer Warnings issued, accounts blocked, and government/legal requests;
   - (f) a list of businesses currently under Consumer Warning.
+- **FR-006-21a** The Transparency Center must also publish the **operator neutrality commitment** (constitution P11): AeroTickets' ownership, its equal treatment, its ad-purchase rule, and the data firewall. The quarterly report must include the number of moderation decisions about the operator's own profile and the number of staff accesses to non-public business data.
 - **FR-006-22** Transparency report figures must be generated from the audit/event store by a reproducible job. Numbers must match the sum of underlying events.
 
 ## 4. Edge Cases & Rules
@@ -99,6 +100,6 @@ Keep fake, harmful, and manipulated content off the Platform, and make every dec
 
 ## 7. Dependencies & Open Questions
 
-- **Q1:** Staffing model for moderation (in-house vs. outsourced, languages, time zones). Determines realistic SLAs.
+- **Decided (2026-09-24):** a small in-house team (2–4 moderators, UK business hours), with automation doing most of the work. SLAs stay as specified. The 24-hour harmful-content SLA holds overnight because of automatic blurring (FR-006-08). Launch locale is English only, so launch lexicons and models are English-first.
 - **Q2:** Is the Platform expected to be designated under EU DSA thresholds? This affects out-of-court dispute settlement obligations.
 - **Q3:** Should the list of businesses under Consumer Warning be searchable, or only visible on profiles?

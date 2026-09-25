@@ -19,7 +19,7 @@ Give businesses insight they can act on: what customers say, how that changes, a
 
 ### Own analytics
 - **FR-015-01** Dashboard metrics for any date range (max 36 months) with a comparison period:
-  - review volume by rating, source label, Verified Experience, language, location, product;
+  - review volume by rating, source label, Verified Experience, language, location;
   - Review Score and Trust Index history (008 snapshots);
   - reply rate and median reply time (007);
   - case metrics (010 FR-010-20);
@@ -28,7 +28,7 @@ Give businesses insight they can act on: what customers say, how that changes, a
   - **durability**: distribution of `improved/unchanged/declined` lifecycle signals, and topics tied to declines (003 FR-003-22);
   - Useful votes on the business's reviews;
   - profile views and widget impressions (016).
-- **FR-015-02** Every metric can be filtered by location, product, source label, verification, language, and category question.
+- **FR-015-02** Every metric can be filtered by location, source label, verification, language, and category question.
 - **FR-015-03** Numbers on the dashboard must match the public numbers for the same definitions and period (single metric definitions shared with 008/009/010).
 - **FR-015-04** Exports: CSV (raw aggregated series) and PDF (formatted report). Scheduled email reports (weekly/monthly) to chosen members.
 - **FR-015-05** Row-level review exports (for the business's own reviews) contain only public review data plus invitation references the business supplied itself. They never contain reviewer emails, proofs, insider identities, or case attachments.
