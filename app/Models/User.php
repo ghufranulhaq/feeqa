@@ -4,10 +4,12 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -40,6 +42,11 @@ class User extends Authenticatable
     ];
 
     /**
+     * @var list<string>
+     */
+    protected $appends = ['avatar'];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -51,6 +58,17 @@ class User extends Authenticatable
             'date_of_birth_confirmed_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * The public URL of the uploaded avatar, if any — what the existing
+     * shadcn Avatar components (`user.avatar`) already expect.
+     */
+    protected function avatar(): Attribute
+    {
+        return Attribute::get(
+            fn (): ?string => $this->avatar_path ? Storage::disk('public')->url($this->avatar_path) : null,
+        );
     }
 
     public function consents(): HasMany

@@ -35,6 +35,7 @@ shell: ## Open a shell in the app container
 install: ## Install PHP and JS dependencies inside the containers
 	$(COMPOSE) exec app composer install
 	$(COMPOSE) exec app npm install
+	$(COMPOSE) exec app php artisan storage:link
 
 key: ## Generate the application key
 	$(COMPOSE) exec app php artisan key:generate

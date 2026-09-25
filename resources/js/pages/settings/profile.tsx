@@ -1,15 +1,17 @@
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Transition } from '@headlessui/react';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { FormEventHandler, useRef } from 'react';
 
 import DeleteUser from '@/components/delete-user';
 import HeadingSmall from '@/components/heading-small';
 import InputError from '@/components/input-error';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useInitials } from '@/hooks/use-initials';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 
@@ -27,7 +29,11 @@ interface ProfileProps {
 }
 
 export default function Profile({ mustVerifyEmail, status, countries }: ProfileProps) {
-    const { auth } = usePage<SharedData>().props;
+    const page = usePage<SharedData>();
+    const { auth } = page.props;
+    const avatarErrors = (page.props.errors ?? {}) as Record<string, string>;
+    const getInitials = useInitials();
+    const avatarInput = useRef<HTMLInputElement>(null);
 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
         name: auth.user.name,
@@ -41,6 +47,25 @@ export default function Profile({ mustVerifyEmail, status, countries }: ProfileP
         patch(route('profile.update'));
     };
 
+    const uploadAvatar = (file: File) => {
+        router.post(
+            route('profile.avatar.store'),
+            { avatar: file },
+            {
+                forceFormData: true,
+                onFinish: () => {
+                    if (avatarInput.current) {
+                        avatarInput.current.value = '';
+                    }
+                },
+            },
+        );
+    };
+
+    const removeAvatar = () => {
+        router.delete(route('profile.avatar.destroy'));
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Profile settings" />
@@ -48,6 +73,41 @@ export default function Profile({ mustVerifyEmail, status, countries }: ProfileP
             <SettingsLayout>
                 <div className="space-y-6">
                     <HeadingSmall title="Profile information" description="Update your name and email address" />
+
+                    <div className="flex items-center gap-4">
+                        <Avatar className="h-16 w-16 overflow-hidden rounded-full">
+                            <AvatarImage src={auth.user.avatar} alt={auth.user.name} />
+                            <AvatarFallback className="rounded-lg bg-neutral-200 text-lg text-black dark:bg-neutral-700 dark:text-white">
+                                {getInitials(auth.user.name)}
+                            </AvatarFallback>
+                        </Avatar>
+
+                        <div className="grid gap-2">
+                            <input
+                                ref={avatarInput}
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp"
+                                className="hidden"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        uploadAvatar(file);
+                                    }
+                                }}
+                            />
+                            <div className="flex gap-2">
+                                <Button type="button" variant="outline" size="sm" onClick={() => avatarInput.current?.click()}>
+                                    Upload photo
+                                </Button>
+                                {auth.user.avatar_path && (
+                                    <Button type="button" variant="ghost" size="sm" onClick={removeAvatar}>
+                                        Remove
+                                    </Button>
+                                )}
+                            </div>
+                            <InputError message={avatarErrors.avatar} />
+                        </div>
+                    </div>
 
                     <form onSubmit={submit} className="space-y-6">
                         <div className="grid gap-2">
