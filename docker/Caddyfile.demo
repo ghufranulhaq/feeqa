@@ -1,0 +1,38 @@
+# Demo server (plan D25, D27). Gets a free Let's Encrypt certificate for
+# APP_DOMAIN automatically, then serves the whole site behind one shared
+# password, hidden from search engines. Every setting below comes from
+# .env — nothing here is server-specific.
+
+{
+	email {$ACME_EMAIL}
+	acme_ca {$ACME_CA:https://acme-v02.api.letsencrypt.org/directory}
+}
+
+{$APP_DOMAIN} {
+	encode gzip
+
+	# Caddy needs a bcrypt hash here, not the plain password:
+	#   docker run --rm caddy:2-alpine caddy hash-password --plaintext 'your-password'
+	# Put the result in .env as DEMO_GATE_PASSWORD_HASH. DEMO_GATE_PASSWORD
+	# (the plain value you actually tell people) is never read by Caddy.
+	basic_auth {
+		{$DEMO_GATE_USER} {$DEMO_GATE_PASSWORD_HASH}
+	}
+
+	# Tell every crawler to stay away (constitution §5.6, plan D27): this is
+	# fictional demo data, never meant to be indexed or mistaken for real
+	# reviews of real companies.
+	header {
+		X-Robots-Tag "noindex, nofollow"
+		Strict-Transport-Security "max-age=86400"
+	}
+
+	root * /var/www/html/public
+
+	handle_path /_mail* {
+		reverse_proxy mailpit:8025
+	}
+
+	php_fastcgi app:9000
+	file_server
+}

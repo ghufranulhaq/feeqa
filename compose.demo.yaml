@@ -1,0 +1,89 @@
+# Demo VPS (plan D22, D24). Built and run entirely on the server — no bind
+# mounts, no dev tools, no Node at runtime. 7 containers (D22):
+# caddy, app, ssr, queue, scheduler, postgres, mailpit. No vite (assets are
+# pre-built into the image), no clamav (constitution §5.6 demo relaxation).
+#
+# This file is not used until the client approves deploying to the demo
+# server — see CONSTITUTION.md §12 (v1.6).
+
+name: feeqa-demo
+
+x-app: &app
+  build:
+    context: .
+    dockerfile: docker/Dockerfile
+    target: demo
+  image: feeqa-app:demo
+  env_file:
+    - .env
+  depends_on:
+    postgres:
+      condition: service_healthy
+  restart: unless-stopped
+  volumes:
+    - app_storage:/var/www/html/storage/app
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/Caddyfile.demo:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    env_file:
+      - .env
+    depends_on:
+      - app
+      - mailpit
+    restart: unless-stopped
+
+  app:
+    <<: *app
+    command: php-fpm
+
+  queue:
+    <<: *app
+    # 2 workers (plan D10, D22): scripts/deploy-demo.sh runs this with
+    # `--scale queue=2` rather than a `deploy.replicas` key, which is a
+    # Swarm-mode construct plain `docker compose up` doesn't reliably honor.
+    command: php artisan queue:work --tries=3 --sleep=1
+
+  scheduler:
+    <<: *app
+    command: php artisan schedule:work
+
+  ssr:
+    <<: *app
+    command: node bootstrap/ssr/ssr.js
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-feeqa}
+      POSTGRES_USER: ${DB_USERNAME:-feeqa}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-feeqa}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    # No published port: only containers on this compose network reach it.
+
+  mailpit:
+    image: axllent/mailpit:latest
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    restart: unless-stopped
+    # Reachable only through Caddy at /_mail (behind the demo password),
+    # never published directly.
+
+volumes:
+  postgres_data:
+  caddy_data:
+  app_storage:
