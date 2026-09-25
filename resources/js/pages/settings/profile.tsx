@@ -66,6 +66,10 @@ export default function Profile({ mustVerifyEmail, status, countries }: ProfileP
         router.delete(route('profile.avatar.destroy'));
     };
 
+    const requestDataExport = () => {
+        router.post(route('data-exports.store'), {}, { preserveScroll: true });
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Profile settings" />
@@ -198,6 +202,14 @@ export default function Profile({ mustVerifyEmail, status, countries }: ProfileP
                             </Transition>
                         </div>
                     </form>
+                </div>
+
+                <div className="space-y-6">
+                    <HeadingSmall title="Your data" description="Download a copy of everything the platform knows about you" />
+                    <Button type="button" variant="outline" onClick={requestDataExport}>
+                        Download my data
+                    </Button>
+                    {status && status.includes('export') && <p className="text-sm text-green-600">{status}</p>}
                 </div>
 
                 <DeleteUser />

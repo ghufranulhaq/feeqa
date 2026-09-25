@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Settings\AvatarController;
+use App\Http\Controllers\Settings\DataExportController;
+use App\Http\Controllers\Settings\DataExportDownloadController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SessionController;
@@ -22,6 +24,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('settings/sessions', [SessionController::class, 'index'])->name('sessions.index');
     Route::delete('settings/sessions/{sessionId}', [SessionController::class, 'destroy'])->name('sessions.destroy');
+
+    Route::post('settings/data-export', [DataExportController::class, 'store'])->name('data-exports.store');
+
+    Route::middleware('signed')
+        ->get('data-exports/{dataExport}/download', DataExportDownloadController::class)
+        ->name('data-exports.download');
 
     Route::get('settings/appearance', function () {
         return Inertia::render('settings/appearance');

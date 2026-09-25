@@ -4,9 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * FR-001-21. One row per consent event — never updated in place.
+ *
+ * @property string $terms_version
+ * @property string $privacy_version
+ * @property bool $marketing_opt_in
+ * @property Carbon $consented_at
  */
 class Consent extends Model
 {
@@ -26,6 +32,9 @@ class Consent extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

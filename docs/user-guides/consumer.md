@@ -40,6 +40,16 @@ account, with roughly what it is and when it was last active. You can
 revoke any of them except the one you're using right now. A session left
 untouched for 30 days signs itself out.
 
+## Your data
+
+**Settings → Profile → Download my data** requests a full export of
+everything the platform holds about you — profile, consents, sessions,
+business memberships, linked sign-in providers, and your photo — as a JSON
+file (plus your photo) in a ZIP archive. You'll get an email with a
+download link once it's ready (usually within seconds, always within 24
+hours); the link works for 7 days. Asking again within 24 hours just
+returns the export already in progress rather than starting a new one.
+
 ## If you get locked out
 
 Signing in, entering a passwordless code, and resetting your password are

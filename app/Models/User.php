@@ -10,9 +10,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property Carbon|null $email_verified_at
+ * @property Carbon|null $date_of_birth_confirmed_at
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -73,14 +78,28 @@ class User extends Authenticatable
         );
     }
 
+    /**
+     * @return HasMany<Consent, $this>
+     */
     public function consents(): HasMany
     {
         return $this->hasMany(Consent::class);
     }
 
+    /**
+     * @return HasMany<UserProvider, $this>
+     */
     public function providers(): HasMany
     {
         return $this->hasMany(UserProvider::class);
+    }
+
+    /**
+     * @return HasMany<DataExport, $this>
+     */
+    public function dataExports(): HasMany
+    {
+        return $this->hasMany(DataExport::class);
     }
 
     /**

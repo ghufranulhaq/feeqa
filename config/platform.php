@@ -1,5 +1,7 @@
 <?php
 
+use App\Actions\Accounts\Export\AccountDataCollector;
+
 // Every external provider is selected here, from .env only (constitution
 // §5.1). Each has a `fake` driver. Password rules and staff IP allow-listing
 // are NOT read from .env — see App\Support\Environment — so production can't
@@ -90,6 +92,21 @@ return [
     */
     'security' => [
         'check_breached_passwords' => env('PASSWORD_CHECK_BREACHED', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Data export (FR-001-19)
+    |--------------------------------------------------------------------------
+    | Every App\Contracts\ExportsUserData implementation listed here
+    | contributes a section to a user's export. Add to this list, don't
+    | change BuildDataExport, when a new spec adds personal data.
+    */
+    'export' => [
+        'collectors' => [
+            AccountDataCollector::class,
+        ],
+        'download_link_days' => 7,
     ],
 
     /*
