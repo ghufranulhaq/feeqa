@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Runs `make ci` before every push (constitution D23). Enable once per clone
+# with `make hooks`. Skippable deliberately with `git push --no-verify`.
+set -euo pipefail
+
+echo "pre-push: running make ci..."
+make ci

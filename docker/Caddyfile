@@ -1,0 +1,17 @@
+# Local development (compose.yaml): plain HTTP on localhost, no certificate
+# (plan D25). The demo server uses its own Caddyfile with automatic
+# Let's Encrypt HTTPS (added when compose.demo.yaml is built).
+
+http://localhost {
+	root * /var/www/html/public
+	encode gzip
+
+	# Mailpit's own web UI, reverse-proxied under one path so the whole
+	# demo site can later sit behind a single domain and password (D27).
+	handle_path /_mail* {
+		reverse_proxy mailpit:8025
+	}
+
+	php_fastcgi app:9000
+	file_server
+}
