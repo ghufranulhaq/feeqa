@@ -69,9 +69,32 @@ the same information behind the "Sessions" list above. This is disclosed
 here because there is no live privacy-notice page yet; one is expected
 before public launch.
 
+## Business roles
+
+One person can hold a role on more than one business, and separately be an
+ordinary consumer reviewer — the same login, different hats. A role only
+ever applies to one business at a time:
+
+| Capability | Owner | Admin | Responder | Analyst |
+|---|:---:|:---:|:---:|:---:|
+| Edit business profile | ✅ | ✅ | ❌ | ❌ |
+| Reply to reviews / cases | ✅ | ✅ | ✅ | ❌ |
+| Flag reviews | ✅ | ✅ | ✅ | ❌ |
+| Send invitations / manage integrations | ✅ | ✅ | ❌ | ❌ |
+| View analytics | ✅ | ✅ | ✅ | ✅ |
+| Manage members | ✅ | ✅ (not Owners) | ❌ | ❌ |
+| Billing & plan | ✅ | ❌ | ❌ | ❌ |
+| Transfer ownership / delete business | ✅ | ❌ | ❌ | ❌ |
+
+A business always keeps at least one Owner — the platform refuses to
+demote or remove the last one. An Admin can add, remove, or change the role
+of anyone except an Owner. There's no business dashboard UI yet (that's
+spec 002 and later); this is the permission engine underneath it, so a
+business user-guide isn't written yet either — the consumer guide above is
+everything currently reachable through the UI.
+
 ## What's not built yet
 
-This page will grow as the rest of spec 001 lands: business user roles and
-permissions, staff accounts and the staff console, and the data
-export/account-deletion tools. Check the spec's `tasks.md` for exactly
-what's done.
+This page will grow as the rest of spec 001 lands: staff accounts and the
+staff console, business invitations, and the data export/account-deletion
+tools. Check the spec's `tasks.md` for exactly what's done.
