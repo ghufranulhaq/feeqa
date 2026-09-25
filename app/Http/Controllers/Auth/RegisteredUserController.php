@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\SignInInsteadNotification;
 use App\Rules\DisplayName;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -36,12 +37,23 @@ class RegisteredUserController extends Controller
             // DisplayName is implicit: it rejects a blank/whitespace-only
             // value itself, so no separate 'required' is needed here.
             'name' => [new DisplayName],
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            // No 'unique' rule here on purpose (edge case: a duplicate email
+            // must not surface as a validation error — that's exactly the
+            // kind of response an automated tool can scan to enumerate
+            // which emails have accounts). Checked manually below instead.
+            'email' => 'required|string|lowercase|email|max:255',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             // FR-001-03: blocked here means nothing is ever written for an
             // under-18 visitor — the email is never stored.
             'over_18' => ['required', 'accepted'],
         ]);
+
+        if ($existing = User::where('email', $request->email)->first()) {
+            $existing->notify(new SignInInsteadNotification);
+
+            return redirect()->route('login')
+                ->with('status', 'Check your email to continue.');
+        }
 
         $user = User::create([
             'name' => $request->name,
