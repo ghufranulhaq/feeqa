@@ -34,6 +34,25 @@ it('enforces the staff IP allow-list only in production', function (string $env,
     ['production', true],
 ]);
 
+it('always checks breached passwords in production, whatever .env says (FR-001-04)', function () {
+    app()['env'] = 'production';
+    config(['platform.security.check_breached_passwords' => false]);
+
+    expect(Environment::checkBreachedPasswords())->toBeTrue();
+});
+
+it('follows the config toggle outside production', function (string $env, bool $configured) {
+    app()['env'] = $env;
+    config(['platform.security.check_breached_passwords' => $configured]);
+
+    expect(Environment::checkBreachedPasswords())->toBe($configured);
+})->with([
+    ['local', true],
+    ['local', false],
+    ['testing', false],
+    ['demo', true],
+]);
+
 it('does nothing outside production, even with fake drivers configured', function () {
     app()['env'] = 'demo';
     config(['platform.ai.driver' => 'fake']);

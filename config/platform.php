@@ -80,4 +80,16 @@ return [
         'active_kid' => env('SIGNING_ACTIVE_KID'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Account security (spec 001, plan D6)
+    |--------------------------------------------------------------------------
+    | check_breached_passwords can be switched off for offline development
+    | (it calls the public "Have I Been Pwned" k-anonymity API). Production
+    | always checks regardless of this value — see Environment::checkBreachedPasswords().
+    */
+    'security' => [
+        'check_breached_passwords' => env('PASSWORD_CHECK_BREACHED', true),
+    ],
+
 ];

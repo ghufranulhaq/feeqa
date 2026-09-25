@@ -46,6 +46,22 @@ class Environment
     }
 
     /**
+     * Whether registration/password-reset must reject known-breached
+     * passwords (FR-001-04). Always true in production, whatever `.env`
+     * says — elsewhere it follows `platform.security.check_breached_passwords`
+     * so offline development and automated tests can turn off the network
+     * call to the public "Have I Been Pwned" API (plan D6).
+     */
+    public static function checkBreachedPasswords(): bool
+    {
+        if (self::isProduction()) {
+            return true;
+        }
+
+        return (bool) config('platform.security.check_breached_passwords', true);
+    }
+
+    /**
      * Refuses to boot in production if a demo-only `fake` driver is
      * configured (constitution §5.6, plan D26). Call from a service
      * provider's boot() method.

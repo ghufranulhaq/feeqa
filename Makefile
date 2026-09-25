@@ -11,7 +11,8 @@ COMPOSE := docker compose
 # and PHPUnit's env-forcing only touches getenv()/putenv()/$_ENV, never
 # $_SERVER, so a stale $_SERVER value wins unless overridden here too.
 TEST_ENV := -e APP_ENV=testing -e DB_DATABASE=feeqa_test -e CACHE_STORE=array \
-            -e SESSION_DRIVER=array -e QUEUE_CONNECTION=sync -e MAIL_MAILER=array
+            -e SESSION_DRIVER=array -e QUEUE_CONNECTION=sync -e MAIL_MAILER=array \
+            -e PASSWORD_CHECK_BREACHED=false
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
