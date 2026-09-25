@@ -12,8 +12,11 @@ exactly what's relaxed for the demo and why.
 
 ## Prerequisites
 
-- Docker and Docker Compose. Nothing else — PHP, Node, and Postgres all run
-  in containers; you don't need them installed on your machine.
+- Docker and Docker Compose, for Postgres and Mailpit.
+- PHP 8.4 (with the `pgsql`, `mbstring`, `bcmath`, `xml`, `curl`, `zip`,
+  `gd`, `intl`, `sodium` extensions), Composer, and Node 22, for running the
+  app and Vite directly on your machine — this is faster day to day than
+  running them in containers too, and is what `make dev` does.
 
 ## Setup from scratch
 
@@ -22,28 +25,44 @@ git clone <repo-url> trust-review-platform
 cd trust-review-platform
 
 cp .env.example .env
+# then edit .env: DB_HOST=127.0.0.1, MAIL_HOST=127.0.0.1 (see .env reference
+# below — the defaults assume the app itself also runs in a container)
 
-docker compose up -d
-make install      # composer install, npm install, php artisan storage:link
-make key          # generates APP_KEY
+make up            # starts Postgres + Mailpit in Docker
+make install        # composer install, npm install, php artisan storage:link
+make key            # generates APP_KEY
 make migrate
+make dev             # php artisan serve + queue:listen + pail + vite, natively
 ```
 
-The app is now at `http://localhost` (Caddy, `docker/Caddyfile`), Vite's
-dev server hot-reloads on `http://localhost:5173`, and Mailpit (catches
-every outgoing email locally — nothing is ever sent to a real inbox in
-local/demo) is at `http://localhost/_mail`.
+The app is now at `http://localhost:8000`, Vite's dev server hot-reloads on
+`http://localhost:5173`, and Mailpit (catches every outgoing email locally —
+nothing is ever sent to a real inbox in local/demo) is at
+`http://localhost:8025`.
 
 Run `php artisan signing:generate-key` once if you need signed attestations
 (spec 004/016) — everything else works without it.
+
+### Full-Docker alternative
+
+The app, queue, scheduler, SSR, and Vite can all run in containers too —
+useful for parity checks against the demo image, or if you'd rather not
+install PHP/Node locally. `docker compose up -d` starts the whole stack
+(Caddy on `http://localhost`, Mailpit under `/_mail`); the Makefile above
+assumes the native workflow, so drive that stack with `docker compose`
+directly (e.g. `docker compose exec app php artisan migrate`). Don't run
+both at once — `artisan serve`/Vite on the host and the `app`/`vite`
+containers will otherwise fight over ports 8000/5173, and only one `.env`
+(`DB_HOST`/`MAIL_HOST` set to `127.0.0.1` vs. `postgres`/`mailpit`) is
+correct at a time.
 
 ## Everyday commands
 
 | Command | What it does |
 |---|---|
-| `make up` / `make down` | Start / stop the local stack |
-| `make shell` | Shell into the app container |
-| `make logs` (or `make logs S=app`) | Follow container logs |
+| `make up` / `make down` | Start / stop Postgres + Mailpit (Docker) |
+| `make dev` | Run the app, queue listener, logs, and Vite natively (Ctrl+C stops all) |
+| `make logs` (or `make logs S=postgres`) | Follow Postgres/Mailpit container logs |
 | `make migrate` | Run migrations |
 | `make fresh` | Drop everything and re-migrate (asks to confirm) |
 | `make test` | Run the full Pest suite |
@@ -60,12 +79,17 @@ default already or is documented inline in that file.
 
 - **App**: `APP_NAME`, `APP_ENV` (`local` here; `demo` or `production`
   elsewhere — see `App\Support\Environment`), `APP_KEY`, `APP_URL`.
-- **Database**: `DB_*` — PostgreSQL 17, container hostname `postgres`.
+- **Database**: `DB_*` — PostgreSQL 17. `DB_HOST=postgres` if the app runs
+  in Docker too (see "Full-Docker alternative" above); `DB_HOST=127.0.0.1`
+  for the native workflow, since Postgres's container port is published to
+  the host.
 - **Session/cache/queue**: all `database`-backed (plan D10). `SESSION_LIFETIME`
   is the outer cookie/GC bound (30 days); the real per-user idle limit is
   `App\Http\Middleware\EnforceSessionLifetime` (FR-001-16).
-- **Mail**: routed to Mailpit locally (`MAIL_HOST=mailpit`); its inbox UI is
-  at `/_mail`.
+- **Mail**: routed to Mailpit locally. `MAIL_HOST=mailpit` (container
+  hostname) if the app runs in Docker, with its inbox UI at `/_mail`;
+  `MAIL_HOST=127.0.0.1` for the native workflow, with the inbox UI at
+  `http://localhost:8025` directly.
 - **External providers** (`AI_DRIVER`, `VERIFICATION_EXTRACTOR`,
   `TRANSCRIPTION_DRIVER`, `MALWARE_SCANNER`, `BILLING_DRIVER`): each
   defaults to `fake` for local/demo. Production refuses to boot with any of
