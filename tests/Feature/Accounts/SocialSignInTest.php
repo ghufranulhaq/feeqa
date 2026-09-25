@@ -134,3 +134,32 @@ it('treats facebook emails as always verified', function () {
 
     expect(session('pending_signup_email_verified'))->toBeTrue();
 });
+
+it('creates a new account for a first-time sign-in via Apple (spec 001 §6: all five methods)', function () {
+    config(['services.apple.client_id' => 'test-apple-client-id']);
+
+    Socialite::fake('apple', SocialiteTwoUser::fake([
+        'id' => 'apple-1',
+        'email' => 'apple-user@example.com',
+        'email_verified' => true,
+    ]));
+
+    $this->get('/login/apple/callback')->assertRedirect(route('signup.complete'));
+
+    expect(session('pending_signup_email'))->toBe('apple-user@example.com');
+    expect(session('pending_signup_email_verified'))->toBeTrue();
+});
+
+it('treats an unverified Apple email the same way as an unverified Google one', function () {
+    config(['services.apple.client_id' => 'test-apple-client-id']);
+
+    Socialite::fake('apple', SocialiteTwoUser::fake([
+        'id' => 'apple-2',
+        'email' => 'apple-unverified@example.com',
+        'email_verified' => false,
+    ]));
+
+    $this->get('/login/apple/callback')->assertRedirect(route('signup.complete'));
+
+    expect(session('pending_signup_email_verified'))->toBeFalse();
+});

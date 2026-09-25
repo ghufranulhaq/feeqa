@@ -3,6 +3,7 @@
 namespace App\Actions\Accounts\Export;
 
 use App\Contracts\ExportsUserData;
+use App\Models\BusinessInvitation;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +31,7 @@ class AccountDataCollector implements ExportsUserData
                 'email' => $user->email,
                 'country' => $user->country,
                 'locale' => $user->locale,
+                'staff_role' => $user->staff_role,
                 'email_verified_at' => $user->email_verified_at?->toIso8601String(),
                 'created_at' => $user->created_at->toIso8601String(),
             ],
@@ -59,6 +61,25 @@ class AccountDataCollector implements ExportsUserData
                 ->get(['businesses.name as business_name', 'roles.name as role'])
                 ->map(fn ($row) => ['business' => $row->business_name, 'role' => $row->role])
                 ->all(),
+            'business_invitations_sent' => BusinessInvitation::where('invited_by', $user->id)
+                ->with('business')
+                ->get()
+                ->map(fn (BusinessInvitation $invitation) => [
+                    'business' => $invitation->business->name,
+                    'invited_email' => $invitation->email,
+                    'role' => $invitation->role,
+                    'accepted_at' => $invitation->accepted_at?->toIso8601String(),
+                    'created_at' => $invitation->created_at->toIso8601String(),
+                ])->all(),
+            'business_invitations_received' => BusinessInvitation::where('email', strtolower($user->email))
+                ->with('business')
+                ->get()
+                ->map(fn (BusinessInvitation $invitation) => [
+                    'business' => $invitation->business->name,
+                    'role' => $invitation->role,
+                    'accepted_at' => $invitation->accepted_at?->toIso8601String(),
+                    'created_at' => $invitation->created_at->toIso8601String(),
+                ])->all(),
         ];
     }
 
