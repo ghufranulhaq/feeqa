@@ -1,6 +1,6 @@
 # Project Constitution: Trust & Review Platform
 
-> This file is the **constitution** of the project. It holds the principles, constraints, and definition of done that every spec, plan, task, and line of code must follow.
+> This file is the **constitution** of the project. It is imported into `CLAUDE.md`, so AI agents always load it. It holds the principles, constraints, and definition of done that every spec, plan, task, and line of code must follow.
 > If a spec conflicts with this file, **this file wins** until someone changes it on purpose (see §9 Amendments).
 
 ---
@@ -24,7 +24,7 @@ We win on **authenticity, transparency, and resolution**, not on review volume.
 | Launch vertical | **Travel**: airlines, travel agencies / OTAs, airports. Businesses from **any** industry can be listed and reviewed. Only Travel is launched (shown in navigation and rankings) and seeded. Staff open further industries from the console (spec 002). |
 | Launch markets | **UK + EU**. English only (`en-GB`). Prices in GBP and EUR. |
 | Clients | **Responsive web only**: consumer site, business dashboard, staff console. Native apps come later on the same API. |
-| Operator | The Platform is operated by **AeroTickets**, which also sells travel and is listed on the Platform (see P11). |
+| Stage | **Client demo** first, showing **all** features on a single server at `feeqa.appsarray.com`. Demo-only relaxations are defined in §5.6. |
 
 Key references:
 - Client requirements: [`add-to-trustpilot.md`](add-to-trustpilot.md)
@@ -93,20 +93,13 @@ Key references:
 - Audio/video reviews need transcripts or captions before they are published.
 
 ### P9. Secure by default
-- Least privilege, audit logging, encryption in transit and at rest.
+- Least privilege, compliance logging of staff decisions (§5.1), encryption in transit and at rest.
 - No secrets in the repo.
 - Signed attestations for anything labelled "verified" or "tamper-proof".
 
 ### P10. Testable requirements
 - If a requirement can't be tested, it isn't a requirement. Rewrite it.
 - Every FR must be specific enough that an implementation that ignores it fails a test.
-
-### P11. Operator neutrality
-AeroTickets (the operator) sells travel and competes with businesses listed on the Platform.
-- AeroTickets' own profile is treated **exactly like any other business**: same algorithms, moderation rules, and plan entitlements. Its profile carries a permanent public label, **"Owned by the Platform operator"**.
-- AeroTickets may buy sponsored placements only **at list price**, and its slots are labelled **"Sponsored · Platform operator"**.
-- **Data firewall:** only Platform staff roles (001) can access non-public data (invitations, cases, proofs, private analytics, customer data of any business). AeroTickets' commercial staff get **exactly** the access of a normal business account on the same plan. Every staff access to another business's non-public data is audit-logged, and access is reviewed each quarter.
-- This commitment is published in the Transparency Center (006).
 
 ---
 
@@ -128,11 +121,12 @@ AeroTickets (the operator) sells travel and competes with businesses listed on t
 ## 5. Technical Constraints
 
 ### 5.1 Architecture
-- **API-first:** every user action in the UI goes through the same versioned public/private API. Contracts are defined in OpenAPI before they are implemented.
-- The technology stack is chosen in the first `plan.md` (spec 001) and recorded in §10 of this file. Once recorded, changing it requires an amendment.
-- Business logic lives in domain services, not in UI components or database triggers.
-- Score calculations (Review Score, Trust Index) are **pure, deterministic, versioned functions** that can be replayed from stored events.
-- Every state change to reviews, replies, cases, moderation decisions, and scores writes an **append-only audit event** (who, what, when, before/after, reason).
+- **One application layer:** every user action (web UI, JSON API, jobs, console) runs through the same application actions. The web UI calls them from its page controllers. The external JSON API (spec 016) calls them from API controllers, and its contract is defined in OpenAPI before it is implemented.
+- The technology stack is recorded in §10 of this file. Once recorded, changing it requires an amendment.
+- Business logic lives in application actions and domain classes, not in UI components, controllers, or database triggers.
+- Score calculations (Review Score, Trust Index) are **pure, deterministic, versioned functions**: the same inputs and methodology version always give the same output. Daily score snapshots are stored (spec 008).
+- **Compliance log (minimal):** only **staff moderation and enforcement decisions**, the **statements of reasons** sent to users, **appeals** and their outcomes, and **legal sign-offs** are recorded (who, what, when, reason code). There is **no** general change/activity log.
+- **External providers are configured by environment only.** AI, OCR/extraction, mail, storage, payments, and malware scanning are reached through a driver chosen in `.env`. Switching a provider or model needs no code change. Each has a `fake` driver for tests and demos.
 
 ### 5.2 Quality budgets
 | Area | Budget |
@@ -143,14 +137,16 @@ AeroTickets (the operator) sells travel and competes with businesses listed on t
 | Availability (public read paths) | 99.9% monthly |
 | Review Score recalculation | Visible within 60 s of a review being published |
 
+The **availability** and **per-node throughput** budgets apply from **public launch**. The single-server **client demo** is exempt from them. All other budgets apply to the demo too.
+
 ### 5.3 Data handling
 - All personal data can be **exported** (machine-readable JSON) and **erased** within 30 days of a verified request.
 - Raw proof files: delete **within 30 days after the verification decision**. Keep the signed attestation (hashes, proof type, issuer/merchant, decision, timestamp).
 - Voice/video originals: keep while the review is live. Delete within 30 days after the review is deleted.
-- Audit events: keep for 6 years, with personal data pseudonymised when the account is erased.
+- Compliance log entries: keep for 6 years, with personal data pseudonymised when the account is erased.
 
 ### 5.4 Security
-- Authentication: email + password (min 12 characters, checked against known-breached passwords), passwordless email link, and OAuth (Google, Apple, Facebook). TOTP/WebAuthn MFA is **required** for business admins and staff.
+- Authentication: email + password (min 12 characters, or 6 in the demo environment per §5.6, checked against known-breached passwords), passwordless email link, and OAuth (Google, Apple, Facebook). Two-factor authentication is **not** part of the Platform.
 - Role-based access control for business accounts and staff (spec 001).
 - Rate limiting on every write endpoint and every public API.
 - All uploads are scanned for malware and checked for content type before processing.
@@ -162,15 +158,40 @@ AeroTickets (the operator) sells travel and competes with businesses listed on t
 - **Currencies:** GBP and EUR at launch (ISO 4217 throughout).
 - Reviews keep their original language. Machine translation, when available, is labelled.
 
+### 5.6 Demo environment (`APP_ENV=demo`)
+The client demo runs with `APP_ENV=demo`. The relaxations below are allowed **only** when `APP_ENV` is `demo` (or `local`/`testing` for development). They must be **impossible** when `APP_ENV=production`, and an automated test must prove it.
+
+**Conditions that make the relaxations acceptable:**
+- The **whole demo site is behind one shared password**, and every page tells search engines not to index it.
+- Demo data uses **fictional businesses and people only**. It never contains real companies, real reviews, or real personal data.
+- Anyone given demo access is told not to enter real personal data, because the demo AI provider (DeepSeek API) processes data outside the UK/EU.
+
+**Relaxations:**
+| Area | Production rule | Demo |
+|------|-----------------|------|
+| Staff console access | IP allow-list | Any IP |
+| Minimum password length | 12 characters | 6 characters |
+| Proof extraction, transcription, malware scanning | Real providers | `fake` drivers allowed. Fake verification issues normal **Verified Experience** badges with real labels |
+| Payments | Real payment gateway | **Simulated**: every payment attempt succeeds, and no gateway is contacted |
+| Legally gated features (L5) | Need a recorded legal sign-off | Switched on without sign-off |
+| Review-update windows (003) | 30 d / 6 m / 1 y windows | Always open |
+| Inactive cases (010) | Auto-close after 30 days | Stay open |
+| Daily score snapshots (008) | Required | Not taken (history is back-filled once by the demo seeders) |
+| Proof-file deletion (§5.3) | Within 30 days | Not deleted |
+| Backups | Nightly | None (demo data can be recreated from seeders) |
+| Certificate expiry check | Daily | None |
+| Availability budget (§5.2) | 99.9% | Not applicable |
+| Demo seeders | Never run | Allowed |
+
 ---
 
 ## 6. Testing Standards
 
 - **Unit tests** for all domain logic. Score algorithms need property-based tests plus fixed golden datasets.
-- **Contract tests** for every API endpoint against its OpenAPI definition.
+- **Contract tests** for every external JSON API endpoint (spec 016) against its OpenAPI definition.
 - **Integration tests** for each user scenario in the specs (one test per scenario, at minimum).
 - **End-to-end tests** for the critical journeys: sign up → write review → verify → publish; claim business → invite → reply; flag → moderate → appeal; open case → resolve → resolution rating.
-- **Accessibility tests** (automated axe scan + manual keyboard/screen-reader check) for every new page.
+- **Accessibility tests** (automated browser check for serious WCAG issues + manual keyboard/screen-reader check) for every new page.
 - Coverage target: **≥ 85% line coverage for domain modules**. Coverage is not the goal. FR coverage is (every FR ID appears in at least one test).
 - Test data must be synthetic. Never use real people's reviews or data scraped from other platforms.
 
@@ -184,16 +205,16 @@ A task, feature, or spec counts as **done** only when **all** of the following a
 - [ ] Every user scenario in the spec has a passing integration or E2E test.
 - [ ] Edge cases listed in the spec are covered by tests.
 - [ ] API changes are reflected in the OpenAPI contract and contract tests pass.
-- [ ] Lint, type-check, and all test suites pass in CI. No skipped tests without a linked issue.
+- [ ] Lint, type-check, and all test suites pass with `make ci`. No skipped tests without a linked issue.
 - [ ] Security: no new high/critical findings from dependency and static analysis scans. Authorization checked for every new endpoint.
 - [ ] Accessibility: WCAG 2.2 AA automated checks pass. Manual keyboard check done for new UI.
 - [ ] Performance budgets (§5.2) are still met.
-- [ ] Audit events are emitted for every new state change.
+- [ ] Every new staff moderation or enforcement action writes a compliance log entry and sends a statement of reasons.
 - [ ] Personal data added by the feature is included in export and erasure (§5.3).
 - [ ] All user-facing strings are externalised (§5.5). AI output is labelled (P7).
-- [ ] Docs updated: spec status, public methodology/help pages if user-visible behaviour changed, and the changelog.
+- [ ] Docs updated **in the same change** (§8 rule 9): `README.md`, the affected user guides in `docs/user-guides/`, the system overview in `docs/system-overview/`, spec status, public methodology/help pages if user-visible behaviour changed, and the changelog. `make docs-check` passes.
 - [ ] Code reviewed and approved by at least one other person.
-- [ ] Deployed to staging and smoke-tested.
+- [ ] Deployed to the demo/staging server and smoke-tested.
 
 ---
 
@@ -207,6 +228,12 @@ A task, feature, or spec counts as **done** only when **all** of the following a
 6. Keep changes small and traceable. One spec per branch where practical. Branch names are `NNN-short-name`.
 7. Write in plain English. Use the glossary terms in §11 consistently.
 8. When a feature touches scoring, moderation, or verification, also update the public methodology text described in spec 008 or 006.
+9. **Keep the documentation current automatically, as part of every change, without being asked.** Whoever changes behaviour, setup, configuration, commands, or deployment updates the matching documents in the **same change**:
+   - `README.md`: developer setup from scratch, demo deployment and updates, `.env` settings for local and demo, and common commands;
+   - `docs/user-guides/`: one guide per user type, for anything users see or do differently;
+   - `docs/system-overview/`: what the system is and what it does, for any new or changed feature.
+
+   `make docs-check` (part of `make ci`) enforces what can be checked automatically. A change whose docs are out of date is **not done** (§7).
 
 ---
 
@@ -222,7 +249,7 @@ A task, feature, or spec counts as **done** only when **all** of the following a
 
 | Date | Decision | Spec / Plan |
 |------|----------|-------------|
-| _TBD_ | Technology stack (language, framework, database, hosting). No constraints from the client: the first plan proposes one with rationale, and it is recorded here after approval. | `specs/001-accounts-identity/plan.md` |
+| _Pending approval_ | Technology stack (language, framework, database, hosting), as proposed in the platform plan. Recorded here once approved. | [`specs/plan.md`](specs/plan.md) |
 | 2026-09-24 | Clients: responsive web only in Phase 1 | Constitution §1 |
 
 ---
@@ -255,4 +282,9 @@ A task, feature, or spec counts as **done** only when **all** of the following a
 | Date | Change |
 |------|--------|
 | 2026-09-24 | Constitution v1.0 created. |
-| 2026-09-24 | v1.1 after the client interview: launch scope (travel, UK+EU, English, web only); P11 operator neutrality and data firewall; L3 narrowed to launch markets + UK261/EU261; L5 rewards made status-only and legal gate added for "resolve first". |
+| 2026-09-24 | v1.1 after the client interview: launch scope (travel, UK+EU, English, web only); P11 operator neutrality and data firewall (removed in v1.2); L3 narrowed to launch markets + UK261/EU261; L5 rewards made status-only and legal gate added for "resolve first". |
+| 2026-09-25 | v1.2: P11 (operator neutrality) removed, because the Platform is fully independent and the operator has no stake in listed businesses. Append-only audit events replaced by a minimal compliance log. "API-first" reworded to "one application layer" (the web UI uses page controllers; OpenAPI applies to the external JSON API). Provider-by-environment rule added. Availability budget deferred to public launch. |
+| 2026-09-25 | v1.3: two-factor authentication removed from all requirements (client correction). |
+| 2026-09-25 | v1.3.1: constitution moved from `CLAUDE.md` to `CONSTITUTION.md` (content unchanged). `CLAUDE.md` imports it so Laravel Boost can manage its own section. |
+| 2026-09-25 | v1.4: §5.6 demo environment added (`APP_ENV=demo` relaxations, their conditions, and the rule that they are impossible in production). Password minimum 6 in demo only. Launch-scope stage row updated. |
+| 2026-09-25 | v1.5: documentation rule added (§8 rule 9, §7): README, user guides (`docs/user-guides/`) and system overview (`docs/system-overview/`) must be updated in the same change as the behaviour they describe. `make docs-check` enforces what it can. |

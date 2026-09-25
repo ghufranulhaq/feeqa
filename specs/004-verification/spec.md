@@ -102,7 +102,7 @@ Fake reviews are the biggest problem with review sites. Any reviewer can prove t
 
 ## 7. Dependencies & Open Questions
 
-- **Decided (2026-09-24):** Phase 1 transaction sources are **document upload + Business API + BCC only**. There are no platform-specific connectors and no special use of the operator's (AeroTickets') booking data (constitution P11).
+- **Decided (2026-09-24):** Phase 1 transaction sources are **document upload + Business API + BCC only**. There are no platform-specific connectors.
 - **Q1:** Which travel booking-engine/GDS and payment partners come first in Phase 2? This is a commercial decision.
 - **Q2:** Should document verification use an OCR/extraction vendor (processor under GDPR) or run in-house? Decide in plan.md, and include it in the DPIA.
 - **Q3:** Should reviews verified with a refund-only proof get a distinct public sub-label?

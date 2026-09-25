@@ -65,7 +65,7 @@ Fund the Platform by selling businesses **tools and reach**, never **reputation*
 ### Sponsored placements (Phase 2)
 - **FR-017-13** Sponsored placements are sold as **fixed monthly slots**: one slot per category × country (category pages and category-level search, 009), bought for a calendar month at a fixed list price per slot (configuration). Each slot rotates evenly among **at most 3** advertisers. Creative: logo, name, short tagline ≤ 60 characters, screened by 006.
 - **FR-017-14** Eligibility (same as 009 FR-009-17): claimed, no Consumer Warning, Review Score ≥ 3.0, no restriction ladder step ≥ 4 in the last 6 months.
-- **FR-017-15** Slot seats are sold first-come, first-served per month at list price, with no bidding. Rotation is equal share of impressions. The operator's Business may buy seats **only at list price**, is subject to the same 3-seat cap, and is labelled "Sponsored · Platform operator" (constitution P11). The rules are published (006 Transparency Center).
+- **FR-017-15** Slot seats are sold first-come, first-served per month at list price, with no bidding. Rotation is equal share of impressions. The rules are published (006 Transparency Center).
 - **FR-017-16** Advertisers see impressions, clicks, and CTR. They get no personal data about consumers.
 
 ### Lead / transaction fees (Phase 2)
@@ -78,7 +78,7 @@ Fund the Platform by selling businesses **tools and reach**, never **reputation*
 - **FR-017-21** Licence contracts (016 FR-016-19) are billed as fixed fees plus usage overage, based on metered API usage per licence key.
 
 ### Admin
-- **FR-017-22** Staff admin console for plans: create or modify plan versions, apply credits/discounts, set up Enterprise contracts, view revenue reports (MRR, churn, by plan). Every change is audit-logged.
+- **FR-017-22** Staff admin console for plans: create or modify plan versions, apply credits/discounts, set up Enterprise contracts, view revenue reports (MRR, churn, by plan).
 
 ## 4. Edge Cases & Rules
 
@@ -109,13 +109,12 @@ Fund the Platform by selling businesses **tools and reach**, never **reputation*
 - [ ] Plans and entitlements are configuration-driven. Every gated action checks entitlement on the server (tests per gate).
 - [ ] The plan invariance suite passes: switching plans on fixtures changes no public score, order, label, or moderation outcome.
 - [ ] Upgrade, downgrade, cancellation, dunning, and tax invoicing work end to end in the processor's test mode.
-- [ ] Sponsored slots follow eligibility, labelling, 3-seat cap, even rotation, and operator rules, and never appear in comparisons (tests with 009).
+- [ ] Sponsored slots follow eligibility, labelling, 3-seat cap, and even rotation rules, and never appear in comparisons (tests with 009).
 - [ ] Lead attribution: 7-day window, consent handling, disputes, and invalid-click filtering (tests).
-- [ ] Admin plan changes are audit-logged.
 
 ## 7. Dependencies & Open Questions
 
-- **Decided (2026-09-24):** Starter £99 / Pro £299 (EUR €119 / €349), Enterprise quoted by sales; monthly + annual (2 months free); GBP + EUR. Ads are fixed monthly slots, with the operator allowed at list price with a disclosed label. Lead fees are a flat fee per booking.
+- **Decided (2026-09-24):** Starter £99 / Pro £299 (EUR €119 / €349), Enterprise quoted by sales; monthly + annual (2 months free); GBP + EUR. Ads are fixed monthly slots. Lead fees are a flat fee per booking.
 - **Q1:** Plan **limits** (invitations, users, locations) in FR-017-02 are defaults. The client should confirm them.
 - **Q2:** List price per sponsored slot and per-booking lead fee for each travel category.
 - **Q3:** Payment processor and tax engine choice (decided in plan.md).

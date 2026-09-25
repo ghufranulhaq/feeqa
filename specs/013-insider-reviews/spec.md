@@ -62,7 +62,7 @@ Consumers, B2B buyers, and job seekers want to know how a company behaves from t
 | Author requests deletion | Deleted immediately, as with any review (003). |
 | Business has fewer than 3 approved insider reviews | None are shown yet. The tab says "Insider reviews will appear once enough are collected". |
 | Legal order to reveal identity | Handled only through FR-013-06, and counted in the transparency report (006). |
-| Unauthorized: a business Owner calls an insider-verification endpoint | 403 + audit event. |
+| Unauthorized: a business Owner calls an insider-verification endpoint | 403. |
 
 ## 5. Out of Scope
 
@@ -77,7 +77,7 @@ Consumers, B2B buyers, and job seekers want to know how a company behaves from t
 - [ ] The public UI and all APIs never expose author identity for insider reviews (tests on every endpoint that returns reviews).
 - [ ] Batch-publication threshold, random delay, and role-family collapsing work (fixture tests).
 - [ ] Insider reviews are excluded from Review Score, Trust Index, rankings, and customer summaries (score invariance test).
-- [ ] Sealed identity access requires two staff approvals and is audit-logged.
+- [ ] Sealed identity access requires two staff approvals and writes a compliance log entry.
 - [ ] Legal sign-off recorded before the feature flag is enabled in production.
 
 ## 7. Dependencies & Open Questions

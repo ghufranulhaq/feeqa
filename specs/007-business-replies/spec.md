@@ -21,7 +21,7 @@ Let businesses respond to reviews publicly and quickly, so consumers can see how
 - **FR-007-01** A business user with the Responder role or above may post **one public reply** per review (and one reply per lifecycle update) on reviews of their Business.
 - **FR-007-02** Reply text must be 2–3,000 characters of plain text. It is screened like other content (006) and must not contain personal data of the reviewer beyond their display name.
 - **FR-007-03** Replies publish right away after automated screening (target ≤ 60 s). They are shown under the review with the business name, logo, publication date, and "Edited" if changed.
-- **FR-007-04** Replies may be edited or deleted by a Responder or above at any time. The edit history is kept for audit (not public).
+- **FR-007-04** Replies may be edited or deleted by a Responder or above at any time.
 - **FR-007-05** The reviewer must be notified (email + in-app) when a reply is posted or edited, subject to their notification preferences.
 - **FR-007-06** **AI reply suggestions** (plan-gated, 017): given the review text, rating, question answers, prior replies, and the Business's tone settings (formal/friendly, sign-off, do/don't phrases), the system generates a draft. Drafts must:
   - never be posted automatically;
@@ -48,7 +48,7 @@ Let businesses respond to reviews publicly and quickly, so consumers can see how
 | Reply on a removed or deleted review | Not possible. Existing replies are hidden along with the review. |
 | Two Responders reply at the same time | The first one wins. The second gets a conflict error and sees the existing reply. |
 | Business under Consumer Warning | Replies still allowed (reply/flag-only access). |
-| Review deleted by the author after a reply | The reply is deleted with it, and is kept in audit. |
+| Review deleted by the author after a reply | The reply is deleted with it. |
 | AI suggestion service unavailable | The button shows "unavailable". Manual reply still works. |
 | AI suggestion includes a money amount or promise not present in the input | Draft blocked and regenerated once; if it fails again, no draft is shown. |
 | Unauthorized: an Analyst posts a reply | 403. |

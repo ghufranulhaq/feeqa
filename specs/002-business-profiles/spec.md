@@ -23,7 +23,7 @@ Give every business a public profile page where people read and write reviews ab
 - **FR-002-03** Editable profile fields: logo (JPEG/PNG/WebP, ≤ 2 MB, at least 200×200), description (≤ 1,500 characters), website, email, phone, address, social links, categories (1 primary + up to 5 secondary), and opening hours per location.
 - **FR-002-04** The profile page must show: name, logo, **Claimed/Unclaimed** label (claimed shows the claim date), Review Score + stars + word label and Trust Index (008), total review count, rating distribution, AI summary (011, when available), company details, reply-behaviour signals (007), case statistics (010), the review list (003), "Similar businesses" (009), and any Consumer Warning (006).
 - **FR-002-05** Unclaimed profiles must clearly say "This business has not claimed its profile" and must still accept reviews.
-- **FR-002-06** Profile changes made by businesses must be audit-logged (field, old value, new value, user).
+- **FR-002-06** *(Removed 2026-09-25: no change log, constitution §5.1.)*
 - **FR-002-07** Name, domain, or primary category changes on a **claimed** profile must go through a staff approval queue before publishing. All other fields publish immediately and are checked afterwards by automated content checks.
 
 ### Consumer-created businesses
@@ -61,16 +61,16 @@ Give every business a public profile page where people read and write reviews ab
   - Changing state never changes any review, score, label, or business data.
 - **FR-002-31** Before an industry can move to `launched`, the console must show a **readiness checklist**. **Blocking** items: slug and localised name for every active locale, icon, and at least one sub-category. **Warning-only** items: question set (FR-002-19; without one, reviewers get the generic form), topic list (011), default invitation delay (005), number of businesses listed, and whether an industry benchmark is possible (015 FR-015-07). Staff must acknowledge the warnings to launch.
 - **FR-002-32** Staff must be able to **preview** an industry's public pages (navigation entry, category page, ranking, review form with its question set) before launching.
-- **FR-002-33** Permissions: staff `Admin` may create, launch, pause, merge, and move industries and categories. `Senior Moderator` may edit question sets, topic lists, and category names/descriptions. Other staff roles have read-only access. Every change is audit-logged (who, what, before/after), and launches and pauses are listed on the Transparency Center changelog (006).
+- **FR-002-33** Permissions: staff `Admin` may create, launch, pause, merge, and move industries and categories. `Senior Moderator` may edit question sets, topic lists, and category names/descriptions. Other staff roles have read-only access. Launches and pauses are listed on the Transparency Center changelog (006).
 - **FR-002-34** Staff may **seed** businesses for any industry using the rules and safeguards of FR-002-24 (public or licensed sources only, source and batch recorded, automated checks).
 - **FR-002-35** Every Business must have a **primary category**. When a consumer creates a Business (FR-002-08), they pick from **all** categories, `draft` ones included, or choose "Other / Uncategorised". Uncategorised businesses go to a staff categorisation queue, with a target of 5 business days. They are fully reviewable in the meantime.
 - **FR-002-36** A category that still contains businesses cannot be deleted. Staff must first **move** or **merge** it into another category. Moving businesses between categories re-runs rankings and benchmarks but never changes Review Scores or Trust Indexes (which don't depend on category: the same formula and prior apply to every business, 008 FR-008-03).
 - **FR-002-37** Score formulas, Trust Index weights, and moderation rules are the **same in every industry** (constitution P2). Opening an industry never requires, and never allows, per-industry score changes through the console.
 
-### Seeding, size flag, operator label, mentions
+### Seeding, size flag, mentions
 - **FR-002-24** **Pre-launch seeding:** staff import about 300–500 **airlines and large travel agencies/OTAs operating in the UK and EU** as `unclaimed` profiles (name, domain, primary category, country, and optionally logo if licensed). Only public or licensed sources may be used, **never data scraped from other review platforms** (constitution L1). Every seeded profile records its data source and import batch. Seeded profiles go through the same automated checks as FR-002-10.
 - **FR-002-25** Each Business has an **employee size band** (`<50`, `50–249`, `250–999`, `1000+`, `unknown`). Staff set it from public data or accept the business's declaration (checked by staff). It is used by 013 (insider reviews allowed only for ≥ 50).
-- **FR-002-26** The operator's Business (AeroTickets) must show a permanent label **"Owned by the Platform operator"** on its profile header, search results, comparisons, and widgets. The label cannot be removed through any business setting (constitution P11).
+- **FR-002-26** *(Removed 2026-09-25: operator label, constitution P11 removed.)*
 - **FR-002-27** Profiles have a **"Mentioned in reviews"** section listing published reviews of other businesses that tag this Business (003 FR-003-31). Mentions are shown separately from the Business's own reviews and never count toward its scores.
 
 ## 4. Edge Cases & Rules
@@ -83,7 +83,7 @@ Give every business a public profile page where people read and write reviews ab
 | Empty description | Allowed. The profile shows "No description provided". |
 | Description with a URL to a different domain, phone numbers in the name, or ALL-CAPS name | Rejected by validation. |
 | Logo is animated or has transparency | Animated: rejected. Transparent: accepted. |
-| Claim code emailed to a role address at a domain the user doesn't control | The code expires after 30 minutes. Max 5 attempts per claim. The claim is audit-logged. |
+| Claim code emailed to a role address at a domain the user doesn't control | The code expires after 30 minutes. Max 5 attempts per claim. |
 | DNS TXT record removed after the claim | No automatic unclaim, but re-verification is required before ownership transfer. |
 | Staff try to launch an industry with a blocking checklist item missing | Reject. Show the missing items. |
 | Staff pause an industry that has active sponsored slots (017) | Slots stop serving right away. Advertisers get a pro-rated credit. |
@@ -112,17 +112,16 @@ Give every business a public profile page where people read and write reviews ab
 - [ ] All four claim methods work. Free email domains are rejected for email claims.
 - [ ] Claiming changes no review, score, or label (checked with a before/after snapshot test).
 - [ ] Profile page shows every element in FR-002-04 that has data.
-- [ ] Sensitive field changes go to staff approval. Other changes publish immediately and are audit-logged.
+- [ ] Sensitive field changes go to staff approval. Other changes publish immediately.
 - [ ] Locations have separate scores.
 - [ ] The seed import creates unclaimed profiles with source and batch recorded, and seeded profiles pass automated checks.
-- [ ] The operator label appears on every surface listed in FR-002-26 and cannot be removed (test).
 - [ ] The "Mentioned in reviews" section shows tagged reviews without affecting scores.
 - [ ] Category question sets are versioned and inherited. Non-launched categories are hidden from navigation.
 - [ ] Staff can create, preview, launch, pause, and re-launch an industry from the console, and public pages update within 5 minutes with no deployment (E2E test).
 - [ ] The readiness checklist blocks launch on missing blocking items and requires warnings to be acknowledged.
 - [ ] Industry state changes and category moves leave every Review Score and Trust Index unchanged (invariance test). Only rankings and benchmarks change.
 - [ ] Every Business has a primary category. Uncategorised businesses appear in the staff queue.
-- [ ] Industry permissions follow FR-002-33, and every change is audit-logged.
+- [ ] Industry permissions follow FR-002-33.
 
 ## 7. Dependencies & Open Questions
 

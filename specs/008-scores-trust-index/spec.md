@@ -78,7 +78,7 @@ Summarise a business's reputation honestly, with two published numbers. The **Re
 - **FR-008-13** The Trust Index must be **identical for any plan**. No input may come from data only available to paying businesses. For example, if transaction reference data improves verification, the free equivalent (document proof) must be available to every reviewer.
 
 ### Governance
-- **FR-008-14** Both algorithms are **pure, deterministic functions** of stored events and a methodology version. Given the same inputs and version, they must produce identical outputs (replay test).
+- **FR-008-14** Both algorithms are **pure, deterministic functions** of their input data and a methodology version. Given the same inputs and version, they must produce identical outputs (determinism test).
 - **FR-008-15** Every methodology version (parameters, weights, bands, minimums) is stored and published in the Transparency Center (006) with an effective date. Material changes must be announced ≥ 30 days before they take effect.
 - **FR-008-16** Daily snapshots of Review Score, Trust Index, and component values must be stored for every Business for trendlines (011, 015). They are kept for at least 5 years.
 - **FR-008-17** When a Business is under Consumer Warning (006), both scores must be hidden on every surface (profile, search, comparison, widgets, API). They are still calculated internally.
@@ -111,7 +111,7 @@ Summarise a business's reputation honestly, with two published numbers. The **Re
 
 - [ ] A golden dataset of ≥ 30 fixture businesses produces the expected Review Scores, labels, star images, and Trust Indexes, all calculated by hand.
 - [ ] Property-based tests: the score is always within [1.0, 5.0] and [0, 100]; adding a 5★ review never lowers the Review Score; excluded components never affect the output.
-- [ ] Replay test: recalculating from stored events reproduces the stored daily snapshots exactly.
+- [ ] Determinism test: calculating twice from the same fixture data and methodology version gives identical results, and the nightly full recalculation matches the incremental values.
 - [ ] Recalculation happens within 60 s of trigger events (integration test).
 - [ ] The breakdown UI shows every component, weight, inclusion flag, version, and date.
 - [ ] Consumer Warning hides scores on every surface (profile, search, comparison, widget, API tests).

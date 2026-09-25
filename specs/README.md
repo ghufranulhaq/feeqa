@@ -1,6 +1,6 @@
 # Specifications Index
 
-These specs define the whole Platform, one capability per spec. Each one follows the spec-driven workflow in [`CLAUDE.md` §2](../CLAUDE.md), and the project-wide **Definition of Done** ([`CLAUDE.md` §7](../CLAUDE.md)) applies to every spec on top of its own acceptance criteria.
+These specs define the whole Platform, one capability per spec. Each one follows the spec-driven workflow in [`CONSTITUTION.md` §2](../CONSTITUTION.md), and the project-wide **Definition of Done** ([`CONSTITUTION.md` §7](../CONSTITUTION.md)) applies to every spec on top of its own acceptance criteria.
 
 Each spec contains these sections:
 
@@ -78,7 +78,7 @@ Every item in [`add-to-trustpilot.md`](../add-to-trustpilot.md) maps to at least
 |---|-------|----------|-------|
 | D1 | Launch vertical | **Travel**: airlines, travel agencies/OTAs, airports. Content drafted in [`travel-content.md`](002-business-profiles/travel-content.md) *(pending client approval)* | 002, 005, 009, 011 |
 | D2 | Markets & clients | **UK + EU**, English (`en-GB`), GBP/EUR, **responsive web only** | Constitution §1 |
-| D3 | Operator conflict | AeroTickets sells travel and is **listed like any other business**, with an "Owned by the Platform operator" label. **Strict published data firewall.** May buy ads at list price with a disclosed label | Constitution P11, 001, 002, 006, 009, 017 |
+| D3 | Operator | *(Revised 2026-09-25)* The Platform is **fully independent**: its own repo, database, servers, and staff logins. The operator has no stake in any listed business, and P11 is removed |
 | D4 | Agency vs. airline | The reviewer picks one business and may **tag** the other. The tagged business sees the review and can reply once, with **no score effect** | 003, 002 |
 | D5 | Trust Index weights | Travel-tuned: 25 / 15 / 20 / 15 / 10 / 15 | 008 |
 | D6 | Compensation (UK261/EU261) | A **separate case milestone**. Excluded from refund speed; counts toward resolution. Shown in comparisons | 010, 008, 009 |
@@ -99,6 +99,17 @@ Every item in [`add-to-trustpilot.md`](../add-to-trustpilot.md) maps to at least
 | D21 | Data licensing | Aggregates + excerpts of at most 200 characters (no full texts) | 016 |
 | D22 | "Resolve first" | Built behind a feature flag. **Off until UK + EU legal sign-off** | 010, Constitution L5 |
 | D23 | Other industries | Any business from any industry can be listed and reviewed. A full top-level taxonomy ships with only Travel launched. **Staff create and launch new industries from the console with no code change** (readiness checklist, preview, audit) | 002 |
+
+### Demo decisions (2026-09-25)
+The first deliverable is a **client demo showing all features**. The specs describe **production** behaviour. Demo-only deviations are defined **only** in [`CONSTITUTION.md` §5.6](../CONSTITUTION.md), and the technical details are in [`plan.md`](plan.md).
+
+| # | Topic | Decision |
+|---|-------|----------|
+| D24 | Demo scope & host | All features, at `https://feeqa.appsarray.com`, on a Vultr VPS (4 vCPU / 8 GB / 160 GB) with 7 Docker containers (`compose.demo.yaml`) |
+| D25 | Demo environment | `APP_ENV=demo`: staff login from any IP, 6-character passwords, fake verification with real badge labels, simulated payments that always succeed, legally gated features on, no ClamAV, relaxed scheduled tasks. All of these are impossible in production |
+| D26 | Demo data | Separate demo seeders with realistic **fictional** businesses and people. Whole site behind a shared password and hidden from search engines |
+| D27 | AI in demo | DeepSeek API. `AI_DRIVER=fake` switches AI off, with working fallbacks |
+| D28 | Two-factor authentication | Not part of the Platform |
 
 ### Still open (non-blocking for Phase 1 planning)
 - Client approval of `travel-content.md` (question sets, topics, invitation timing).

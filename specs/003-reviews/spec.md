@@ -53,7 +53,7 @@ Let consumers write honest, useful reviews of a business or a location (product 
 - **FR-003-22** The system must derive and store a **durability signal** per review: `improved`, `unchanged`, or `declined`, from comparing the current rating with the original. This signal feeds analytics (015) and the Trust Index "repeat satisfaction" input (008).
 
 ### Edit & delete
-- **FR-003-23** Authors may edit a review or update at any time. Edited content is screened again. The card shows "Edited" with the date. The rating history of edits is kept for audit, but it is not public.
+- **FR-003-23** Authors may edit a review or update at any time. Edited content is screened again. The card shows "Edited" with the date.
 - **FR-003-24** Authors may delete their review at any time. Deletion removes the review and its updates from public view and from scores right away.
 - **FR-003-25** Nobody other than the author (edit/delete) and staff moderation (006) can change a review's content or visibility.
 
@@ -71,7 +71,7 @@ Let consumers write honest, useful reviews of a business or a location (product 
   - triggers a notification to the tagged Business's members (007 preferences apply);
   - may receive **one reply from the tagged Business**, shown under the main business's reply and labelled with the tagged business's name (007 rules apply);
   - **never** counts toward the tagged Business's Review Score, Trust Index, analytics ratings, or AI summaries.
-- **FR-003-33** The author may add, change, or remove the tag while editing. Removing the tag also hides the tagged business's reply (kept in audit).
+- **FR-003-33** The author may add, change, or remove the tag while editing. Removing the tag also hides the tagged business's reply.
 
 ## 4. Edge Cases & Rules
 
@@ -90,7 +90,7 @@ Let consumers write honest, useful reviews of a business or a location (product 
 | Lifecycle update submitted outside a window | Reject: "Your next update opens on <date>". |
 | Update submitted for a deleted or removed review | Reject. |
 | Author account deleted | All their reviews are removed from public view and scores (001). |
-| Business user tries to edit or delete a review through the API | 403 + audit event. |
+| Business user tries to edit or delete a review through the API | 403. |
 | Useful vote spam (many votes from new accounts) | Votes from accounts flagged by fraud detection are not counted. |
 | Unauthenticated user submits | Draft kept. Sign-in required before submit. |
 | Question-set answer for a question not in the set | Ignore it and log it. |

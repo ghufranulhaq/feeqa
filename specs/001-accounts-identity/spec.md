@@ -10,10 +10,10 @@ Give every person a single, secure identity on the Platform. Consumers can revie
 
 1. **Consumer sign-up with email.** A visitor who taps "Write a review" and picks "Continue with email" enters an email, gets a 6-digit code or magic link, confirms that they are 18 or older, chooses a display name and country, and lands back on the review form they started from, with their draft kept.
 2. **Social sign-in.** A visitor who picks Google, Apple, or Facebook and grants consent gets an account linked to that provider's verified email. If an account with the same verified email already exists, the provider is linked to it and no duplicate account is created.
-3. **Business user invitation.** When a business admin invites a colleague by email with the role "Responder", the colleague gets an email, sets up MFA, and can reply to reviews but can't change billing or invite others.
+3. **Business user invitation.** When a business admin invites a colleague by email with the role "Responder", the colleague gets an email, accepts the invitation, and can reply to reviews but can't change billing or invite others.
 4. **Data export.** When a consumer requests "Download my data", they get an email link within 24 hours to a JSON archive of their profile, reviews, updates, media, cases, votes, flags, and consents.
 5. **Account deletion.** When a consumer deletes their account and confirms, their reviews are removed from public view immediately, their personal data is erased within 30 days, and they get a confirmation email.
-6. **Staff access.** A moderator signs in with their staff account and MFA and can see the moderation queue. Every action they take is recorded with their staff ID.
+6. **Staff access.** A moderator signs in with their staff account (from an allowed network) and can see the moderation queue. Every action they take is recorded with their staff ID.
 
 ## 3. Functional Requirements
 
@@ -43,13 +43,12 @@ Give every person a single, secure identity on the Platform. Consumers can revie
   | Transfer ownership / delete business account | ✅ | ❌ | ❌ | ❌ |
 
 - **FR-001-11** Every Business must have at least one Owner at all times. The system must reject removing or demoting the last Owner.
-- **FR-001-12** Business users must enrol in **MFA** (TOTP or WebAuthn) before they can perform any write action for a Business.
+- **FR-001-12** *(Removed 2026-09-25: two-factor authentication is not required.)*
 - **FR-001-13** One person may hold both a consumer identity and business memberships under the same login. **A user must not be able to publish a customer review on a Business where they hold a membership** (see 003).
 
 ### Staff
-- **FR-001-14** Staff roles: `Moderator`, `Senior Moderator`, `Mediator`, `Support`, `Admin`. Staff accounts require MFA and may be created only by a staff `Admin`.
-- **FR-001-15** Every staff action on user content or accounts must write an audit event with staff ID, action, target, reason code, and timestamp.
-- **FR-001-15a** **Operator data firewall (constitution P11):** a person who holds a business membership in the operator's Business (AeroTickets) must **not** also hold any staff role, and staff accounts must not be created for such people. The system must reject the conflicting assignment in either direction. Staff reads of any business's non-public data must write an audit event. A quarterly access report must be producible from the audit store.
+- **FR-001-14** Staff roles: `Moderator`, `Senior Moderator`, `Mediator`, `Support`, `Admin`. Staff accounts may be created only by a staff `Admin`, and the staff console is reachable only from allow-listed networks.
+- **FR-001-15** Every staff moderation or enforcement action on user content or accounts must write a **compliance log** entry with staff ID, action, target, reason code, and timestamp (constitution §5.1). No other changes are logged.
 
 ### Sessions & security
 - **FR-001-16** Sessions must expire after 30 days of inactivity for consumers and 12 hours for staff. Users must be able to see their active sessions and revoke them.
@@ -58,7 +57,7 @@ Give every person a single, secure identity on the Platform. Consumers can revie
 
 ### Data rights
 - **FR-001-19** A user must be able to request a **full data export**. It must be delivered as machine-readable JSON (media included as files) within 24 hours, through a download link that expires after 7 days.
-- **FR-001-20** A user must be able to **delete their account**. Public content is hidden right away. Personal data is erased or irreversibly pseudonymised within 30 days. Audit events keep only a pseudonymous ID.
+- **FR-001-20** A user must be able to **delete their account**. Public content is hidden right away. Personal data is erased or irreversibly pseudonymised within 30 days. Compliance log entries keep only a pseudonymous ID.
 - **FR-001-21** The system must record consents (terms version, privacy version, marketing opt-in) with timestamps. It must ask again for consent when the terms change in a material way.
 
 ## 4. Edge Cases & Rules
@@ -75,9 +74,9 @@ Give every person a single, secure identity on the Platform. Consumers can revie
 | Avatar upload > 5 MB, not an image, animated, or fails the malware scan | Reject. Max 5 MB, JPEG/PNG/WebP, stored after stripping EXIF. |
 | Account deleted while a case (010) is open | The case closes as "Withdrawn by consumer". The business keeps only the case metadata, no personal data. |
 | Export requested twice within 24 hours | Return the pending export. Do not start a second one. |
-| Unauthorized: a Responder calls the billing endpoint | 403, and an audit event is written. |
+| Unauthorized: a Responder calls the billing endpoint | 403. |
 | Last Owner tries to leave the Business | Reject until another Owner is appointed. |
-| Staff account without MFA | Cannot sign in. |
+| Staff sign-in from a network that isn't allow-listed | Rejected. |
 
 ## 5. Out of Scope
 
@@ -93,12 +92,11 @@ Give every person a single, secure identity on the Platform. Consumers can revie
 - [ ] An unverified or under-18 user cannot publish anything (tests exist for both).
 - [ ] The permission matrix (FR-001-10) is covered by an automated test for each cell.
 - [ ] The last Owner cannot be removed.
-- [ ] MFA is enforced for business write actions and all staff sign-ins.
+- [ ] The staff console rejects requests from networks that aren't allow-listed.
 - [ ] Data export contains every personal-data entity defined across all shipped specs (checked against the data inventory).
 - [ ] Account deletion hides content right away and erases personal data within 30 days (checked by a scheduled-job test).
 - [ ] Rate limiting and lockout behaviour are verified by tests.
 - [ ] The public profile page never exposes an email or proof data (checked by a test).
-- [ ] An operator-business member cannot be given a staff role, and the reverse is also rejected (test).
 
 ## 7. Dependencies & Open Questions
 

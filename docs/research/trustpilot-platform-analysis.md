@@ -5,7 +5,7 @@
 >
 > **Researched:** 2026-09-24. Public sources only (listed at the end). Some details, such as TrustScore weights, are not officially published. Those are marked *reported*, which means they come from third-party analysis.
 >
-> **IP note:** "Trustpilot", "TrustScore", and "TrustBox" are Trustpilot trademarks. The Platform must not use them. See the brand constraints in `CLAUDE.md`.
+> **IP note:** "Trustpilot", "TrustScore", and "TrustBox" are Trustpilot trademarks. The Platform must not use them. See the brand constraints in `CONSTITUTION.md`.
 
 ---
 
