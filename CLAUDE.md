@@ -17,4 +17,8 @@ This project follows a written constitution. It is imported below and is **autho
 
 When you change behaviour, setup, configuration, commands, or deployment, update `README.md`, the affected user guides, and the system overview **in the same change** (constitution §8 rule 9).
 
-<!-- Laravel Boost adds its guidelines below this line when installed (see specs/plan.md D21). Do not edit that section by hand. -->
+## Laravel Boost guidelines
+
+Laravel Boost (plan D21, dev-only) writes its guidelines to `AGENTS.md`, updated by `php artisan boost:update`. Do not edit that file by hand.
+
+@AGENTS.md
