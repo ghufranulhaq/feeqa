@@ -82,7 +82,11 @@ class PasswordlessLoginController extends Controller
         $user = User::where('email', $code->email)->first();
 
         if (! $user) {
-            session(['pending_signup_email' => $code->email]);
+            session([
+                'pending_signup_email' => $code->email,
+                // Proven by demonstrating control of the inbox (code/link).
+                'pending_signup_email_verified' => true,
+            ]);
 
             return redirect()->route('signup.complete');
         }

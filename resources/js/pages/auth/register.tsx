@@ -3,6 +3,7 @@ import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
 import InputError from '@/components/input-error';
+import SocialLoginButtons from '@/components/social-login-buttons';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -19,7 +20,7 @@ interface RegisterForm {
     marketing_opt_in: boolean;
 }
 
-export default function Register() {
+export default function Register({ socialProviders }: { socialProviders: string[] }) {
     const { data, setData, post, processing, errors, reset } = useForm<RegisterForm>({
         name: '',
         email: '',
@@ -148,6 +149,8 @@ export default function Register() {
                         Create account
                     </Button>
                 </div>
+
+                <SocialLoginButtons providers={socialProviders} />
 
                 <div className="text-muted-foreground text-center text-sm">
                     Already have an account?{' '}

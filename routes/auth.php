@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordlessLoginController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\SocialLoginController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
@@ -55,6 +56,16 @@ Route::middleware('guest')->group(function () {
 
     Route::post('signup/complete', [CompleteProfileController::class, 'store'])
         ->name('signup.complete.store');
+
+    Route::get('login/{provider}/redirect', [SocialLoginController::class, 'redirect'])
+        ->whereAlpha('provider')
+        ->name('login.social.redirect');
+
+    // Apple posts its callback as a cross-site form POST — see routes/web.php
+    // for the matching CSRF exemption.
+    Route::match(['get', 'post'], 'login/{provider}/callback', [SocialLoginController::class, 'callback'])
+        ->whereAlpha('provider')
+        ->name('login.social.callback');
 });
 
 Route::middleware('auth')->group(function () {

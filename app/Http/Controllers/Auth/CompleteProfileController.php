@@ -57,9 +57,16 @@ class CompleteProfileController extends Controller
         ]);
 
         // Not mass-assignable on purpose (email_verified_at is not in
-        // User::$fillable) — set explicitly, since we already proved
-        // control of this inbox via the passwordless code/link.
-        $user->forceFill(['email_verified_at' => now()])->save();
+        // User::$fillable) — set explicitly. Passwordless (T8) always
+        // proved inbox control; social (T9, edge case) only when the
+        // provider itself reported the email verified.
+        if ($request->session()->get('pending_signup_email_verified', true)) {
+            $user->forceFill(['email_verified_at' => now()])->save();
+        }
+
+        if ($providerLink = $request->session()->get('pending_signup_provider')) {
+            $user->providers()->create($providerLink);
+        }
 
         $user->consents()->create([
             'terms_version' => config('legal.terms_version'),
@@ -68,7 +75,11 @@ class CompleteProfileController extends Controller
             'consented_at' => now(),
         ]);
 
-        $request->session()->forget('pending_signup_email');
+        $request->session()->forget([
+            'pending_signup_email',
+            'pending_signup_email_verified',
+            'pending_signup_provider',
+        ]);
 
         event(new Registered($user));
 

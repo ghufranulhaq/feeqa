@@ -3,6 +3,7 @@ import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
 import InputError from '@/components/input-error';
+import SocialLoginButtons from '@/components/social-login-buttons';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -19,9 +20,10 @@ interface LoginForm {
 interface LoginProps {
     status?: string;
     canResetPassword: boolean;
+    socialProviders: string[];
 }
 
-export default function Login({ status, canResetPassword }: LoginProps) {
+export default function Login({ status, canResetPassword, socialProviders }: LoginProps) {
     const { data, setData, post, processing, errors, reset } = useForm<LoginForm>({
         email: '',
         password: '',
@@ -95,6 +97,8 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                         Email me a sign-in code instead
                     </TextLink>
                 </div>
+
+                <SocialLoginButtons providers={socialProviders} />
 
                 <div className="text-muted-foreground text-center text-sm">
                     Don't have an account?{' '}

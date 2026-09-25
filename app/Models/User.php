@@ -58,6 +58,11 @@ class User extends Authenticatable
         return $this->hasMany(Consent::class);
     }
 
+    public function providers(): HasMany
+    {
+        return $this->hasMany(UserProvider::class);
+    }
+
     /**
      * FR-001-21: "must ask again for consent when the terms change in a
      * material way" — true when there's no consent on record, or the most

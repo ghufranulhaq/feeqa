@@ -17,6 +17,14 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
+
+        // Apple posts its OAuth callback as a cross-site form POST
+        // (response_mode=form_post), which carries no Laravel CSRF token.
+        // Socialite's own state/nonce check on the callback is what
+        // authenticates this request instead.
+        $middleware->validateCsrfTokens(except: [
+            'login/apple/callback',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
