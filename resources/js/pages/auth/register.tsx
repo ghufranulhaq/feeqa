@@ -16,6 +16,7 @@ interface RegisterForm {
     password: string;
     password_confirmation: string;
     over_18: boolean;
+    marketing_opt_in: boolean;
 }
 
 export default function Register() {
@@ -25,6 +26,7 @@ export default function Register() {
         password: '',
         password_confirmation: '',
         over_18: false,
+        marketing_opt_in: false,
     });
 
     const submit: FormEventHandler = (e) => {
@@ -122,7 +124,26 @@ export default function Register() {
                         <InputError message={errors.over_18} />
                     </div>
 
-                    <Button type="submit" className="mt-2 w-full" tabIndex={6} disabled={processing}>
+                    <div className="grid gap-2">
+                        <div className="flex items-start space-x-3">
+                            <Checkbox
+                                id="marketing_opt_in"
+                                name="marketing_opt_in"
+                                tabIndex={6}
+                                checked={data.marketing_opt_in}
+                                onCheckedChange={(checked) => setData('marketing_opt_in', checked === true)}
+                            />
+                            <Label htmlFor="marketing_opt_in" className="font-normal">
+                                Send me occasional product updates and tips (optional)
+                            </Label>
+                        </div>
+                    </div>
+
+                    {/* Terms/Privacy Policy pages aren't part of this spec yet — plain
+                        text for now rather than linking to pages that don't exist. */}
+                    <p className="text-muted-foreground text-xs">By creating an account you agree to our Terms and Privacy Policy.</p>
+
+                    <Button type="submit" className="mt-2 w-full" tabIndex={7} disabled={processing}>
                         {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
                         Create account
                     </Button>
@@ -130,7 +151,7 @@ export default function Register() {
 
                 <div className="text-muted-foreground text-center text-sm">
                     Already have an account?{' '}
-                    <TextLink href={route('login')} tabIndex={7}>
+                    <TextLink href={route('login')} tabIndex={8}>
                         Log in
                     </TextLink>
                 </div>

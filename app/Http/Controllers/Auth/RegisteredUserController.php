@@ -46,6 +46,7 @@ class RegisteredUserController extends Controller
             // FR-001-03: blocked here means nothing is ever written for an
             // under-18 visitor — the email is never stored.
             'over_18' => ['required', 'accepted'],
+            'marketing_opt_in' => ['sometimes', 'boolean'],
         ]);
 
         if ($existing = User::where('email', $request->email)->first()) {
@@ -60,6 +61,16 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'date_of_birth_confirmed_at' => now(),
+        ]);
+
+        // FR-001-21: creating the account is treated as agreeing to the
+        // current terms/privacy versions; marketing is a separate, genuinely
+        // optional opt-in.
+        $user->consents()->create([
+            'terms_version' => config('legal.terms_version'),
+            'privacy_version' => config('legal.privacy_version'),
+            'marketing_opt_in' => $request->boolean('marketing_opt_in'),
+            'consented_at' => now(),
         ]);
 
         event(new Registered($user));

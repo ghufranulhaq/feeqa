@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -50,5 +51,23 @@ class User extends Authenticatable
             'date_of_birth_confirmed_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function consents(): HasMany
+    {
+        return $this->hasMany(Consent::class);
+    }
+
+    /**
+     * FR-001-21: "must ask again for consent when the terms change in a
+     * material way" — true when there's no consent on record, or the most
+     * recent one no longer matches the published terms/privacy versions.
+     */
+    public function needsReconsent(): bool
+    {
+        /** @var Consent|null $latest */
+        $latest = $this->consents()->latest('consented_at')->first();
+
+        return $latest === null || ! $latest->isCurrent();
     }
 }
