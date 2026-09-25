@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
+use App\Notifications\AccountDeletionScheduledNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,19 +43,25 @@ class ProfileController extends Controller
     }
 
     /**
-     * Delete the user's account.
+     * FR-001-20: request account deletion. Public content is hidden right
+     * away (BlockPendingDeletionAccounts middleware, ReviewerProfileController);
+     * personal data is erased/pseudonymised within 30 days
+     * (ErasePendingAccountDeletions, scheduled daily).
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
-
         $user = $request->user();
 
-        Auth::logout();
+        // A passwordless/social-only account has no password to confirm —
+        // being authenticated as them is confirmation enough.
+        if ($user->password !== null) {
+            $request->validate(['password' => ['required', 'current_password']]);
+        }
 
-        $user->delete();
+        $user->forceFill(['deletion_requested_at' => now()])->save();
+        $user->notify(new AccountDeletionScheduledNotification);
+
+        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

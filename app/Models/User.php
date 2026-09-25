@@ -17,6 +17,7 @@ use Spatie\Permission\Traits\HasRoles;
 /**
  * @property Carbon|null $email_verified_at
  * @property Carbon|null $date_of_birth_confirmed_at
+ * @property Carbon|null $deletion_requested_at
  */
 class User extends Authenticatable
 {
@@ -63,6 +64,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'date_of_birth_confirmed_at' => 'datetime',
+            'deletion_requested_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -128,5 +130,13 @@ class User extends Authenticatable
     public function isStaff(): bool
     {
         return $this->staff_role !== null;
+    }
+
+    /**
+     * FR-001-20.
+     */
+    public function hasPendingDeletion(): bool
+    {
+        return $this->deletion_requested_at !== null;
     }
 }

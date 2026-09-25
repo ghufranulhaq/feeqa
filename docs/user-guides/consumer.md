@@ -50,6 +50,14 @@ download link once it's ready (usually within seconds, always within 24
 hours); the link works for 7 days. Asking again within 24 hours just
 returns the export already in progress rather than starting a new one.
 
+## Deleting your account
+
+**Settings → Profile → Delete account** (confirm with your password, if you
+have one). Your public profile disappears immediately. Your personal data
+is permanently erased or anonymised within 30 days — you get a
+confirmation email right away, and you're signed out on every device.
+There's no way to undo this after the 30 days are up.
+
 ## If you get locked out
 
 Signing in, entering a passwordless code, and resetting your password are

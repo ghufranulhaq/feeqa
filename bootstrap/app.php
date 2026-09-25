@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\BlockPendingDeletionAccounts;
 use App\Http\Middleware\EnforceSessionLifetime;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
@@ -17,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+            BlockPendingDeletionAccounts::class,
             EnforceSessionLifetime::class,
         ]);
 

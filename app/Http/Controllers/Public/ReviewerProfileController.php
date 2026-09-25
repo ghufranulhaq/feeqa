@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ReviewerProfileController extends Controller
 {
@@ -14,9 +15,16 @@ class ReviewerProfileController extends Controller
      * published review count/list only — never email, real name, or proof
      * data. Reviews are spec 003, so the list and count are always empty
      * until then.
+     *
+     * FR-001-20: "Public content is hidden right away" once deletion is
+     * requested.
      */
     public function show(User $user): Response
     {
+        if ($user->hasPendingDeletion()) {
+            throw new NotFoundHttpException;
+        }
+
         return Inertia::render('public/reviewer-profile', [
             'reviewer' => [
                 'id' => $user->id,

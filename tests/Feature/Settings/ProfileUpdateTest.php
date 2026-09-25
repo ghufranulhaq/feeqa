@@ -76,7 +76,10 @@ class ProfileUpdateTest extends TestCase
             ->assertRedirect('/');
 
         $this->assertGuest();
-        $this->assertNull($user->fresh());
+        // FR-001-20: deletion is scheduled, not immediate — the row still
+        // exists, marked for erasure within 30 days.
+        $this->assertNotNull($user->fresh());
+        $this->assertNotNull($user->fresh()->deletion_requested_at);
     }
 
     public function test_correct_password_must_be_provided_to_delete_account()
