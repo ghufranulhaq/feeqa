@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Domain\Staff\StaffRole;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -93,5 +94,20 @@ class User extends Authenticatable
         $latest = $this->consents()->latest('consented_at')->first();
 
         return $latest === null || ! $latest->isCurrent();
+    }
+
+    /**
+     * FR-001-13: "One person may hold both a consumer identity and
+     * business memberships under the same login" — a staff role is the
+     * same idea, on the same User row.
+     */
+    public function staffRole(): ?StaffRole
+    {
+        return $this->staff_role ? StaffRole::from($this->staff_role) : null;
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->staff_role !== null;
     }
 }

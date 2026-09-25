@@ -6,9 +6,7 @@ use App\Models\User;
 
 /**
  * FR-001-16: consumers get 30 days of inactivity before their session
- * expires; staff get 12 hours. Staff accounts don't exist yet (spec 001
- * task T17 adds them) — until then every user is a consumer, so this
- * always returns the consumer value. T17 adds the staff-role branch here.
+ * expires; staff get 12 hours.
  */
 class SessionLifetime
 {
@@ -18,6 +16,6 @@ class SessionLifetime
 
     public static function minutesFor(User $user): int
     {
-        return self::CONSUMER_MINUTES;
+        return $user->isStaff() ? self::STAFF_MINUTES : self::CONSUMER_MINUTES;
     }
 }

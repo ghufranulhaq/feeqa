@@ -97,8 +97,23 @@ not linked from anywhere in the UI. A business user-guide isn't written yet
 either — the consumer guide above is everything currently reachable through
 the UI.
 
+## Staff
+
+Staff roles are Moderator, Senior Moderator, Mediator, Support, and Admin —
+separate from business roles, and a staff account is created only by
+another staff Admin (`POST /staff/accounts`; no staff console UI to send
+this from yet). A new staff account gets an unusable random password and
+is immediately sent the normal "set your password" email. Every staff
+account creation is written to the compliance log — who did it, when, and
+why — the same log spec 006's moderation actions will use later.
+
+Staff sessions expire after 12 hours idle, not the 30 days consumers get.
+In production, the staff endpoints are only reachable from an IP allow-list
+(`STAFF_ALLOWED_IPS`); everywhere else — including the demo — any network
+can reach them, per constitution §5.6.
+
 ## What's not built yet
 
-This page will grow as the rest of spec 001 lands: staff accounts and the
-staff console, business invitations, and the data export/account-deletion
-tools. Check the spec's `tasks.md` for exactly what's done.
+This page will grow as the rest of spec 001 lands: the staff console UI,
+and the data export/account-deletion tools. Check the spec's `tasks.md`
+for exactly what's done.
