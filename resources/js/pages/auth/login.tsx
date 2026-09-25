@@ -91,8 +91,14 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                 </div>
 
                 <div className="text-muted-foreground text-center text-sm">
+                    <TextLink href={route('login.passwordless')} tabIndex={6}>
+                        Email me a sign-in code instead
+                    </TextLink>
+                </div>
+
+                <div className="text-muted-foreground text-center text-sm">
                     Don't have an account?{' '}
-                    <TextLink href={route('register')} tabIndex={5}>
+                    <TextLink href={route('register')} tabIndex={7}>
                         Sign up
                     </TextLink>
                 </div>

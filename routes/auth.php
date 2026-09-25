@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\CompleteProfileController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordlessLoginController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
@@ -32,6 +34,27 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+
+    Route::get('login/passwordless', [PasswordlessLoginController::class, 'create'])
+        ->name('login.passwordless');
+
+    Route::post('login/passwordless', [PasswordlessLoginController::class, 'store'])
+        ->name('login.passwordless.store');
+
+    Route::get('login/passwordless/verify', [PasswordlessLoginController::class, 'showVerify'])
+        ->name('login.passwordless.verify');
+
+    Route::post('login/passwordless/verify', [PasswordlessLoginController::class, 'verify'])
+        ->name('login.passwordless.verify.store');
+
+    Route::get('login/passwordless/{token}', [PasswordlessLoginController::class, 'viaToken'])
+        ->name('login.passwordless.token');
+
+    Route::get('signup/complete', [CompleteProfileController::class, 'create'])
+        ->name('signup.complete');
+
+    Route::post('signup/complete', [CompleteProfileController::class, 'store'])
+        ->name('signup.complete.store');
 });
 
 Route::middleware('auth')->group(function () {
