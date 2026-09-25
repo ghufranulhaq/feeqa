@@ -88,15 +88,15 @@ Give every person a single, secure identity on the Platform. Consumers can revie
 
 ## 6. Acceptance Criteria
 
-- [ ] All five sign-up/sign-in methods work end to end and produce a single account per verified email.
-- [ ] An unverified or under-18 user cannot publish anything (tests exist for both).
-- [ ] The permission matrix (FR-001-10) is covered by an automated test for each cell.
-- [ ] The last Owner cannot be removed.
-- [ ] The staff console rejects requests from networks that aren't allow-listed.
-- [ ] Data export contains every personal-data entity defined across all shipped specs (checked against the data inventory).
-- [ ] Account deletion hides content right away and erases personal data within 30 days (checked by a scheduled-job test).
-- [ ] Rate limiting and lockout behaviour are verified by tests.
-- [ ] The public profile page never exposes an email or proof data (checked by a test).
+- [x] All five sign-up/sign-in methods work end to end and produce a single account per verified email.
+- [~] An unverified or under-18 user cannot publish anything (tests exist for both). *An under-18 visitor is fully blocked at sign-up (tested) — there's nothing to publish yet to test the unverified half against, since publishing is spec 003. Revisit this box when spec 003 ships.*
+- [x] The permission matrix (FR-001-10) is covered by an automated test for each cell.
+- [x] The last Owner cannot be removed.
+- [x] The staff console rejects requests from networks that aren't allow-listed.
+- [x] Data export contains every personal-data entity defined across all shipped specs (checked against the data inventory).
+- [x] Account deletion hides content right away and erases personal data within 30 days (checked by a scheduled-job test).
+- [x] Rate limiting and lockout behaviour are verified by tests.
+- [x] The public profile page never exposes an email or proof data (checked by a test).
 
 ## 7. Dependencies & Open Questions
 

@@ -84,5 +84,11 @@ memberships have something to point at; spec 002 owns and extends it.
 - [x] **T20. Docs pass.** README, `docs/user-guides/`, `docs/system-overview/`
       updated for everything above (constitution §8 rule 9); `make
       docs-check` passes.
-- [ ] **T21. Acceptance sweep.** Re-check every box in spec.md §6 against
-      what's built; `make ci` green.
+- [x] **T21. Acceptance sweep.** Re-checked every box in spec.md §6:
+      8 of 9 checked off; the 9th ("an unverified or under-18 user cannot
+      publish anything") is half-satisfiable today — under-18 is fully
+      blocked at sign-up (tested) — and half deferred, since there's no
+      publish feature yet to test the "unverified" half against (spec 003).
+      Closed two gaps the sweep found: no test exercised Apple sign-in
+      specifically (only Google/Facebook), and the data export was missing
+      business invitations and staff_role. `make ci` green (256 tests).
