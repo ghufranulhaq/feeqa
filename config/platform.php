@@ -76,7 +76,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'signing' => [
-        'keys_path' => env('SIGNING_KEYS_PATH', storage_path('app/signing')),
+        'keys_path' => env('SIGNING_KEYS_PATH', storage_path('app/signing/keys.json')),
         'active_kid' => env('SIGNING_ACTIVE_KID'),
     ],
 
