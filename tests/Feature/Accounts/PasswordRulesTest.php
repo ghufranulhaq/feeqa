@@ -16,6 +16,7 @@ function registerWith(string $password): TestResponse
         'email' => 'jordan-'.uniqid().'@example.com',
         'password' => $password,
         'password_confirmation' => $password,
+        'over_18' => true,
     ]);
 }
 

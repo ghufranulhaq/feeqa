@@ -5,6 +5,7 @@ import { FormEventHandler } from 'react';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
@@ -14,6 +15,7 @@ interface RegisterForm {
     email: string;
     password: string;
     password_confirmation: string;
+    over_18: boolean;
 }
 
 export default function Register() {
@@ -22,6 +24,7 @@ export default function Register() {
         email: '',
         password: '',
         password_confirmation: '',
+        over_18: false,
     });
 
     const submit: FormEventHandler = (e) => {
@@ -37,18 +40,20 @@ export default function Register() {
             <form className="flex flex-col gap-6" onSubmit={submit}>
                 <div className="grid gap-6">
                     <div className="grid gap-2">
-                        <Label htmlFor="name">Name</Label>
+                        <Label htmlFor="name">Display name</Label>
                         <Input
                             id="name"
                             type="text"
                             required
                             autoFocus
                             tabIndex={1}
-                            autoComplete="name"
+                            autoComplete="nickname"
+                            minLength={2}
+                            maxLength={40}
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
                             disabled={processing}
-                            placeholder="Full name"
+                            placeholder="What other reviewers will see"
                         />
                         <InputError message={errors.name} className="mt-2" />
                     </div>
@@ -101,7 +106,23 @@ export default function Register() {
                         <InputError message={errors.password_confirmation} />
                     </div>
 
-                    <Button type="submit" className="mt-2 w-full" tabIndex={5} disabled={processing}>
+                    <div className="grid gap-2">
+                        <div className="flex items-start space-x-3">
+                            <Checkbox
+                                id="over_18"
+                                name="over_18"
+                                tabIndex={5}
+                                checked={data.over_18}
+                                onCheckedChange={(checked) => setData('over_18', checked === true)}
+                            />
+                            <Label htmlFor="over_18" className="font-normal">
+                                I confirm that I am 18 years of age or older
+                            </Label>
+                        </div>
+                        <InputError message={errors.over_18} />
+                    </div>
+
+                    <Button type="submit" className="mt-2 w-full" tabIndex={6} disabled={processing}>
                         {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
                         Create account
                     </Button>
@@ -109,7 +130,7 @@ export default function Register() {
 
                 <div className="text-muted-foreground text-center text-sm">
                     Already have an account?{' '}
-                    <TextLink href={route('login')} tabIndex={6}>
+                    <TextLink href={route('login')} tabIndex={7}>
                         Log in
                     </TextLink>
                 </div>
