@@ -27,6 +27,11 @@ export default defineConfig({
         // (needed for Docker port publishing), but the browser on the host
         // must be told to reach it at localhost, not 0.0.0.0.
         origin: 'http://localhost:5173',
+        // Vite's default CORS allow-list only covers its own host:port. The
+        // app itself is served by Caddy on http://localhost (port 80), a
+        // different origin, so module scripts fetched from :5173 need it
+        // reflected explicitly or every browser blocks them as cross-origin.
+        cors: true,
         hmr: {
             host: 'localhost',
         },
