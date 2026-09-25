@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\Concerns\EnforcesRateLimits;
 use App\Models\PasswordlessCode;
 use App\Models\User;
 use App\Notifications\PasswordlessSignInNotification;
@@ -10,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -21,6 +23,8 @@ use Inertia\Response;
  */
 class PasswordlessLoginController extends Controller
 {
+    use EnforcesRateLimits;
+
     public function create(): Response
     {
         return Inertia::render('auth/passwordless-request');
@@ -45,6 +49,9 @@ class PasswordlessLoginController extends Controller
         ]);
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function verify(Request $request): RedirectResponse
     {
         $request->validate([
@@ -52,14 +59,23 @@ class PasswordlessLoginController extends Controller
             'code' => ['required', 'string'],
         ]);
 
+        $email = strtolower($request->string('email')->toString());
+
+        // FR-001-17: independent per-account and per-IP counters (5 / 15 min).
+        $this->ensureNotRateLimited('passwordless-code', $email, 'code');
+
         $match = PasswordlessCode::usable()
-            ->where('email', strtolower($request->string('email')->toString()))
+            ->where('email', $email)
             ->where('code', $request->string('code')->toString())
             ->first();
 
         if (! $match) {
+            $this->hitRateLimit('passwordless-code', $email);
+
             return back()->withErrors(['code' => 'That code is invalid or has expired.'])->withInput();
         }
+
+        $this->clearRateLimit('passwordless-code', $email);
 
         return $this->signInOrHandOff($match);
     }

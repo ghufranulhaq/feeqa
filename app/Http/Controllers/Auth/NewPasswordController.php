@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\Concerns\EnforcesRateLimits;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,6 +17,8 @@ use Inertia\Response;
 
 class NewPasswordController extends Controller
 {
+    use EnforcesRateLimits;
+
     /**
      * Show the password reset page.
      */
@@ -40,6 +43,11 @@ class NewPasswordController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        $email = $request->string('email')->toString();
+
+        // FR-001-17: independent per-account and per-IP counters (5 / 15 min).
+        $this->ensureNotRateLimited('password-reset-confirm', $email);
+
         // Here we will attempt to reset the user's password. If it is successful we
         // will update the password on an actual user model and persist it to the
         // database. Otherwise we will parse the error and return the response.
@@ -59,8 +67,12 @@ class NewPasswordController extends Controller
         // the application's home authenticated view. If there is an error we can
         // redirect them back to where they came from with their error message.
         if ($status == Password::PasswordReset) {
+            $this->clearRateLimit('password-reset-confirm', $email);
+
             return to_route('login')->with('status', __($status));
         }
+
+        $this->hitRateLimit('password-reset-confirm', $email);
 
         throw ValidationException::withMessages([
             'email' => [__($status)],
