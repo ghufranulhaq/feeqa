@@ -31,7 +31,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
         gnupg \
     && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
-    && docker-php-ext-install -j"$(nproc)" pdo_pgsql pgsql intl sodium gd zip \
+    && docker-php-ext-install -j"$(nproc)" pdo_pgsql pgsql intl sodium gd zip sockets \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY docker/php.ini /usr/local/etc/php/conf.d/99-platform.ini
@@ -49,7 +49,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
 # ---------------------------------------------------------------------------
 FROM node-base AS dev
 
-RUN pecl install xdebug && docker-php-ext-enable xdebug
+RUN pecl channel-update pecl.php.net && pecl install xdebug && docker-php-ext-enable xdebug
 
 COPY docker/xdebug.ini /usr/local/etc/php/conf.d/99-xdebug.ini
 

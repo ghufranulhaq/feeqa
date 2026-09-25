@@ -4,6 +4,15 @@
 
 COMPOSE := docker compose
 
+# Overrides for anything that must differ from the container's real .env
+# during tests. Passed at the `exec` level, not left to phpunit.xml's
+# <env force="true">: the container's env_file already sets these as real
+# process environment variables, which PHP's CLI SAPI copies into $_SERVER —
+# and PHPUnit's env-forcing only touches getenv()/putenv()/$_ENV, never
+# $_SERVER, so a stale $_SERVER value wins unless overridden here too.
+TEST_ENV := -e APP_ENV=testing -e DB_DATABASE=feeqa_test -e CACHE_STORE=array \
+            -e SESSION_DRIVER=array -e QUEUE_CONNECTION=sync -e MAIL_MAILER=array
+
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
 
@@ -36,13 +45,13 @@ fresh: ## Drop all tables and re-run migrations (local only — asks to confirm)
 	$(COMPOSE) exec app php artisan migrate:fresh
 
 test: ## Run the Pest test suite
-	$(COMPOSE) exec app php artisan test
+	$(COMPOSE) exec $(TEST_ENV) app ./vendor/bin/pest
 
 test-filter: ## Run tests matching a filter: make test-filter F=SomeTest
-	$(COMPOSE) exec app php artisan test --filter=$(F)
+	$(COMPOSE) exec $(TEST_ENV) app ./vendor/bin/pest --filter=$(F)
 
 test-browser: ## Run Playwright-backed browser/accessibility tests
-	$(COMPOSE) exec app php artisan test --group=browser
+	$(COMPOSE) exec $(TEST_ENV) app ./vendor/bin/pest --group=browser
 
 ci: lint stan test ## Everything the pre-push hook runs
 
