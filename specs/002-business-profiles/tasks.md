@@ -16,7 +16,7 @@ spec owns and extends it.
       Hospitality, Public & Non-profit, "Other / Uncategorised") plus the
       Travel sub-tree and the two `launched = false` sub-categories from
       `travel-content.md`. FR-002-18, FR-002-29.
-- [ ] **T2. Business schema extension.** Extend `businesses`: slug
+- [x] **T2. Business schema extension.** Extend `businesses`: slug
       (unique), primary_domain, additional_domains (json), country, status
       enum (`unclaimed/pending/claimed/suspended/closed`), claimed_at,
       description, website, email, phone, address (json), social_links

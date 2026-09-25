@@ -4,12 +4,21 @@ namespace App\Models;
 
 use App\Domain\Businesses\BusinessPermission;
 use App\Domain\Businesses\BusinessRole;
+use App\Domain\Businesses\BusinessStatus;
+use App\Domain\Businesses\EmployeeSizeBand;
+use Database\Factories\BusinessFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
- * Minimal stand-in (spec 001 T14) — just enough for business
- * memberships/roles to point at. Spec 002 owns and extends this model.
+ * FR-002-01: a business listing, claimed or not. Spec 001 T14 added a
+ * minimal stand-in (id, name) just so business memberships/roles had
+ * something to point at — this is spec 002's model, owning everything
+ * else about a profile.
  *
  * The role/permission lookups below query model_has_roles directly rather
  * than going through Spatie's ambient "current team" state (plan D7's
@@ -20,7 +29,95 @@ use Illuminate\Support\Facades\DB;
  */
 class Business extends Model
 {
-    protected $fillable = ['name'];
+    /** @use HasFactory<BusinessFactory> */
+    use HasFactory;
+
+    /**
+     * Mirrors the DB-level defaults so a freshly-created instance already
+     * reflects them without a round-trip (the DB defaults still apply to
+     * any insert that bypasses Eloquent).
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'status' => 'unclaimed',
+        'employee_size_band' => 'unknown',
+    ];
+
+    protected $fillable = [
+        'name',
+        'slug',
+        'primary_domain',
+        'additional_domains',
+        'country',
+        'status',
+        'claimed_at',
+        'description',
+        'website',
+        'email',
+        'phone',
+        'address',
+        'social_links',
+        'logo_path',
+        'primary_category_id',
+        'employee_size_band',
+        'data_source',
+        'import_batch',
+    ];
+
+    protected static function booted(): void
+    {
+        // Every business needs a unique slug (FR-002-01). Tests and
+        // internal callers routinely create a Business with just a name
+        // (e.g. spec 001's membership tests) — this keeps that working
+        // without every caller having to compute one.
+        static::creating(function (Business $business): void {
+            $business->slug ??= self::uniqueSlugFor($business->name);
+        });
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'additional_domains' => 'array',
+            'address' => 'array',
+            'social_links' => 'array',
+            'status' => BusinessStatus::class,
+            'employee_size_band' => EmployeeSizeBand::class,
+            'claimed_at' => 'datetime',
+        ];
+    }
+
+    public static function uniqueSlugFor(string $name, ?int $excludingId = null): string
+    {
+        $base = Str::slug($name) ?: 'business';
+        $slug = $base;
+        $suffix = 2;
+
+        while (
+            self::where('slug', $slug)
+                ->when($excludingId, fn ($query) => $query->where('id', '!=', $excludingId))
+                ->exists()
+        ) {
+            $slug = "{$base}-{$suffix}";
+            $suffix++;
+        }
+
+        return $slug;
+    }
+
+    public function primaryCategory(): BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'primary_category_id');
+    }
+
+    /**
+     * FR-002-03: up to 5 secondary categories, alongside the primary one.
+     */
+    public function secondaryCategories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'business_categories');
+    }
 
     /**
      * @return list<string>
