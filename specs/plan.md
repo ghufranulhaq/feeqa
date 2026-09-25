@@ -1,8 +1,8 @@
 # Platform Technical Plan (Cross-Cutting)
 
-**Status:** Proposed, awaiting review (revision 6) · **Date:** 2026-09-25
+**Status:** **Approved** (revision 6) · **Date:** 2026-09-25 · Build in progress per §8. Deployment to the demo VPS (§8 step 10) requires separate, explicit client approval after local development and testing are complete.
 **Applies to:** all specs 001–017. Each spec's own `plan.md` builds on this document and may only deviate from it through a recorded decision.
-**Constitution:** v1.5 (demo rules in §5.6, documentation rule in §8 rule 9). Once this plan is approved, the stack (§2) is recorded in [`CONSTITUTION.md` §10](../CONSTITUTION.md).
+**Constitution:** v1.6 (demo rules in §5.6, documentation rule in §8 rule 9, stack approved and recorded in §10).
 **Current focus:** the **client demo**, showing **all features**, at `https://feeqa.appsarray.com`. Production-only items are marked *(production, later)*.
 
 ---
@@ -55,7 +55,7 @@ The Platform is **one Laravel 13 application**, started from Laravel's official 
 | Containers | Docker + Docker Compose: `compose.yaml` (local), **`compose.demo.yaml`** (demo), `compose.prod.yaml` *(production, later)* | D22 |
 | Web server + HTTPS | **Caddy** with automatic **Let's Encrypt** certificates | D25 |
 | Environments | `local`, `testing`, `demo`, `production` | D26 |
-| Demo hosting | **Vultr** shared-CPU VPS (4 vCPU / 8 GB / 160 GB), Ubuntu 24.04, 2 GB swap | D24 |
+| Demo hosting | **Vultr** shared-CPU VPS (4 vCPU / 8 GB / 160 GB), Ubuntu 26.04 LTS, 2 GB swap | D24 |
 | Deployment | `make ci` + git pre-push hook locally. `make deploy-demo`: the VPS pulls from GitHub, builds, and restarts | D23 |
 
 ---
@@ -370,7 +370,7 @@ trust-review-platform/
   - Building on the VPS makes the live demo slower for a few minutes during a deploy, so deploy outside client sessions.
 
 ### D24. Demo hosting: Vultr VPS
-- **Server:** Vultr shared-CPU **vc2-4c-8gb** (4 vCPU, 8 GB RAM, 160 GB SSD), **Ubuntu 24.04 LTS**, London location, **2 GB swap file**.
+- **Server:** Vultr shared-CPU **vc2-4c-8gb** (4 vCPU, 8 GB RAM, 160 GB SSD), **Ubuntu 26.04 LTS**, London location, **2 GB swap file**.
 - **Estimated memory use:**
 
   | Container | Approx. RAM |

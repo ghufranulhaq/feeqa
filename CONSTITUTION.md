@@ -249,7 +249,7 @@ A task, feature, or spec counts as **done** only when **all** of the following a
 
 | Date | Decision | Spec / Plan |
 |------|----------|-------------|
-| _Pending approval_ | Technology stack (language, framework, database, hosting), as proposed in the platform plan. Recorded here once approved. | [`specs/plan.md`](specs/plan.md) |
+| 2026-09-25 | **Technology stack approved** (plan revision 6): PHP 8.4, Laravel 13 from the official React starter kit (Inertia 3, React 19, TypeScript, Tailwind 4, shadcn/ui, Wayfinder, Fortify — no two-factor); PostgreSQL 17 (`pg_trgm` + full-text, no search library); Spatie Laravel Permission (teams mode) + Policies; Laravel AI SDK (`openai-compatible` driver, DeepSeek API in demo, `fake` elsewhere); `database` queue/cache/session drivers; sodium Ed25519 (JWS) for signed attestations; plain TypeScript widget; Pest 4 (incl. Playwright browser/accessibility tests, dev machines only); Laravel Boost (dev only); Docker + Caddy/Let's Encrypt, Vultr VPS demo hosting. Full rationale and trade-offs: [`specs/plan.md`](specs/plan.md) §2, §4. | [`specs/plan.md`](specs/plan.md) |
 | 2026-09-24 | Clients: responsive web only in Phase 1 | Constitution §1 |
 
 ---
@@ -288,3 +288,4 @@ A task, feature, or spec counts as **done** only when **all** of the following a
 | 2026-09-25 | v1.3.1: constitution moved from `CLAUDE.md` to `CONSTITUTION.md` (content unchanged). `CLAUDE.md` imports it so Laravel Boost can manage its own section. |
 | 2026-09-25 | v1.4: §5.6 demo environment added (`APP_ENV=demo` relaxations, their conditions, and the rule that they are impossible in production). Password minimum 6 in demo only. Launch-scope stage row updated. |
 | 2026-09-25 | v1.5: documentation rule added (§8 rule 9, §7): README, user guides (`docs/user-guides/`) and system overview (`docs/system-overview/`) must be updated in the same change as the behaviour they describe. `make docs-check` enforces what it can. |
+| 2026-09-25 | v1.6: technology stack approved and recorded in §10. Build begins (plan §8 demo build order). Deployment to the demo VPS requires the client's explicit approval after local development and testing are complete — no `make deploy-demo` before then. |
