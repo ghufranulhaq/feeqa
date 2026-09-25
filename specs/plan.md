@@ -9,7 +9,7 @@
 
 ## 1. Summary
 
-The Platform is **one Laravel 13 application**, started from Laravel's official **React starter kit**: Inertia 3, React 19, TypeScript, Tailwind 4, shadcn/ui, and Fortify authentication (no two-factor).
+The Platform is **one Laravel 13 application**, started from Laravel's official **React starter kit**: Inertia 3, React 19, TypeScript, Tailwind 4, shadcn/ui, and the kit's own built-in authentication controllers (no Fortify, no two-factor — see D6, corrected 2026-09-25).
 
 - **One app, four areas:** public site, consumer account, business dashboard, and staff console. All are Inertia pages. Public pages are **server-side rendered** (SSR).
 - **PostgreSQL**, with its built-in fuzzy search (no search library).
@@ -36,7 +36,7 @@ The Platform is **one Laravel 13 application**, started from Laravel's official 
 | UI components | **shadcn/ui** (free, Radix-based, copied into `resources/js/components/ui`) | No Metronic, no paid templates |
 | Routing helpers | **Laravel Wayfinder** | Type-safe routes in React; comes with the starter kit |
 | Public page rendering | **Inertia SSR** (Node 22 process) | D3 |
-| Authentication | **Laravel Fortify** (login, register, reset, email verification) + **Laravel Socialite** (Google, Apple, Facebook) | The starter kit's 2FA feature is **removed** (D6) |
+| Authentication | The starter kit's **own built-in controllers** (login, register, reset, email verification) + **Laravel Socialite** (Google, Apple, Facebook) | No Fortify, no two-factor (D6, corrected) |
 | Permissions | **spatie/laravel-permission** (teams mode) + Laravel Policies | D7 |
 | Database | **PostgreSQL 17** with `pg_trgm` and full-text search | No search library (D5) |
 | Queue / cache / sessions | Laravel `database` drivers on PostgreSQL | No Redis (D10) |
@@ -139,7 +139,7 @@ trust-review-platform/
 
 ### D2. One Laravel app from the official React starter kit
 - **Choice:** `laravel new` with the React starter kit (Laravel's built-in authentication, not WorkOS). Every area is an Inertia page in the same app. There is no separate React application.
-- **Why:** the kit already provides Inertia 3, React 19, TypeScript, Tailwind 4, shadcn/ui, Fortify, Wayfinder, and SSR support.
+- **Why:** the kit already provides Inertia 3, React 19, TypeScript, Tailwind 4, shadcn/ui, its own auth controllers, and SSR support. Wayfinder was added separately (it isn't bundled by this kit version).
 - **Trade-off:**
   - The web UI talks to Laravel controllers through Inertia, so the external API (016) is a **separate set of JSON controllers**. Both call the **same Actions**, so no logic is duplicated.
   - We own the starter-kit code, so there are no upstream updates to it.
@@ -175,12 +175,13 @@ trust-review-platform/
 - **Trade-off:** less relevance tuning than a search engine. **Revisit trigger:** autocomplete p95 > 200 ms in load tests. Adding a search library would need your approval.
 
 ### D6. Authentication (no two-factor)
+- **Corrected 2026-09-25:** this revision assumed the React starter kit is built on Fortify and ships two-factor authentication enabled by default. Neither is true for the kit actually installed (`laravel/react-starter-kit`, main branch): it has its own plain Inertia auth controllers (`app/Http/Controllers/Auth/*`) for login, registration, password reset, and email verification, and **no Fortify dependency and no two-factor code exist anywhere in the scaffold** — there is nothing to remove. Fortify was not added, because the kit's built-in controllers already cover FR-001-01/02/04, and adding Fortify on top would just duplicate them. The product outcome (no 2FA) is unchanged.
 - **Choice:**
-  - **Fortify**: registration, login, password reset, email verification. The starter kit enables two-factor by default, so we **remove `Features::twoFactorAuthentication()`** and its pages, routes, and database columns.
+  - **The starter kit's own controllers**: registration, login, password reset, email verification — used as scaffolded, extended only where spec 001 needs more (e.g. `Password::uncompromised()`, environment-driven minimum length).
   - **Socialite** (+ the Apple provider package): Google/Apple/Facebook buttons appear only when their keys are set in `.env`. They're left empty in the demo unless you add keys.
   - **Passwordless email codes**: a small custom action.
   - **Password rules:** minimum **12** characters in production, **6 in demo** (constitution §5.6). The minimum is read from the environment rules (D26), not from a free-standing `.env` number, so production can't be set lower by mistake. Breached-password check through `Password::uncompromised()` (a free public API), which can be switched off for offline development.
-- **Trade-off:** without two-factor, a stolen password gives full account access. We reduce the risk with login rate limiting and lockout (FR-001-17), breached-password checks, session listing and revocation (FR-001-16), the production staff IP allow-list, and 12-hour staff sessions. Two-factor can be switched back on later through Fortify's config.
+- **Trade-off:** without two-factor, a stolen password gives full account access. We reduce the risk with login rate limiting and lockout (FR-001-17), breached-password checks, session listing and revocation (FR-001-16), the production staff IP allow-list, and 12-hour staff sessions. Two-factor could be added later (e.g. via Fortify or a custom TOTP flow) if the client wants it.
 
 ### D7. Permissions: Spatie Laravel Permission (teams mode) + Policies
 - **Choice:**
@@ -577,7 +578,7 @@ Shared steps (e.g., logging in, resetting a password) live in `docs/user-guides/
 
 ## 6. Dependencies
 
-**Composer (production):** `laravel/framework` 13, `inertiajs/inertia-laravel`, `laravel/fortify`, `laravel/wayfinder`, `laravel/socialite` + `socialiteproviders/apple`, `spatie/laravel-permission`, `laravel/ai`, `laravel/sanctum`, `laravel/cashier` *(used only when `BILLING_DRIVER=stripe`)*.
+**Composer (production):** `laravel/framework` 13, `inertiajs/inertia-laravel`, `laravel/socialite` + `socialiteproviders/apple`, `spatie/laravel-permission`, `laravel/ai`, `laravel/sanctum`, `laravel/cashier` *(used only when `BILLING_DRIVER=stripe`)*. `laravel/wayfinder` is dev-only (it generates TypeScript at build time; nothing from it ships at runtime).
 
 **Composer (dev):** `pestphp/pest` 4 + `pest-plugin-laravel` + `pest-plugin-browser`, `laravel/boost`, `laravel/pint`, `larastan/larastan`, `league/openapi-psr7-validator`.
 
@@ -587,7 +588,7 @@ Shared steps (e.g., logging in, resetting a password) live in `docs/user-guides/
 
 **Container images (demo):** `caddy`, `postgres:17`, `axllent/mailpit`, and our own image (PHP 8.4 / Node 22 build stages).
 
-**Not used:** GitHub Actions or any CI service, paid services, Metronic, activity-log packages, an append-only event store, a search library, Redis, Pennant, two-factor authentication, a separate React SPA, Next.js, ClamAV (in demo), a payment gateway (in demo), a certificate-check job (in demo).
+**Not used:** GitHub Actions or any CI service, paid services, Metronic, activity-log packages, an append-only event store, a search library, Redis, Pennant, Fortify, two-factor authentication, a separate React SPA, Next.js, ClamAV (in demo), a payment gateway (in demo), a certificate-check job (in demo).
 
 ---
 
@@ -611,7 +612,7 @@ Shared steps (e.g., logging in, resetting a password) live in `docs/user-guides/
 
 ## 8. Demo Build Order (all features)
 
-1. **Foundation:** starter kit (2FA removed), Docker + `compose.yaml` / `compose.demo.yaml`, Makefile, git hook, `Environment` guard, all drivers with `fake` implementations, test setup, Boost.
+1. **Foundation:** starter kit (no Fortify, no 2FA — see D6), Docker + `compose.yaml` / `compose.demo.yaml`, Makefile, git hook, `Environment` guard, all drivers with `fake` implementations, test setup, Boost.
 2. **001** Accounts & roles → **002** Businesses & industries (base seeders).
 3. **003** Reviews → **006** Moderation (screening, flags, staff console).
 4. **008** Review Score & Trust Index → **009** Search & compare.
