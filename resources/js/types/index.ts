@@ -33,7 +33,11 @@ export interface User {
     name: string;
     email: string;
     avatar?: string;
+    avatar_path: string | null;
+    country: string | null;
+    locale: string;
     email_verified_at: string | null;
+    date_of_birth_confirmed_at: string | null;
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...

@@ -92,4 +92,16 @@ return [
         'check_breached_passwords' => env('PASSWORD_CHECK_BREACHED', true),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Locales (constitution §5.5, FR-001-05, FR-001-08)
+    |--------------------------------------------------------------------------
+    | Launch locale is en-GB only. Adding a locale is a config change, not a
+    | code change — the architecture must not need code changes to add one.
+    */
+    'locales' => [
+        'default' => 'en-GB',
+        'supported' => ['en-GB'],
+    ],
+
 ];

@@ -9,6 +9,7 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 
@@ -19,12 +20,19 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: boolean; status?: string }) {
+interface ProfileProps {
+    mustVerifyEmail: boolean;
+    status?: string;
+    countries: Record<string, string>;
+}
+
+export default function Profile({ mustVerifyEmail, status, countries }: ProfileProps) {
     const { auth } = usePage<SharedData>().props;
 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
         name: auth.user.name,
         email: auth.user.email,
+        country: auth.user.country ?? '',
     });
 
     const submit: FormEventHandler = (e) => {
@@ -73,6 +81,25 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                             />
 
                             <InputError className="mt-2" message={errors.email} />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="country">Country</Label>
+
+                            <Select value={data.country} onValueChange={(value) => setData('country', value)}>
+                                <SelectTrigger id="country" className="mt-1 w-full">
+                                    <SelectValue placeholder="Select your country" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {Object.entries(countries).map(([code, name]) => (
+                                        <SelectItem key={code} value={code}>
+                                            {name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+
+                            <InputError className="mt-2" message={errors.country} />
                         </div>
 
                         {mustVerifyEmail && auth.user.email_verified_at === null && (
