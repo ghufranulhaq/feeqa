@@ -54,9 +54,8 @@ an experience (spec 004) — those stay private.
 Every sign-in creates a session, visible and revocable individually from
 Settings → Sessions — each one shows roughly what device/browser it's on
 and when it was last active. A session that sits idle for 30 days signs
-itself out automatically. (Staff accounts, once spec 001's remaining
-staff-console work lands, get a much shorter 12-hour idle limit instead —
-see the spec's own task list for what's built so far.)
+itself out automatically — staff accounts (below) get a much shorter
+12-hour idle limit instead.
 
 Sign-in, the passwordless code, and password reset are all limited to 5
 failed attempts in 15 minutes, tracked both per account and per network
@@ -112,8 +111,22 @@ In production, the staff endpoints are only reachable from an IP allow-list
 (`STAFF_ALLOWED_IPS`); everywhere else — including the demo — any network
 can reach them, per constitution §5.6.
 
+## Your data
+
+**Settings → Profile → Download my data** gets you everything the platform
+holds about you — profile, consents, sessions, business memberships,
+linked sign-in providers, your photo — as a JSON file plus your photo in a
+ZIP archive, emailed as a download link within seconds (spec says "within
+24 hours"; a second request inside 24 hours of the first just returns
+that one instead of starting over). The link works for 7 days.
+
+**Settings → Profile → Delete account** hides your public profile
+immediately and schedules your personal data to be permanently erased or
+anonymised within 30 days; you're signed out everywhere right away and get
+a confirmation email. There's no undo once the 30 days are up.
+
 ## What's not built yet
 
-This page will grow as the rest of spec 001 lands: the staff console UI,
-and the data export/account-deletion tools. Check the spec's `tasks.md`
-for exactly what's done.
+This page will grow as later specs add their own personal data to the
+export, and as the staff console gets a real UI. Everything spec 001
+itself describes is built — check the spec's `tasks.md` for the detail.

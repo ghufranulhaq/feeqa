@@ -67,21 +67,21 @@ memberships have something to point at; spec 002 owns and extends it.
       `Business::hasMembership(User $user): bool`, tested in
       `BusinessPermissionMatrixTest`. FR-001-13 (unit-level only — review
       submission is spec 003).
-- [ ] **T17. Staff accounts.** Staff roles (Moderator, Senior Moderator,
+- [x] **T17. Staff accounts.** Staff roles (Moderator, Senior Moderator,
       Mediator, Support, Admin) as global Spatie roles; creation restricted
       to staff Admin; `StaffIpAllowList` middleware using
       `Environment::staffIpAllowlistEnforced()`; `compliance_log` table with
       an entry written when a staff account is created. FR-001-14, FR-001-15.
-- [ ] **T18. Data export.** An `ExportsUserData` collector interface plus an
+- [x] **T18. Data export.** An `ExportsUserData` collector interface plus an
       `Actions\Account\ExportUserData` action producing a JSON archive
       (media as files) via a queued job, a 7-day-expiring signed download
       link, delivered within 24h, and de-duplication of a second request
       inside 24h. FR-001-19, edge case.
-- [ ] **T19. Account deletion.** Hide public content immediately (no-op
+- [x] **T19. Account deletion.** Hide public content immediately (no-op
       today — nothing public exists until spec 003), a `deletion_requested_at`
       flag, a scheduled command that erases/pseudonymises after 30 days,
       confirmation email. FR-001-20.
-- [ ] **T20. Docs pass.** README, `docs/user-guides/`, `docs/system-overview/`
+- [x] **T20. Docs pass.** README, `docs/user-guides/`, `docs/system-overview/`
       updated for everything above (constitution §8 rule 9); `make
       docs-check` passes.
 - [ ] **T21. Acceptance sweep.** Re-check every box in spec.md §6 against
