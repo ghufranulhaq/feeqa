@@ -88,10 +88,14 @@ ever applies to one business at a time:
 
 A business always keeps at least one Owner — the platform refuses to
 demote or remove the last one. An Admin can add, remove, or change the role
-of anyone except an Owner. There's no business dashboard UI yet (that's
-spec 002 and later); this is the permission engine underneath it, so a
-business user-guide isn't written yet either — the consumer guide above is
-everything currently reachable through the UI.
+of anyone except an Owner. Invitations (an Owner or Admin invites someone
+by email and role) work end to end — the invitee gets an email, and
+accepting it grants exactly the role they were invited as — but there's no
+business dashboard UI yet to send one from (that's spec 002 and later); the
+`/business/{business}/invitations` endpoint is real and usable today, just
+not linked from anywhere in the UI. A business user-guide isn't written yet
+either — the consumer guide above is everything currently reachable through
+the UI.
 
 ## What's not built yet
 
