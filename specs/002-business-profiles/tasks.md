@@ -5,7 +5,7 @@ one starts (constitution §2, §8). Task order follows dependency, not FR
 number. Spec 001 left a minimal `businesses` stand-in (id, name) — this
 spec owns and extends it.
 
-- [ ] **T1. Industries & categories schema.** `categories` table (id,
+- [x] **T1. Industries & categories schema.** `categories` table (id,
       parent_id, slug, name, `launched` bool for pre-existing leaf-category
       behaviour, `state` enum `draft/launched/paused` for the top-level
       industry lifecycle, `icon`, timestamps). Self-referencing tree, max 3
