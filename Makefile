@@ -55,7 +55,7 @@ test-filter: ## Run tests matching a filter: make test-filter F=SomeTest
 test-browser: ## Run Playwright-backed browser/accessibility tests
 	$(COMPOSE) exec $(TEST_ENV) app ./vendor/bin/pest --group=browser
 
-ci: lint stan test ## Everything the pre-push hook runs
+ci: lint stan test docs-check ## Everything the pre-push hook runs
 
 lint: ## Pint (PHP) + ESLint/Prettier (JS/TS) + tsc
 	$(COMPOSE) exec app ./vendor/bin/pint --test
