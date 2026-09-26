@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Staff;
 use App\Actions\Staff\CreateCategory;
 use App\Actions\Staff\LaunchIndustry;
 use App\Actions\Staff\PauseIndustry;
+use App\Actions\Staff\PreviewIndustry;
 use App\Actions\Staff\SetCategoryLaunched;
 use App\Actions\Staff\UpdateCategoryDetails;
 use App\Http\Controllers\Controller;
@@ -50,9 +51,16 @@ class CategoryController extends Controller
 
     public function launch(Request $request, Category $industry, LaunchIndustry $action): RedirectResponse
     {
-        $action->handle($industry, $request->user());
+        $validated = $request->validate(['acknowledge_warnings' => ['sometimes', 'boolean']]);
+
+        $action->handle($industry, $request->user(), $validated['acknowledge_warnings'] ?? false);
 
         return back()->with('status', 'Industry launched.');
+    }
+
+    public function preview(Request $request, Category $industry, PreviewIndustry $action): array
+    {
+        return $action->handle($industry, $request->user());
     }
 
     public function pause(Request $request, Category $industry, PauseIndustry $action): RedirectResponse

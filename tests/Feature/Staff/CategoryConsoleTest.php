@@ -1,12 +1,14 @@
 <?php
 
 use App\Actions\Staff\CreateCategory;
+use App\Actions\Staff\EvaluateIndustryReadiness;
 use App\Actions\Staff\LaunchIndustry;
 use App\Actions\Staff\PauseIndustry;
 use App\Actions\Staff\SetCategoryLaunched;
 use App\Actions\Staff\UpdateCategoryDetails;
 use App\Domain\Businesses\CategoryState;
 use App\Domain\Staff\StaffRole;
+use App\Models\Business;
 use App\Models\Category;
 use App\Models\ComplianceLogEntry;
 use App\Models\User;
@@ -19,6 +21,22 @@ function categoryStaff(StaffRole $role): User
     $user->forceFill(['staff_role' => $role->value])->save();
 
     return $user;
+}
+
+/**
+ * An industry that clears every FR-002-31 blocking item: a localised
+ * name for every supported locale, an icon, and at least one sub-category.
+ */
+function readyIndustry(array $attributes = []): Category
+{
+    $industry = Category::factory()->create([
+        'parent_id' => null,
+        'icon' => 'plane',
+        ...$attributes,
+    ]);
+    Category::factory()->create(['parent_id' => $industry->id]);
+
+    return $industry;
 }
 
 // --- CreateCategory -------------------------------------------------
@@ -86,11 +104,11 @@ it('rejects a plain Moderator editing a category', function () {
 
 // --- LaunchIndustry / PauseIndustry ----------------------------------
 
-it('launches a draft industry and logs it (FR-002-30)', function () {
+it('launches a ready draft industry and logs it (FR-002-30)', function () {
     $admin = categoryStaff(StaffRole::Admin);
-    $industry = Category::factory()->create(['parent_id' => null, 'state' => 'draft', 'launched' => false]);
+    $industry = readyIndustry(['state' => 'draft', 'launched' => false]);
 
-    (new LaunchIndustry)->handle($industry, $admin);
+    app(LaunchIndustry::class)->handle($industry, $admin, acknowledgeWarnings: true);
 
     expect($industry->fresh()->state)->toBe(CategoryState::Launched)
         ->and($industry->fresh()->launched)->toBeTrue();
@@ -99,7 +117,7 @@ it('launches a draft industry and logs it (FR-002-30)', function () {
 
 it('pauses a launched industry: hidden from navigation, nothing about businesses changes (FR-002-30)', function () {
     $admin = categoryStaff(StaffRole::Admin);
-    $industry = Category::factory()->create(['parent_id' => null, 'state' => 'launched', 'launched' => true]);
+    $industry = readyIndustry(['state' => 'launched', 'launched' => true]);
 
     (new PauseIndustry)->handle($industry, $admin);
 
@@ -110,18 +128,18 @@ it('pauses a launched industry: hidden from navigation, nothing about businesses
 
 it('relaunches a paused industry', function () {
     $admin = categoryStaff(StaffRole::Admin);
-    $industry = Category::factory()->create(['parent_id' => null, 'state' => 'paused', 'launched' => false]);
+    $industry = readyIndustry(['state' => 'paused', 'launched' => false]);
 
-    (new LaunchIndustry)->handle($industry, $admin);
+    app(LaunchIndustry::class)->handle($industry, $admin, acknowledgeWarnings: true);
 
     expect($industry->fresh()->state)->toBe(CategoryState::Launched);
 });
 
 it('rejects launching an already-launched industry', function () {
     $admin = categoryStaff(StaffRole::Admin);
-    $industry = Category::factory()->create(['parent_id' => null, 'state' => 'launched', 'launched' => true]);
+    $industry = readyIndustry(['state' => 'launched', 'launched' => true]);
 
-    (new LaunchIndustry)->handle($industry, $admin);
+    app(LaunchIndustry::class)->handle($industry, $admin, acknowledgeWarnings: true);
 })->throws(ValidationException::class);
 
 it('rejects treating a non-industry category as if it had the industry lifecycle', function () {
@@ -129,8 +147,46 @@ it('rejects treating a non-industry category as if it had the industry lifecycle
     $parent = Category::factory()->create(['parent_id' => null]);
     $leaf = Category::factory()->create(['parent_id' => $parent->id]);
 
-    (new LaunchIndustry)->handle($leaf, $admin);
+    app(LaunchIndustry::class)->handle($leaf, $admin, acknowledgeWarnings: true);
 })->throws(ValidationException::class);
+
+// --- FR-002-31 readiness checklist ------------------------------------
+
+it('rejects launching with a blocking item missing, listing what\'s missing', function () {
+    $admin = categoryStaff(StaffRole::Admin);
+    // No icon, no sub-category — two blocking items.
+    $industry = Category::factory()->create(['parent_id' => null, 'icon' => null]);
+
+    try {
+        app(LaunchIndustry::class)->handle($industry, $admin, acknowledgeWarnings: true);
+        expect(false)->toBeTrue('Expected a ValidationException.');
+    } catch (ValidationException $e) {
+        $missing = $e->errors()['checklist'];
+        expect($missing)->toContain('Missing an icon.')
+            ->and($missing)->toContain('Needs at least one sub-category.');
+    }
+
+    expect($industry->fresh()->state)->not->toBe(CategoryState::Launched);
+});
+
+it('rejects launching without acknowledging the warnings, even when nothing is blocking', function () {
+    $admin = categoryStaff(StaffRole::Admin);
+    $industry = readyIndustry();
+
+    app(LaunchIndustry::class)->handle($industry, $admin, acknowledgeWarnings: false);
+})->throws(ValidationException::class);
+
+it('evaluates the warning-only items with their current values (FR-002-31)', function () {
+    $industry = readyIndustry();
+    Business::factory()->count(2)->create(['primary_category_id' => $industry->id]);
+
+    $checklist = app(EvaluateIndustryReadiness::class)->handle($industry);
+
+    expect($checklist->isBlocked())->toBeFalse()
+        ->and($checklist->warnings)->toContain('Question set: none — reviewers will get the generic form.')
+        ->and($checklist->warnings)->toContain('Businesses listed: 2.')
+        ->and($checklist->warnings)->toContain('Industry benchmark: not enough businesses yet (spec 015).');
+});
 
 // --- SetCategoryLaunched ----------------------------------------------
 
@@ -148,11 +204,11 @@ it('lets an Admin launch a plain sub-category', function () {
 
 it('reflects a state change in the navigation scope immediately, no cache to wait out', function () {
     $admin = categoryStaff(StaffRole::Admin);
-    $industry = Category::factory()->create(['parent_id' => null, 'state' => 'draft', 'launched' => false]);
+    $industry = readyIndustry(['state' => 'draft', 'launched' => false]);
 
     expect(Category::visibleInNavigation()->find($industry->id))->toBeNull();
 
-    (new LaunchIndustry)->handle($industry, $admin);
+    app(LaunchIndustry::class)->handle($industry, $admin, acknowledgeWarnings: true);
 
     expect(Category::visibleInNavigation()->find($industry->id))->not->toBeNull();
 });

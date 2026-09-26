@@ -36,9 +36,21 @@ caches categories yet) immediately — well inside the FR-002-28 5-minute
 budget. Pausing or launching an industry never touches any Business's
 data, and every launch/pause is written to the compliance log (the public
 Transparency Center changelog itself is spec 006). There's no staff
-console UI for any of this yet, nor the FR-002-31 readiness checklist
-that will gate launching — every endpoint under `/staff/categories/...`
-is real and usable today, just not linked from anywhere or checklist-gated.
+console UI for any of this yet — every endpoint under
+`/staff/categories/...` is real and usable today, just not linked from
+anywhere.
+
+Launching is gated by a readiness checklist (FR-002-31): missing an icon,
+a localised name for every supported locale, or at least one
+sub-category **blocks** the launch outright, listing what's missing.
+Beyond that, staff always see (and must acknowledge, whatever they say)
+five warning-only lines — whether a question set exists yet, that the
+topic list and default invitation delay aren't built yet (specs 011 and
+005), how many businesses are listed, and whether there are enough of
+them for a reliable benchmark (spec 015). Staff can also **preview** an
+industry before launching (FR-002-32) — its navigation entry, category
+page, and review-form questions; the ranking preview is honestly `null`
+until spec 009's search exists.
 
 ### Question sets
 
@@ -147,6 +159,5 @@ for now, same as the main profile.
 
 No question sets are attached to a review form yet, and there's no
 console UI anywhere for staff — for industries/categories, for the
-profile-change/claim queues above, or for the FR-002-31 readiness
-checklist and preview that will gate launching an industry. All of that
-is still on spec 002's `tasks.md`.
+profile-change/claim queues above, or for anything else in this
+document. All of that is still on spec 002's `tasks.md`.

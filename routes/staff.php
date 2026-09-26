@@ -29,4 +29,6 @@ Route::middleware(['auth', StaffIpAllowList::class])->prefix('staff')->group(fun
     Route::post('categories/{industry}/launch', [CategoryController::class, 'launch'])->name('staff.categories.launch');
     Route::post('categories/{industry}/pause', [CategoryController::class, 'pause'])->name('staff.categories.pause');
     Route::post('categories/{category}/set-launched', [CategoryController::class, 'setLaunched'])->name('staff.categories.set-launched');
+    // FR-002-32.
+    Route::get('categories/{industry}/preview', [CategoryController::class, 'preview'])->name('staff.categories.preview');
 });

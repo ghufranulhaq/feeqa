@@ -77,7 +77,7 @@ spec owns and extends it.
       Transparency Center changelog (006 — write the compliance_log entry
       now, the public changelog page lands with 006). FR-002-28,
       FR-002-30, FR-002-33.
-- [ ] **T10. Readiness checklist + preview.** Blocking items (slug +
+- [x] **T10. Readiness checklist + preview.** Blocking items (slug +
       localised name for every active locale, icon, ≥ 1 sub-category) and
       warning-only items (question set, topic list, invitation delay,
       business count, benchmark feasibility) gate the `launched`
