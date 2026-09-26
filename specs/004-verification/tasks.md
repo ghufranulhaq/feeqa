@@ -81,7 +81,7 @@ wires them up rather than creating them.
       console — same relationship as 003's screening-hold state waiting on
       006's moderation UI. FR-004-08, edge case (staff can't approve their
       own review's proof).
-- [ ] **T6. Reference matching.** `SubmitTransactionRecords` action/endpoint
+- [x] **T6. Reference matching.** `SubmitTransactionRecords` action/endpoint
       under the business dashboard (`business/{business}/transaction-records`,
       `auth`+`SetPermissionTeam`): rejects plaintext emails (400), enforces
       the 10,000-per-request / 1M-per-day limits, upserts by reference
