@@ -83,6 +83,8 @@ class Business extends Model
         'data_source',
         'import_batch',
         'restricted_features',
+        'consumer_warning_at',
+        'consumer_warning_reason',
     ];
 
     protected static function booted(): void
@@ -111,6 +113,7 @@ class Business extends Model
             'claimed_at' => 'datetime',
             'closed_at' => 'datetime',
             'restricted_features' => 'array',
+            'consumer_warning_at' => 'datetime',
         ];
     }
 
@@ -172,6 +175,16 @@ class Business extends Model
     public function hasFeatureRestricted(RestrictableFeature $feature): bool
     {
         return in_array($feature->value, $this->restricted_features ?? [], true);
+    }
+
+    /**
+     * FR-006-16: "Review Score and Trust Index hidden" for the duration of
+     * a Consumer Warning. A hook for 008/009 to read once they exist, same
+     * forward-hook shape as {@see RecalculateBusinessScore}.
+     */
+    public function trustSignalsHidden(): bool
+    {
+        return $this->consumer_warning_at !== null;
     }
 
     public static function uniqueSlugFor(string $name, ?int $excludingId = null): string

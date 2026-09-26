@@ -191,25 +191,55 @@ guessed at for content that isn't there yet.
       FR-006-12, FR-006-13, edge cases (conflict of interest, unauthorized
       Responder queue access — reuses existing business-role authorization,
       nothing new to add there).
-- [ ] **T6. Enforcement ladder and Consumer Warning.** `EnforcementStep`
-      value object/enum for both ladders (FR-006-14, FR-006-15).
-      `enforcement_actions` table (subject_type/id — business or user,
-      step, reason_code, applied_by, applied_at, expires_at nullable,
-      lifted_by/at nullable, lift_reason nullable, senior_approved_by
-      nullable — required to skip a step, timestamps). `ApplyEnforcementStep`
-      action: records the step, and for step 5 (Consumer Warning) sets a
-      new `Business.consumer_warning_at` + `consumer_warning_reason`,
-      forces `status = Suspended`-equivalent score hiding (Review Score and
-      Trust Index hidden — a `Business::trustSignalsHidden(): bool`
-      accessor 008/009 will read once they exist, same forward-hook shape
-      as `RecalculateBusinessScore`), suspends paid features (reuses 002's
-      existing plan/status machinery), and can only be lifted by a Senior
-      Moderator after the 6-month minimum and a `resolution_notes` entry
-      (FR-006-16). `LiftEnforcementStep`. Reviewer ladder block reuses
-      001's existing account-block field if one exists, otherwise adds
-      `users.blocked_at`. Every step call is a `ModerateReview`-style
-      wrapper: reason code required, compliance log, statement of reasons.
-      FR-006-14 through FR-006-17.
+- [x] **T6. Enforcement ladder and Consumer Warning.** `EnforcementLadder`
+      (business/reviewer) and `EnforcementStep` enums — one `EnforcementStep`
+      type for both ladders since they share their first two steps'
+      wording ("educational notice", "warning"); `EnforcementStep::
+      sequenceFor()` returns the ordered 6-step business or 3-step reviewer
+      sequence. `enforcement_actions` table (subject — Business or User,
+      via a morph, plus `ladder` stored alongside `step` so a query never
+      has to load the subject; reason_code, applied_by, applied_at,
+      expires_at nullable, lifted_by/at nullable, lift_reason nullable,
+      senior_approved_by nullable) + model, never deleted — lifting a step
+      updates the same row rather than removing it, so the ladder's
+      history survives for T9's Transparency Center. `ApplyEnforcementStep`:
+      validates the step belongs to the subject's own ladder; blocks a
+      conflicted moderator (reusing T5's `Business::hasConflictWithStaff()`);
+      requires Senior Moderator approval (`?User $seniorApprover`) to skip
+      ahead of the subject's current rung ("staff may skip steps for
+      severe or proven fraud"); applies each step's side effects inline
+      rather than delegating to T5's `BlockUserAccount`/`RestrictBusinessFeature`
+      (those each run their own full compliance-log-and-notify cycle for
+      one ad hoc decision, while a ladder step is one decision covering
+      several columns at once) — `feature_restriction` restricts
+      invitations and profile edits (not flagging: FR-006-16's later
+      "reply/flag-only access" implies flagging survives this earlier
+      step too); `consumer_warning` sets `Business.consumer_warning_at`/
+      `consumer_warning_reason`, restricts every feature except flagging,
+      and forces `plan = Free` (this repo's only Business-plan machinery
+      today, since 017/Plans & Billing doesn't exist — an honest stand-in
+      for "suspends paid features," not a real subscription cancellation);
+      `account_block` sets `users.blocked_at`/`blocked_reason` (added in
+      T5 alongside `BlockUserAccount`, reused here, so T6 needed no new
+      migration for it). `Business::trustSignalsHidden(): bool` reads
+      `consumer_warning_at` — a forward hook for 008/009, same shape as
+      `RecalculateBusinessScore` — deliberately not `BusinessStatus::Suspended`,
+      a separate, currently-unused status this spec leaves alone.
+      `LiftEnforcementStep`: any Moderator+ can lift any step at any time,
+      except `consumer_warning`, which needs a Senior Moderator and the
+      applied-at-plus-6-months minimum (FR-006-16); reverses the side
+      effects it can (un-restricts the two features, clears the warning,
+      unblocks the account) but doesn't restore a suspended `plan` — no
+      billing record of the prior tier exists to restore it to, another
+      honest gap for 017. `ApplyEnforcementStep` requires a `ReasonCode`,
+      writes exactly one `ComplianceLogEntry`, and sends one
+      `StatementOfReasonsNotification` (to every Business owner, or
+      directly to a reviewer) — the same "ModerateReview-style wrapper"
+      tasks.md called for. `LiftEnforcementStep` takes free-text resolution
+      notes instead (there's no punitive `ReasonCode` to attach to lifting
+      something), so it logs to compliance but doesn't send a statement of
+      reasons — FR-006-13 is about actions against a user, not ones
+      restoring them. FR-006-14 through FR-006-17.
 - [ ] **T7. Appeals.** `appeals` table (appealable — the
       enforcement_action or moderation decision being appealed —
       appellant_id, statement ≤ 2000 chars, evidence paths json, status:
