@@ -36,11 +36,18 @@ class RequestReviewVerification
     private const MISUSE_NEGATIVE_SHARE_THRESHOLD = 0.8;
 
     /**
+     * @param  bool  $requestedByStaff  FR-006-12's "request verification" staff
+     *                                  verb (`ModerateReview`) delegates here
+     *                                  rather than duplicating this action —
+     *                                  set true to bypass the business
+     *                                  permission check below, since the
+     *                                  caller is staff, not a business member.
+     *
      * @throws AuthorizationException
      */
-    public function handle(Business $business, User $actor, Review $review): BusinessVerificationRequest
+    public function handle(Business $business, User $actor, Review $review, bool $requestedByStaff = false): BusinessVerificationRequest
     {
-        if (! $business->userCan($actor, BusinessPermission::ReplyToReviewsAndCases)) {
+        if (! $requestedByStaff && ! $business->userCan($actor, BusinessPermission::ReplyToReviewsAndCases)) {
             throw new AuthorizationException('You cannot request verification for this business.');
         }
 

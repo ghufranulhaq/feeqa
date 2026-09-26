@@ -4,6 +4,7 @@ namespace App\Actions\Moderation;
 
 use App\Actions\Reviews\ScreenReviewSubmission;
 use App\Domain\Businesses\BusinessPermission;
+use App\Domain\Businesses\RestrictableFeature;
 use App\Domain\Moderation\FlagStatus;
 use App\Domain\Moderation\ReasonCode;
 use App\Models\Business;
@@ -53,6 +54,12 @@ class CreateFlag
         if ($actingBusiness !== null) {
             if ($reporter === null || ! $actingBusiness->userCan($reporter, BusinessPermission::FlagReviews)) {
                 throw new AuthorizationException('You cannot flag content on behalf of this business.');
+            }
+
+            // FR-006-14 step 4: a business under a flagging restriction
+            // can't file new flags until it's lifted.
+            if ($actingBusiness->hasFeatureRestricted(RestrictableFeature::Flagging)) {
+                throw new AuthorizationException('Flagging is currently restricted for this business.');
             }
         } elseif ($reporter === null && trim((string) $reporterEmail) === '') {
             // FR-006-07: "non-signed-in reporters must give an email."

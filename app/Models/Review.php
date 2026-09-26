@@ -55,6 +55,7 @@ class Review extends Model
         'published_at',
         'edited_at',
         'durability_signal',
+        'assigned_to',
     ];
 
     protected function casts(): array
@@ -93,6 +94,16 @@ class Review extends Model
     public function reviewer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewer_id');
+    }
+
+    /**
+     * FR-006-11: the held-content queue's assignment.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function assignee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
     }
 
     /**

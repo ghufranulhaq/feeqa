@@ -8,6 +8,7 @@ use App\Domain\Businesses\BusinessPlan;
 use App\Domain\Businesses\BusinessRole;
 use App\Domain\Businesses\BusinessStatus;
 use App\Domain\Businesses\EmployeeSizeBand;
+use App\Domain\Businesses\RestrictableFeature;
 use Database\Factories\BusinessFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -81,6 +82,7 @@ class Business extends Model
         'employee_size_band',
         'data_source',
         'import_batch',
+        'restricted_features',
     ];
 
     protected static function booted(): void
@@ -108,6 +110,7 @@ class Business extends Model
             'employee_size_band' => EmployeeSizeBand::class,
             'claimed_at' => 'datetime',
             'closed_at' => 'datetime',
+            'restricted_features' => 'array',
         ];
     }
 
@@ -144,6 +147,31 @@ class Business extends Model
     public function moderationIncidents(): HasMany
     {
         return $this->hasMany(ModerationIncident::class);
+    }
+
+    /**
+     * @return HasMany<ModeratorConflict, $this>
+     */
+    public function moderatorConflicts(): HasMany
+    {
+        return $this->hasMany(ModeratorConflict::class);
+    }
+
+    /**
+     * Edge cases table: a staff member with a declared conflict of
+     * interest on this Business must not moderate its content.
+     */
+    public function hasConflictWithStaff(User $staff): bool
+    {
+        return $this->moderatorConflicts()->where('staff_id', $staff->id)->exists();
+    }
+
+    /**
+     * FR-006-14 step 4: whether the ladder has switched this feature off.
+     */
+    public function hasFeatureRestricted(RestrictableFeature $feature): bool
+    {
+        return in_array($feature->value, $this->restricted_features ?? [], true);
     }
 
     public static function uniqueSlugFor(string $name, ?int $excludingId = null): string

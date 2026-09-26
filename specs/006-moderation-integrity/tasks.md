@@ -132,39 +132,65 @@ guessed at for content that isn't there yet.
       through FR-006-10, edge cases table (no reason code, oversized
       details/evidence, duplicate flag, mass flagging, business flags
       every negative review).
-- [ ] **T5. Moderation console: queues and staff actions.** Read actions
-      for each FR-006-11 queue (held content — reviews with
-      `status = Held`; open flags — T4's own queue, already carrying
-      `assigned_to` from T4; verification proofs,
-      already listed at `staff/review-verifications` from 004 T5;
-      business incidents from T3; appeals from T7; profile-change requests,
-      already listed from 002) filterable by priority/SLA/category and
-      assignable to a staff member (`assigned_to` nullable column still
-      needed on `reviews` — `flags` already has one from T4,
-      `moderation_incidents` already has one from T3). `ModerateReview`
-      action covering FR-006-12's verbs that
-      apply to a review today (publish, remove, redact a span with
-      `[removed]`, mark not genuine, request verification — delegates to
-      004's existing `RequestReviewVerification` (business-initiated proof
-      request) rather than duplicating it, with a small staff-bypass on
-      its own `BusinessPermission` check; not `RequestDocumentVerification`
-      (the reviewer's own proof-upload flow, which doesn't fit a
-      staff-initiated call at all) — a naming slip in an earlier draft of
-      this line, caught before T5 started: every call requires a
-      `ReasonCode`, writes a
-      `ComplianceLogEntry` (reusing the existing model from 001/002/004
-      rather than a new log), and sends a `StatementOfReasonsNotification`
-      (what was affected, the reason code, the guideline version in force
-      from T1, whether automation was involved, and an appeal link) to the
-      content's owner — FR-006-13. `remove`/`not_genuine` re-triggers
-      `RecalculateBusinessScore` (the existing 008 placeholder hook) per
-      FR-006-17. `BlockUserAccount` and `RestrictBusinessFeature` cover the
-      account/business verbs the ladder (T6) needs. A moderator with a
-      recorded conflict of interest on a business (a `moderator_conflicts`
-      table: staff_id, business_id) is blocked from acting on it — edge
-      cases table. FR-006-11, FR-006-12, FR-006-13, edge cases (conflict of
-      interest, unauthorized Responder queue access — reuses existing
-      business-role authorization, nothing new to add there).
+- [x] **T5. Moderation console: queues and staff actions.** Three read
+      actions in a new `App\Actions\Staff\Queues` namespace —
+      `ListHeldReviewsQueue` (reviews with `status = Held`, oldest first —
+      no priority/category field exists yet for this queue, an honest gap
+      unlike flags' own `sla_due_at`), `ListFlagsQueue` (defaults to
+      unresolved — open/blurred — ordered by `sla_due_at`, filterable by
+      an explicit status or `reason_code`), and `ListModerationIncidentsQueue`
+      (defaults to open/investigating, oldest-detected first). Verification
+      proofs stay at `staff/review-verifications` from 004 T5; profile-
+      change requests stay wherever 002 already lists them; appeals have no
+      queue yet (T7 doesn't exist). `AssignQueueItem`: one action for every
+      queue item type carrying an `assigned_to` column (`Review` — new
+      column added by this task; `Flag` and `ModerationIncident` already
+      had theirs from T4/T3) — assignment isn't itself a moderation
+      decision, so it skips the compliance log. `ModerateReview` action
+      covering FR-006-12's verbs that apply to a review today (publish,
+      remove, redact a span with `[removed]`, mark not genuine, request
+      verification — delegates to 004's existing `RequestReviewVerification`
+      rather than duplicating it, via a new `bool $requestedByStaff`
+      parameter that bypasses its own `BusinessPermission` check; not
+      `RequestDocumentVerification`, the reviewer's own proof-upload flow —
+      a naming slip in an earlier draft, caught before T5 started). `remove`
+      and `mark_not_genuine` both land on `ReviewStatus::Rejected` (the
+      same status auto-reject already uses, since both take the review off
+      every public/scored surface) but stay distinct verbs: `mark_not_genuine`
+      requires the `not_genuine` reason code and always re-triggers
+      `RecalculateBusinessScore`; `remove` accepts any reason code and only
+      recalculates if the review had been published (FR-006-17). Every
+      verb requires a `ReasonCode`, writes a `ComplianceLogEntry` (reusing
+      001/002/004's existing model), and sends a `StatementOfReasonsNotification`
+      (what was affected, the reason code, the current guideline version
+      from T1, that a human — not automation — made the call, and an
+      honest-placeholder appeal instruction since T7 doesn't exist) to the
+      review's author — except `request_verification`, which already gets
+      its own `BusinessRequestedVerificationNotification` from the
+      delegate, so this skips a duplicate. `DecideFlag` (`App\Actions\Staff`):
+      not named in this task's original description, but necessary to make
+      spec.md's User Scenario 2 real — resolves a flag to `upheld`/`rejected`,
+      which is also what "restores" a blurred review, since
+      `Review::isBlurred()` (T4) only checks for a flag still carrying
+      `blurred`; notifies the reporter (signed-in via `notify()`, guest via
+      `Notification::route('mail', ...)`) of the outcome per FR-006-07.
+      `BlockUserAccount` (new `users.blocked_at`/`blocked_reason` columns —
+      no existing account-block field from 001) and `RestrictBusinessFeature`
+      (new `businesses.restricted_features` json column + a new
+      `RestrictableFeature` enum: flagging/invitations/profile_edits) cover
+      the account/business verbs the T6 ladder needs, pulling their
+      migrations forward now rather than in T6, same precedent as T3/T4's
+      early `assigned_to` columns. Only the `Flagging` restriction is wired
+      into an actual check (`CreateFlag` now refuses a restricted
+      business's flag) — invitations (005) and profile edits (002) are
+      documented gaps until those specs' own actions check
+      `Business::hasFeatureRestricted()` too. A new `moderator_conflicts`
+      table (staff_id, business_id, unique pair) backs
+      `Business::hasConflictWithStaff()`, checked by both `ModerateReview`
+      and `DecideFlag` before they touch a business's content. FR-006-11,
+      FR-006-12, FR-006-13, edge cases (conflict of interest, unauthorized
+      Responder queue access — reuses existing business-role authorization,
+      nothing new to add there).
 - [ ] **T6. Enforcement ladder and Consumer Warning.** `EnforcementStep`
       value object/enum for both ladders (FR-006-14, FR-006-15).
       `enforcement_actions` table (subject_type/id — business or user,
