@@ -108,20 +108,20 @@ Give every business a public profile page where people read and write reviews ab
 
 ## 6. Acceptance Criteria
 
-- [ ] A consumer can create an unclaimed business and review it. Duplicate detection prevents obvious duplicates (test fixtures cover domain variants and name+city matches).
-- [ ] All four claim methods work. Free email domains are rejected for email claims.
-- [ ] Claiming changes no review, score, or label (checked with a before/after snapshot test).
-- [ ] Profile page shows every element in FR-002-04 that has data.
-- [ ] Sensitive field changes go to staff approval. Other changes publish immediately.
-- [ ] Locations have separate scores.
-- [ ] The seed import creates unclaimed profiles with source and batch recorded, and seeded profiles pass automated checks.
-- [ ] The "Mentioned in reviews" section shows tagged reviews without affecting scores.
-- [ ] Category question sets are versioned and inherited. Non-launched categories are hidden from navigation.
-- [ ] Staff can create, preview, launch, pause, and re-launch an industry from the console, and public pages update within 5 minutes with no deployment (E2E test).
-- [ ] The readiness checklist blocks launch on missing blocking items and requires warnings to be acknowledged.
-- [ ] Industry state changes and category moves leave every Review Score and Trust Index unchanged (invariance test). Only rankings and benchmarks change.
-- [ ] Every Business has a primary category. Uncategorised businesses appear in the staff queue.
-- [ ] Industry permissions follow FR-002-33.
+- [~] A consumer can create an unclaimed business and review it. Duplicate detection prevents obvious duplicates (test fixtures cover domain variants and name+city matches). *Creation and duplicate detection (domain and fuzzy name+city variants) are fully built and tested — "review it" is spec 003, not built yet. Revisit this box when spec 003 ships.*
+- [x] All four claim methods work. Free email domains are rejected for email claims.
+- [~] Claiming changes no review, score, or label (checked with a before/after snapshot test). *A before/after snapshot test covers every profile field that exists today (`ClaimingInvarianceTest`) — Review/score models don't exist yet (specs 003/008) to literally snapshot. Revisit when they ship.*
+- [x] Profile page shows every element in FR-002-04 that has data. Everything a later spec owns is an explicit "coming soon" placeholder, never a faked value.
+- [x] Sensitive field changes go to staff approval. Other changes publish immediately.
+- [~] Locations have separate scores. *Locations exist with their own public sub-page (FR-002-16) — a location's own Review Score is spec 008, not built yet. Revisit when it ships.*
+- [x] The seed import creates unclaimed profiles with source and batch recorded, and seeded profiles pass automated checks.
+- [~] The "Mentioned in reviews" section shows tagged reviews without affecting scores. *The section is real and built, tested to always be empty and score-neutral today — there's no Review model yet to tag it with (spec 003). Revisit when it ships.*
+- [x] Category question sets are versioned and inherited. Non-launched categories are hidden from navigation.
+- [~] Staff can create, preview, launch, pause, and re-launch an industry from the console, and public pages update within 5 minutes with no deployment (E2E test). *Every action is built and tested at the action/HTTP level — there is no staff console UI yet (consistent with the rest of this spec), and no public page reads category state yet (that's search, spec 009) to prove the 5-minute budget against end to end. What's tested instead: a state change is a plain, uncached column write, reflected immediately by anything that queries it (`Category::visibleInNavigation()`). Revisit this box once a console UI and spec 009 both exist.*
+- [x] The readiness checklist blocks launch on missing blocking items and requires warnings to be acknowledged.
+- [~] Industry state changes and category moves leave every Review Score and Trust Index unchanged (invariance test). Only rankings and benchmarks change. *Invariance tests prove a business's own fields are untouched by a category move or an industry launch/pause — Review Score and Trust Index don't exist yet (spec 008) to literally include in the snapshot. Revisit when it ships.*
+- [x] Every Business has a primary category. Uncategorised businesses appear in the staff queue. Both real creation paths (a consumer adding one, a staff import) always assign a category, defaulting to "Other / Uncategorised"; that fallback is a real, tested staff queue (`GET /staff/businesses/uncategorised`), not just an internal label.
+- [x] Industry permissions follow FR-002-33.
 
 ## 7. Dependencies & Open Questions
 

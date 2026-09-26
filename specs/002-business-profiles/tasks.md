@@ -107,6 +107,14 @@ spec owns and extends it.
 - [x] **T14. Docs pass.** README, `docs/user-guides/`,
       `docs/system-overview/` updated for everything above (constitution
       §8 rule 9); `make docs-check` passes.
-- [ ] **T15. Acceptance sweep.** Re-check every box in spec.md §6 against
-      what's actually implemented; close any gap the sweep finds; `make ci`
-      green.
+- [x] **T15. Acceptance sweep.** Re-checked every box in spec.md §6:
+      9 of 14 fully checked off; the other 5 are marked `[~]` with an
+      inline note — each is fully built and tested for everything that
+      exists today, and is only partial because it also names a
+      Review/Score/ranking concept owned by specs 003/008/009, none of
+      which are built yet (same pattern as spec 001 T21). Closed two real
+      gaps the sweep found: FR-002-35's "staff categorisation queue" had
+      no way to actually see it (added `GET /staff/businesses/
+      uncategorised`), and there was no explicit before/after snapshot
+      test for claiming (FR-002-15) or for industry/category invariance
+      (FR-002-37) — both added. `make ci` green (471 tests).

@@ -121,10 +121,14 @@ profile instead of creating a duplicate.
 
 A newly-created business always needs a category — every category is
 selectable, including ones not yet launched, or the "Other / Uncategorised"
-fallback when nothing fits (that fallback queues it for staff to sort out
-later). It's reviewable immediately, but sits in a brief `pending` state
-until an automated check confirms the domain resolves and isn't on a
-blocklist, at which point it becomes an ordinary unclaimed profile.
+fallback when nothing fits. That fallback is a real staff queue
+(FR-002-35, `GET /staff/businesses/uncategorised`, any staff role,
+oldest first — a 5 business day target for staff to work through it, not
+an enforced deadline) rather than just an internal label. The business
+itself is reviewable immediately either way, but sits in a brief
+`pending` state until an automated check confirms the domain resolves
+and isn't on a blocklist, at which point it becomes an ordinary
+unclaimed profile.
 
 ## Editing a profile
 

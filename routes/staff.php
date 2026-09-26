@@ -7,6 +7,7 @@ use App\Http\Controllers\Staff\BusinessProfileChangeRequestController;
 use App\Http\Controllers\Staff\CategoryController;
 use App\Http\Controllers\Staff\EmployeeSizeBandDisputeController as StaffEmployeeSizeBandDisputeController;
 use App\Http\Controllers\Staff\StaffAccountController;
+use App\Http\Controllers\Staff\UncategorisedBusinessesController;
 use App\Http\Middleware\StaffIpAllowList;
 use Illuminate\Support\Facades\Route;
 
@@ -43,6 +44,10 @@ Route::middleware(['auth', StaffIpAllowList::class])->prefix('staff')->group(fun
 
     // FR-002-24, FR-002-34.
     Route::post('businesses/import', [BusinessImportController::class, 'store'])->name('staff.businesses.import');
+
+    // FR-002-35.
+    Route::get('businesses/uncategorised', [UncategorisedBusinessesController::class, 'index'])
+        ->name('staff.businesses.uncategorised');
 
     // Edge cases table: duplicate businesses merged.
     Route::post('businesses/{business}/merge', [BusinessMergeController::class, 'store'])->name('staff.businesses.merge');
