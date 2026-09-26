@@ -107,7 +107,7 @@ wires them up rather than creating them.
       reviews ÷ all published customer reviews, rolling 12 months),
       exposed as a hook for specs 008/015 to read later — same "built now,
       filled later" shape as `RecalculateBusinessScore`. FR-004-24.
-- [ ] **T9. Raw proof file deletion job + demo relaxation.** A scheduled
+- [x] **T9. Raw proof file deletion job + demo relaxation.** A scheduled
       command deletes stored proof files (and any extracted-field data
       beyond what the attestation keeps) 30 days after the verification
       decision. `Environment::rawProofFilesDeletedOnSchedule()` — always
