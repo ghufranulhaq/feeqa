@@ -99,10 +99,14 @@ wired), same pattern as spec 002.
       pending. Source label shown on every review card with a tooltip
       explaining what it means (FR-003-16's Verified Experience badge stays
       "coming soon", 004). FR-003-14, FR-003-15, FR-003-16.
-- [ ] **T8. Useful votes.** `ToggleUsefulVote` action: any signed-in user
-      except the author, tapping again removes the vote. Excluding
-      fraud-flagged accounts' votes (edge case) is noted as pending spec
-      006 (no fraud detection exists yet to flag them). FR-003-27.
+- [x] **T8. Useful votes.** `ToggleUsefulVote` action: any signed-in user
+      except the author, tapping again removes the vote (unique
+      `review_useful_votes` pair from T1 enforces one vote per reader).
+      Excluding fraud-flagged accounts' votes (edge case) is noted as
+      pending spec 006 (no fraud detection exists yet to flag them). A
+      real endpoint (`reviews.useful-vote.store`) exists; the review card
+      now shows the real count, but no button reaches the endpoint yet —
+      same "endpoint before UI" situation as T5's drafts. FR-003-27.
 - [ ] **T9. Filtering, sorting, pagination.** A review-listing query action
       for a Business/Location: sort by *Most recent* (default) or *Most
       useful*; filter by star rating (multi-select), source label,

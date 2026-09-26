@@ -8,8 +8,8 @@ use App\Models\Review;
 /**
  * FR-003-26: the fields a review card shows today. Reply, case summary,
  * and Verified Experience badge stay "coming soon" until specs 007, 010,
- * and 004 exist. Useful count/Share/Report are spec 003 T8 and out of
- * scope for other specs, so they aren't part of this shape yet either.
+ * and 004 exist. Share/Report aren't owned by any task yet, so they still
+ * aren't part of this shape.
  */
 class ReviewCard
 {
@@ -20,6 +20,7 @@ class ReviewCard
      *     author: array{name: string, avatar: ?string, country: ?string, published_reviews_count: int},
      *     star_rating: int, title: string, text: string,
      *     date_of_experience: string, published_at: ?string, source_label: string,
+     *     useful_count: int,
      *     question_answers: list<array{label: string, type: string, value: mixed}>,
      * }
      */
@@ -47,6 +48,7 @@ class ReviewCard
             'date_of_experience' => $review->date_of_experience->toDateString(),
             'published_at' => $review->published_at?->toIso8601String(),
             'source_label' => $review->source_label->value,
+            'useful_count' => $review->usefulVotes()->count(),
             'question_answers' => self::questionAnswers($review),
         ];
     }

@@ -30,6 +30,7 @@ export interface ReviewCardData {
     date_of_experience: string;
     published_at: string | null;
     source_label: string;
+    useful_count: number;
     question_answers: ReviewCardQuestionAnswer[];
 }
 
@@ -66,7 +67,10 @@ function formatAnswer(answer: ReviewCardQuestionAnswer): string {
 
 /**
  * FR-003-26. Reply, case summary, and Verified Experience badge stay
- * "coming soon" (007/010/004); Useful count is spec 003 T8, not built yet.
+ * "coming soon" (007/010/004). Useful count is real (FR-003-27); the
+ * tap-to-vote endpoint (`reviews.useful-vote.store`) exists but no button
+ * reaches it here yet, same "endpoint before UI" situation as spec 003
+ * T5's drafts.
  */
 export function ReviewCard({
     review,
@@ -141,6 +145,10 @@ export function ReviewCard({
                         <TooltipContent>{SOURCE_LABEL_DESCRIPTIONS[review.source_label] ?? formatSourceLabel(review.source_label)}</TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
+            </p>
+
+            <p className="mt-2 text-xs text-neutral-500">
+                {review.useful_count} {review.useful_count === 1 ? 'person' : 'people'} found this useful
             </p>
 
             {review.question_answers.length > 0 && (

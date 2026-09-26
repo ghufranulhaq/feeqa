@@ -8,6 +8,7 @@ use App\Http\Controllers\Public\LocationProfileController;
 use App\Http\Controllers\Public\ReviewController;
 use App\Http\Controllers\Public\ReviewDraftController;
 use App\Http\Controllers\Public\ReviewerProfileController;
+use App\Http\Controllers\Public\ReviewUsefulVoteController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('reviewers/{user}', [ReviewerProfileController::class, 'show'])->name('reviewers.show');
@@ -33,6 +34,9 @@ Route::middleware('auth')->group(function () {
     // reaches this yet, same situation as the claim/location endpoints above.
     Route::post('businesses/{business}/review-draft', [ReviewDraftController::class, 'store'])->name('businesses.review-draft.store');
     Route::get('businesses/{business}/review-draft', [ReviewDraftController::class, 'show'])->name('businesses.review-draft.show');
+
+    // FR-003-27.
+    Route::post('reviews/{review}/useful-vote', [ReviewUsefulVoteController::class, 'store'])->name('reviews.useful-vote.store');
 });
 
 // FR-002-16.
