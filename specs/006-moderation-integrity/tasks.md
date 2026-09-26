@@ -134,17 +134,24 @@ guessed at for content that isn't there yet.
       every negative review).
 - [ ] **T5. Moderation console: queues and staff actions.** Read actions
       for each FR-006-11 queue (held content — reviews with
-      `status = Held`; open flags; T4's own queue; verification proofs,
+      `status = Held`; open flags — T4's own queue, already carrying
+      `assigned_to` from T4; verification proofs,
       already listed at `staff/review-verifications` from 004 T5;
       business incidents from T3; appeals from T7; profile-change requests,
       already listed from 002) filterable by priority/SLA/category and
-      assignable to a staff member (`assigned_to` nullable column added to
-      `reviews` and `flags` — `moderation_incidents` already has one from
-      T3). `ModerateReview` action covering FR-006-12's verbs that
+      assignable to a staff member (`assigned_to` nullable column still
+      needed on `reviews` — `flags` already has one from T4,
+      `moderation_incidents` already has one from T3). `ModerateReview`
+      action covering FR-006-12's verbs that
       apply to a review today (publish, remove, redact a span with
       `[removed]`, mark not genuine, request verification — delegates to
-      004's existing `RequestDocumentVerification` rather than
-      duplicating it): every call requires a `ReasonCode`, writes a
+      004's existing `RequestReviewVerification` (business-initiated proof
+      request) rather than duplicating it, with a small staff-bypass on
+      its own `BusinessPermission` check; not `RequestDocumentVerification`
+      (the reviewer's own proof-upload flow, which doesn't fit a
+      staff-initiated call at all) — a naming slip in an earlier draft of
+      this line, caught before T5 started: every call requires a
+      `ReasonCode`, writes a
       `ComplianceLogEntry` (reusing the existing model from 001/002/004
       rather than a new log), and sends a `StatementOfReasonsNotification`
       (what was affected, the reason code, the guideline version in force
