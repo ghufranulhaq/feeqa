@@ -4,6 +4,7 @@ use App\Http\Controllers\Business\BusinessInvitationAcceptController;
 use App\Http\Controllers\Business\BusinessProfileController;
 use App\Http\Controllers\Business\EmployeeSizeBandDisputeController;
 use App\Http\Controllers\Business\InvitationController;
+use App\Http\Controllers\Business\InvitationTemplateController;
 use App\Http\Controllers\Business\LocationController;
 use App\Http\Controllers\Business\TransactionRecordController;
 use App\Http\Controllers\Business\VerificationRequestController;
@@ -48,4 +49,9 @@ Route::middleware(['auth', SetPermissionTeam::class])->prefix('business/{busines
     // FR-004-18, FR-004-21.
     Route::post('reviews/{review}/verification-request', [VerificationRequestController::class, 'store'])
         ->name('business.reviews.verification-request.store');
+
+    // FR-005-13, FR-005-14: one editable template per locale, checked by
+    // GuardNeutralTemplate on every write.
+    Route::post('invitation-templates', [InvitationTemplateController::class, 'store'])
+        ->name('business.invitation-templates.store');
 });
