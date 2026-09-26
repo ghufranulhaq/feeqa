@@ -48,11 +48,18 @@ wired), same pattern as spec 002.
       FR-003-04, FR-003-06 through FR-003-09, edge cases (empty/whitespace/
       emoji title and text, rating missing/out of range, idempotency,
       duplicate submission, date rules).
-- [ ] **T4. Question set answers on submission.** Loads the Business's (or
-      Location's) `effectiveQuestions()` (002 T8); required questions must
-      be answered, optional ones may be skipped; answers stored with the
-      question set's version; an answer keyed to a question not in the set
-      is dropped rather than stored. FR-003-05, edge case row.
+- [x] **T4. Question set answers on submission.** Loads the Business's
+      primary category's `effectiveQuestions()` (002 T8); required
+      questions must be answered, optional ones may be skipped; answers
+      stored with the question set's version; an answer keyed to a
+      question not in the set is dropped and logged rather than stored.
+      Locations have no category of their own in the current schema, so
+      "the Location's category, if set" stays a pending hook — the
+      Business's primary category is always used. Also closes a gap left
+      open by T3: `SubmitReview` now accepts an optional `Location`
+      (validated as belonging to the Business) so location reviews
+      (FR-003-01) actually store `location_id`. FR-003-05, FR-003-01,
+      edge case row (question-set answer for a question not in the set).
 - [ ] **T5. Draft autosave.** `review_drafts` table (user_id, business_id,
       location_id nullable, payload json) + save/restore actions and
       endpoints for signed-in users; device-local autosave is a frontend
