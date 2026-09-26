@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Business\BusinessInvitationAcceptController;
 use App\Http\Controllers\Business\BusinessProfileController;
+use App\Http\Controllers\Business\EmployeeSizeBandDisputeController;
 use App\Http\Controllers\Business\InvitationController;
 use App\Http\Controllers\Business\LocationController;
 use App\Http\Middleware\SetPermissionTeam;
@@ -32,4 +33,8 @@ Route::middleware(['auth', SetPermissionTeam::class])->prefix('business/{busines
     Route::post('locations', [LocationController::class, 'store'])->name('business.locations.store');
     Route::patch('locations/{location}', [LocationController::class, 'update'])->name('business.locations.update');
     Route::delete('locations/{location}', [LocationController::class, 'destroy'])->name('business.locations.destroy');
+
+    // FR-002-25 edge case.
+    Route::post('employee-size-band-disputes', [EmployeeSizeBandDisputeController::class, 'store'])
+        ->name('business.employee-size-band-disputes.store');
 });

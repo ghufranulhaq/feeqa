@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Staff\BusinessClaimReviewController;
+use App\Http\Controllers\Staff\BusinessImportController;
 use App\Http\Controllers\Staff\BusinessProfileChangeRequestController;
 use App\Http\Controllers\Staff\CategoryController;
+use App\Http\Controllers\Staff\EmployeeSizeBandDisputeController as StaffEmployeeSizeBandDisputeController;
 use App\Http\Controllers\Staff\StaffAccountController;
 use App\Http\Middleware\StaffIpAllowList;
 use Illuminate\Support\Facades\Route;
@@ -31,4 +33,11 @@ Route::middleware(['auth', StaffIpAllowList::class])->prefix('staff')->group(fun
     Route::post('categories/{category}/set-launched', [CategoryController::class, 'setLaunched'])->name('staff.categories.set-launched');
     // FR-002-32.
     Route::get('categories/{industry}/preview', [CategoryController::class, 'preview'])->name('staff.categories.preview');
+
+    // FR-002-24, FR-002-34.
+    Route::post('businesses/import', [BusinessImportController::class, 'store'])->name('staff.businesses.import');
+
+    // FR-002-25 edge case.
+    Route::post('employee-size-band-disputes/{dispute}/resolve', [StaffEmployeeSizeBandDisputeController::class, 'resolve'])
+        ->name('staff.employee-size-band-disputes.resolve');
 });

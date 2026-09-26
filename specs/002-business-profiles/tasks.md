@@ -84,7 +84,7 @@ spec owns and extends it.
       transition; staff preview of an industry's public pages before
       launch; edge case: launching with a missing blocking item is
       rejected and lists what's missing. FR-002-31, FR-002-32, edge cases.
-- [ ] **T11. Seeding pipeline + size-band dispute.** A staff import action
+- [x] **T11. Seeding pipeline + size-band dispute.** A staff import action
       that creates `unclaimed` Businesses in bulk (name, domain, primary
       category, country, optional licensed logo), records source + batch
       (FR-002-24, reusing T4's duplicate/automated checks), and an

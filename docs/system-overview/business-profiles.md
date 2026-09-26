@@ -155,9 +155,28 @@ location needs the same Owner/Admin permission as editing the profile
 (FR-002-16). A location's own Review Score is spec 008 — "coming soon"
 for now, same as the main profile.
 
+## Seeding businesses (staff)
+
+A staff Admin can import a batch of unclaimed businesses in bulk — name,
+domain, country, category, and an optional licensed logo (FR-002-24,
+FR-002-34) — from a public or licensed source only, never scraped from
+another review platform. Every row records its data source and a shared
+import batch id (auto-generated if none is given), goes through the same
+FR-002-10 automated check as a business a consumer adds one at a time,
+and a row whose domain is already listed is skipped rather than creating
+a duplicate.
+
+## Disputing an employee size band
+
+An Owner or Admin can dispute their business's employee size band
+(FR-002-25) by submitting evidence and, optionally, the band they think
+is correct. The current band **stays exactly as it is** until a staff
+member decides — upholding it or changing it — which emails the person
+who raised the dispute either way and logs the decision.
+
 ## What's not built yet
 
 No question sets are attached to a review form yet, and there's no
 console UI anywhere for staff — for industries/categories, for the
-profile-change/claim queues above, or for anything else in this
-document. All of that is still on spec 002's `tasks.md`.
+profile-change/claim/import/dispute queues above, or for anything else
+in this document. All of that is still on spec 002's `tasks.md`.
