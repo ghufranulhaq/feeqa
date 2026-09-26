@@ -31,7 +31,7 @@ wires them up rather than creating them.
       (transaction_invitation/reference_match/document_proof/payment_link),
       `VerificationStatus` (pending/approved/rejected). Models + factories
       for `ReviewVerification` and `VerificationAttestation`. FR-004-01.
-- [ ] **T2. Proof fingerprint & tamper signals (pure domain).** Pure,
+- [x] **T2. Proof fingerprint & tamper signals (pure domain).** Pure,
       unit-tested classes: `ProofFingerprint` (keyed HMAC of normalised
       business_id+reference, and a document variant that folds in a
       perceptual hash), `PerceptualHash` (average-hash over GD, reused
