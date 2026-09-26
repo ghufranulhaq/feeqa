@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Business\BusinessInvitationAcceptController;
+use App\Http\Controllers\Business\BusinessProfileController;
 use App\Http\Controllers\Business\InvitationController;
 use App\Http\Middleware\SetPermissionTeam;
 use Illuminate\Support\Facades\Route;
@@ -19,4 +20,10 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', SetPermissionTeam::class])->prefix('business/{business}')->group(function () {
     Route::post('invitations', [InvitationController::class, 'store'])
         ->name('business.invitations.store');
+
+    // FR-002-03, FR-002-07.
+    Route::patch('profile', [BusinessProfileController::class, 'update'])
+        ->name('business.profile.update');
+    Route::post('logo', [BusinessProfileController::class, 'updateLogo'])
+        ->name('business.logo.update');
 });

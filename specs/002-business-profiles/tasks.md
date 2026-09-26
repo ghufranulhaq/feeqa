@@ -41,7 +41,7 @@ spec owns and extends it.
       the business is reviewable immediately. FR-002-08, FR-002-09,
       FR-002-10, FR-002-35, edge cases (domain normalisation, subdomains,
       marketplace sellers).
-- [ ] **T5. Profile editing + sensitive-field approval queue.** Owner/Admin
+- [x] **T5. Profile editing + sensitive-field approval queue.** Owner/Admin
       edit action for FR-002-03 fields; name/domain/primary-category
       changes on a claimed profile go to a staff approval queue instead of
       publishing immediately; validation edge cases (empty description

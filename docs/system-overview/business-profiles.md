@@ -62,9 +62,30 @@ later). It's reviewable immediately, but sits in a brief `pending` state
 until an automated check confirms the domain resolves and isn't on a
 blocklist, at which point it becomes an ordinary unclaimed profile.
 
+## Editing a profile
+
+An Owner or Admin (spec 001's business roles) can update their profile:
+description, website, email, phone, address, social links, logo, and up
+to 5 secondary categories all publish immediately. A **name, domain, or
+primary-category change on a claimed profile is different**: it queues
+instead of publishing, and only takes effect once a staff member approves
+it — rejecting one never touches the business and emails the requester
+why. Nothing here changes on an unclaimed profile, which has no members
+yet to make the request in the first place. There's no business dashboard
+UI to do any of this from yet (that's a later part of spec 002) — the
+`PATCH /business/{business}/profile`, `POST /business/{business}/logo`,
+and staff `POST /staff/profile-change-requests/{id}/approve|reject`
+endpoints are real and usable today, just not linked from anywhere.
+
+A description can't link to a different website than the business's own
+(anti-spam), and a logo follows the same rules as a personal photo
+(JPEG/PNG/WebP, not animated) except its own size limit (2 MB) and a
+200×200 minimum — unlike a photo, transparency is kept rather than
+flattened.
+
 ## What's not built yet
 
-Businesses can't yet claim or edit a profile, there are no locations, no
+Consumers can't yet claim a profile themselves, there are no locations, no
 question sets are attached to a review form yet, and there's no staff
-console for industries/categories. All of that is still on spec 002's
-`tasks.md`.
+console for industries/categories or for the profile-change queue above.
+All of that is still on spec 002's `tasks.md`.
