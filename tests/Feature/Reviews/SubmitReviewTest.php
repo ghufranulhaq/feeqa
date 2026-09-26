@@ -3,10 +3,15 @@
 use App\Actions\Reviews\ScreenReviewSubmission;
 use App\Actions\Reviews\SubmitReview;
 use App\Domain\Businesses\BusinessRole;
+use App\Domain\Invitations\InvitationMethod;
+use App\Domain\Invitations\InvitationStatus;
 use App\Domain\Reviews\ReviewStatus;
 use App\Domain\Reviews\SourceLabel;
+use App\Domain\Verification\VerificationMethod;
+use App\Drivers\Signing\SigningService;
 use App\Models\Business;
 use App\Models\Review;
+use App\Models\ReviewInvitation;
 use App\Models\User;
 use Database\Seeders\Base\BusinessRolesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -222,3 +227,115 @@ it('is held, not published, when the screening step flags the text (integration 
     expect($review->status)->toBe(ReviewStatus::Held)
         ->and($review->published_at)->toBeNull();
 });
+
+it('sets source_label Invited and marks the invitation reviewed for a non-link method (FR-005-02)', function () {
+    $reviewer = User::factory()->create();
+    $business = Business::factory()->create();
+    $invitation = ReviewInvitation::factory()->for($business)->create(['method' => InvitationMethod::Manual]);
+
+    $review = (new SubmitReview(new ScreenReviewSubmission))->handle(
+        $reviewer,
+        $business,
+        validReviewData(),
+        invitationToken: $invitation->token,
+    );
+
+    expect($review->source_label)->toBe(SourceLabel::Invited)
+        ->and($invitation->fresh()->status)->toBe(InvitationStatus::Reviewed)
+        ->and($invitation->fresh()->review_id)->toBe($review->id)
+        ->and($invitation->fresh()->reviewed_at)->not->toBeNull();
+});
+
+it('sets source_label Redirected for the link method (FR-005-02)', function () {
+    $reviewer = User::factory()->create();
+    $business = Business::factory()->create();
+    $invitation = ReviewInvitation::factory()->for($business)->link()->create();
+
+    $review = (new SubmitReview(new ScreenReviewSubmission))->handle(
+        $reviewer,
+        $business,
+        validReviewData(),
+        invitationToken: $invitation->token,
+    );
+
+    expect($review->source_label)->toBe(SourceLabel::Redirected);
+});
+
+it('issues a transaction_invitation attestation for a transaction-linked method carrying a reference (FR-005-02)', function () {
+    app(SigningService::class)->generateKey();
+    $reviewer = User::factory()->create();
+    $business = Business::factory()->create();
+    $invitation = ReviewInvitation::factory()->for($business)->api()->withReference('BK-777888')->create();
+
+    $review = (new SubmitReview(new ScreenReviewSubmission))->handle(
+        $reviewer,
+        $business,
+        validReviewData(),
+        invitationToken: $invitation->token,
+    );
+
+    expect($review->fresh()->isVerified())->toBeTrue()
+        ->and($review->verifications()->first()->method)->toBe(VerificationMethod::TransactionInvitation);
+});
+
+it('does not issue an attestation for a non-transaction-linked method, even with a reference', function () {
+    $reviewer = User::factory()->create();
+    $business = Business::factory()->create();
+    $invitation = ReviewInvitation::factory()->for($business)->withReference('BK-777999')->create(['method' => InvitationMethod::Manual]);
+
+    $review = (new SubmitReview(new ScreenReviewSubmission))->handle(
+        $reviewer,
+        $business,
+        validReviewData(),
+        invitationToken: $invitation->token,
+    );
+
+    expect($review->fresh()->isVerified())->toBeFalse();
+});
+
+it('rejects reusing the same reference across two different invitations (FR-004-11 anti-reuse)', function () {
+    app(SigningService::class)->generateKey();
+    $reviewerA = User::factory()->create();
+    $reviewerB = User::factory()->create();
+    $business = Business::factory()->create();
+    $firstInvitation = ReviewInvitation::factory()->for($business)->api()->withReference('BK-SAME-001')->create();
+    $secondInvitation = ReviewInvitation::factory()->for($business)->api()->withReference('BK-SAME-001')->create();
+
+    $firstReview = (new SubmitReview(new ScreenReviewSubmission))->handle($reviewerA, $business, validReviewData(), invitationToken: $firstInvitation->token);
+    $secondReview = (new SubmitReview(new ScreenReviewSubmission))->handle($reviewerB, $business, validReviewData(['idempotency_key' => Str::uuid()->toString()]), invitationToken: $secondInvitation->token);
+
+    expect($firstReview->fresh()->isVerified())->toBeTrue()
+        ->and($secondReview->fresh()->isVerified())->toBeFalse();
+});
+
+it('rejects an unknown invitation token', function () {
+    $reviewer = User::factory()->create();
+    $business = Business::factory()->create();
+
+    (new SubmitReview(new ScreenReviewSubmission))->handle($reviewer, $business, validReviewData(), invitationToken: 'not-a-real-token');
+})->throws(ValidationException::class);
+
+it('rejects an invitation token for a different business', function () {
+    $reviewer = User::factory()->create();
+    $business = Business::factory()->create();
+    $otherBusiness = Business::factory()->create();
+    $invitation = ReviewInvitation::factory()->for($otherBusiness)->create();
+
+    (new SubmitReview(new ScreenReviewSubmission))->handle($reviewer, $business, validReviewData(), invitationToken: $invitation->token);
+})->throws(ValidationException::class);
+
+it('rejects an already-used invitation token', function () {
+    $reviewer = User::factory()->create();
+    $business = Business::factory()->create();
+    $invitation = ReviewInvitation::factory()->for($business)->reviewed()->create(['review_id' => Review::factory()->for($business)->create()->id]);
+
+    (new SubmitReview(new ScreenReviewSubmission))->handle($reviewer, $business, validReviewData(), invitationToken: $invitation->token);
+})->throws(ValidationException::class);
+
+it('rejects an expired invitation token', function () {
+    $reviewer = User::factory()->create();
+    $business = Business::factory()->create();
+    $invitation = ReviewInvitation::factory()->for($business)->expired()->create();
+
+    (new SubmitReview(new ScreenReviewSubmission))->handle($reviewer, $business, validReviewData(), invitationToken: $invitation->token);
+})->throws(ValidationException::class);

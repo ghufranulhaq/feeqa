@@ -3,12 +3,15 @@
 namespace App\Actions\Reviews;
 
 use App\Actions\Businesses\RecalculateBusinessScore;
+use App\Actions\Verification\IssueTransactionInvitationAttestation;
+use App\Domain\Invitations\InvitationStatus;
 use App\Domain\Reviews\ReviewStatus;
 use App\Domain\Reviews\SourceLabel;
 use App\Models\Business;
 use App\Models\CategoryQuestion;
 use App\Models\Location;
 use App\Models\Review;
+use App\Models\ReviewInvitation;
 use App\Models\User;
 use App\Notifications\ReviewTaggedNotification;
 use Illuminate\Support\Facades\Log;
@@ -17,11 +20,12 @@ use Illuminate\Validation\ValidationException;
 
 /**
  * FR-003-02, FR-003-04 through FR-003-09: the core submission rules.
- * FR-003-14, FR-003-15: source label is set here, by the system only, and
- * is always `Organic` — `Invited`/`Redirected` both need the invitation/
- * generic-link system (005), not built yet. Edge cases table: a `closed`
- * Business (002) still accepts reviews until 12 months after its closure
- * date (`Business::acceptsNewReviews()`).
+ * FR-003-14, FR-003-15, FR-005-02: source label is `Organic` unless an
+ * optional invitation token is supplied, in which case it comes from the
+ * invitation's own method (005) — `Invited` for bcc/integration/api/csv/
+ * manual, `Redirected` for `link`. Edge cases table: a `closed` Business
+ * (002) still accepts reviews until 12 months after its closure date
+ * (`Business::acceptsNewReviews()`).
  */
 class SubmitReview
 {
@@ -35,7 +39,7 @@ class SubmitReview
      *     answers?: array<string, mixed>, tagged_business_ids?: list<int>,
      * } $data
      */
-    public function handle(User $reviewer, Business $business, array $data, ?Location $location = null): Review
+    public function handle(User $reviewer, Business $business, array $data, ?Location $location = null, ?string $invitationToken = null): Review
     {
         $idempotencyKey = $data['idempotency_key'] ?? null;
 
@@ -46,6 +50,8 @@ class SubmitReview
         if ($location !== null) {
             $this->guardLocationBelongsToBusiness($business, $location);
         }
+
+        $invitation = $this->resolveInvitation($invitationToken, $business);
 
         $this->guardConfirmation($data);
         $starRating = ReviewFieldGuards::starRating($data['star_rating']);
@@ -67,7 +73,7 @@ class SubmitReview
             'location_id' => $location?->id,
             'reviewer_id' => $reviewer->id,
             'status' => $outcome->status,
-            'source_label' => SourceLabel::Organic,
+            'source_label' => $invitation?->method->sourceLabel() ?? SourceLabel::Organic,
             'star_rating' => $starRating,
             'title' => $title,
             'text' => $text,
@@ -86,11 +92,51 @@ class SubmitReview
             Notification::send($taggedBusiness->members(), new ReviewTaggedNotification($review));
         }
 
+        if ($invitation !== null) {
+            $invitation->update(['status' => InvitationStatus::Reviewed, 'reviewed_at' => now(), 'review_id' => $review->id]);
+
+            if ($invitation->method->isTransactionLinked() && $invitation->reference !== null) {
+                app(IssueTransactionInvitationAttestation::class)->handle($business, $review, $invitation->reference);
+            }
+        }
+
         // FR-003-30: never the tagged business (FR-003-32's zero-score-
         // effect clause) — only the business actually being reviewed.
         app(RecalculateBusinessScore::class)->handle($business);
 
         return $review;
+    }
+
+    /**
+     * FR-005-02: a token identifies which invitation this review closes
+     * out, if any — resolved before the review exists so its source_label
+     * can be set at creation, not patched in afterwards.
+     */
+    private function resolveInvitation(?string $token, Business $business): ?ReviewInvitation
+    {
+        if ($token === null) {
+            return null;
+        }
+
+        $invitation = ReviewInvitation::where('token', $token)->first();
+
+        if ($invitation === null) {
+            throw ValidationException::withMessages(['invitation_token' => 'That invitation link is not valid.']);
+        }
+
+        if ($invitation->business_id !== $business->id) {
+            throw ValidationException::withMessages(['invitation_token' => 'That invitation is for a different business.']);
+        }
+
+        if ($invitation->review_id !== null) {
+            throw ValidationException::withMessages(['invitation_token' => 'That invitation has already been used.']);
+        }
+
+        if ($invitation->isExpired()) {
+            throw ValidationException::withMessages(['invitation_token' => 'That invitation has expired.']);
+        }
+
+        return $invitation;
     }
 
     private function guardLocationBelongsToBusiness(Business $business, Location $location): void
