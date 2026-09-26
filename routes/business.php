@@ -63,4 +63,8 @@ Route::middleware(['auth', SetPermissionTeam::class])->prefix('business/{busines
         ->name('business.review-invitations.store');
     Route::delete('review-invitations/{reviewInvitation}', [ReviewInvitationController::class, 'destroy'])
         ->name('business.review-invitations.destroy');
+
+    // FR-005-01 (csv), FR-005-03.
+    Route::post('review-invitations/csv', [ReviewInvitationController::class, 'importCsv'])
+        ->name('business.review-invitations.import-csv');
 });

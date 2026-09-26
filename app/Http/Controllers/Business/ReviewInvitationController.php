@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Business;
 
 use App\Actions\Invitations\CancelInvitation;
+use App\Actions\Invitations\ImportInvitationsFromCsv;
 use App\Actions\Invitations\RequestManualInvitation;
 use App\Http\Controllers\Controller;
 use App\Models\Business;
@@ -45,5 +46,20 @@ class ReviewInvitationController extends Controller
         $action->handle($reviewInvitation, $request->user(), $validated['reason'] ?? null);
 
         return response()->json(['status' => $reviewInvitation->fresh()->status->value]);
+    }
+
+    public function importCsv(Request $request, Business $business, ImportInvitationsFromCsv $action): JsonResponse
+    {
+        $request->validate([
+            'file' => ['required', 'file'],
+        ]);
+
+        $result = $action->handle($business, $request->user(), $request->file('file'));
+
+        return response()->json([
+            'created' => $result->created->count(),
+            'collapsed' => $result->collapsed,
+            'errors' => $result->errors,
+        ]);
     }
 }

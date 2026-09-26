@@ -7,6 +7,7 @@ use App\Models\ReviewInvitation;
 use App\Models\User;
 use Database\Seeders\Base\BusinessRolesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Spatie\Permission\PermissionRegistrar;
 
 uses(RefreshDatabase::class);
@@ -52,6 +53,35 @@ it('lets an Owner cancel a queued invitation over HTTP (FR-005-12)', function ()
 
     $response->assertOk()->assertJson(['status' => 'cancelled']);
     expect($invitation->fresh()->status)->toBe(InvitationStatus::Cancelled);
+});
+
+it('lets an Owner import a CSV of invitations over HTTP (FR-005-01 csv)', function () {
+    $this->seed(BusinessRolesSeeder::class);
+    $business = Business::factory()->create();
+    $owner = User::factory()->create();
+    app(PermissionRegistrar::class)->setPermissionsTeamId($business->id);
+    $owner->assignRole(BusinessRole::Owner->value);
+    $file = UploadedFile::fake()->createWithContent('customers.csv', "recipient_email\nfirst@example.com\nsecond@example.com\n");
+
+    $response = $this->actingAs($owner)->post(route('business.review-invitations.import-csv', $business), [
+        'file' => $file,
+    ]);
+
+    $response->assertOk()->assertJson(['created' => 2, 'collapsed' => 0, 'errors' => []]);
+    expect(ReviewInvitation::where('business_id', $business->id)->count())->toBe(2);
+});
+
+it('forbids a Responder from importing a CSV over HTTP', function () {
+    $this->seed(BusinessRolesSeeder::class);
+    $business = Business::factory()->create();
+    $responder = User::factory()->create();
+    app(PermissionRegistrar::class)->setPermissionsTeamId($business->id);
+    $responder->assignRole(BusinessRole::Responder->value);
+    $file = UploadedFile::fake()->createWithContent('customers.csv', "recipient_email\nfirst@example.com\n");
+
+    $this->actingAs($responder)->post(route('business.review-invitations.import-csv', $business), [
+        'file' => $file,
+    ])->assertForbidden();
 });
 
 it('requires authentication', function () {
