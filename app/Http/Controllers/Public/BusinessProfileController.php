@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Actions\Reviews\ListReviewsForProfile;
 use App\Domain\Businesses\BusinessStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Business;
 use App\Models\BusinessSlugRedirect;
 use App\Models\Review;
 use App\Support\Reviews\ReviewCard;
+use App\Support\Reviews\ReviewListFilters;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -20,10 +23,10 @@ class BusinessProfileController extends Controller
      * later spec (scores, AI summary, replies, cases, similar businesses,
      * Consumer Warnings) is listed in `pending_features` instead of being
      * faked — the profile page shows those sections as "coming soon"
-     * rather than pretending the data exists. Reviews (spec 003 T6) are
+     * rather than pretending the data exists. Reviews (spec 003 T6, T9) are
      * real.
      */
-    public function show(string $slug): Response|RedirectResponse
+    public function show(Request $request, string $slug): Response|RedirectResponse
     {
         $business = Business::where('slug', $slug)->first();
 
@@ -36,6 +39,8 @@ class BusinessProfileController extends Controller
 
             return redirect()->to(route('businesses.show', $redirect->business->slug), 301);
         }
+
+        $reviewFilters = ReviewListFilters::fromRequest($request);
 
         return Inertia::render('public/business-profile', [
             'business' => [
@@ -72,16 +77,12 @@ class BusinessProfileController extends Controller
             // Business's own reviews — always empty until spec 003 exists,
             // not a "coming soon" placeholder like the list below.
             'mentions' => $business->mentions(),
-            // FR-003-26, FR-003-29: real reviews, paginated (max page size
-            // 50 — 20 here, well under the cap). Sorting/filtering beyond
-            // "most recent" is spec 003 T9, not built yet.
-            'reviews' => $business->reviews()
-                ->publiclyVisible()
-                ->with('reviewer')
-                ->latest('published_at')
-                ->paginate(20)
-                ->withQueryString()
+            // FR-003-26, FR-003-28, FR-003-29: real reviews, sorted,
+            // filtered, and paginated (max page size 50 — 20 here, well
+            // under the cap).
+            'reviews' => (new ListReviewsForProfile)->handle($business, $reviewFilters)
                 ->through(fn (Review $review) => ReviewCard::present($review)),
+            'review_filters' => $reviewFilters,
             'pending_features' => [
                 ['key' => 'review_score', 'label' => 'Review Score & Trust Index', 'spec' => '008'],
                 ['key' => 'ai_summary', 'label' => 'AI summary', 'spec' => '011'],

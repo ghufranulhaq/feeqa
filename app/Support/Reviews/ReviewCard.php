@@ -48,7 +48,10 @@ class ReviewCard
             'date_of_experience' => $review->date_of_experience->toDateString(),
             'published_at' => $review->published_at?->toIso8601String(),
             'source_label' => $review->source_label->value,
-            'useful_count' => $review->usefulVotes()->count(),
+            // T9's listing query eager-loads this via withCount() to avoid
+            // an N+1 across a full page; a single-review view (no count
+            // loaded) falls back to counting directly.
+            'useful_count' => $review->useful_votes_count ?? $review->usefulVotes()->count(),
             'question_answers' => self::questionAnswers($review),
         ];
     }

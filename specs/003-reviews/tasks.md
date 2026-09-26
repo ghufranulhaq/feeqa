@@ -107,13 +107,19 @@ wired), same pattern as spec 002.
       real endpoint (`reviews.useful-vote.store`) exists; the review card
       now shows the real count, but no button reaches the endpoint yet —
       same "endpoint before UI" situation as T5's drafts. FR-003-27.
-- [ ] **T9. Filtering, sorting, pagination.** A review-listing query action
-      for a Business/Location: sort by *Most recent* (default) or *Most
-      useful*; filter by star rating (multi-select), source label,
-      has-update, language, date range, location. Filters that name a
-      not-yet-built concept (Verified Experience, has-reply, has-case)
-      are accepted but have nothing to filter on yet — documented as
-      pending 004/007/010. Page size capped at 50. FR-003-28, FR-003-29.
+- [x] **T9. Filtering, sorting, pagination.** `ListReviewsForProfile`
+      action, shared by the Business profile and (newly wired) Location
+      profile: sort by *Most recent* (default) or *Most useful*; filter by
+      star rating (multi-select), source label, has-update, language, date
+      range, and location (by slug). `verified_experience`, `has_reply`,
+      and `has_case` are accepted in the query string and silently ignored
+      — documented as pending 004/007/010, since there's nothing to filter
+      on yet. Page size stays at 20/page (T6's choice, under FR-003-29's 50
+      cap). A shared `ReviewFilters` React component gives both profile
+      pages real filter/sort controls. Fixed a latent `LocationFactory` bug
+      along the way: it stored `slug` as a `Stringable` instead of a plain
+      string, which `route()`'s query-string builder silently drops.
+      FR-003-28, FR-003-29.
 - [ ] **T10. Edit & delete.** `UpdateReview`/`DeleteReview` — author only
       (403 for anyone else, including a business member — tested via API);
       an edit is re-screened through T2 and shows "Edited" with a date; a

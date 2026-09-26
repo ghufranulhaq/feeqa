@@ -1,5 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { ReviewCard, type ReviewCardData } from '@/components/review-card';
+import { ReviewFilters, type ReviewFiltersState } from '@/components/review-filters';
 
 interface Category {
     slug: string;
@@ -52,15 +53,26 @@ export default function BusinessProfile({
     locations,
     mentions,
     reviews,
+    review_filters: reviewFilters,
     pending_features: pendingFeatures,
 }: {
     business: Business;
     locations: LocationSummary[];
     mentions: unknown[];
     reviews: ReviewsPage;
+    review_filters: ReviewFiltersState;
     pending_features: PendingFeature[];
 }) {
     const categories = [business.primary_category, ...business.secondary_categories].filter((category): category is Category => category !== null);
+
+    const hasActiveFilters =
+        reviewFilters.star_rating.length > 0 ||
+        reviewFilters.source_label.length > 0 ||
+        reviewFilters.has_update ||
+        reviewFilters.language !== null ||
+        reviewFilters.date_from !== null ||
+        reviewFilters.date_to !== null ||
+        reviewFilters.location !== null;
 
     return (
         <>
@@ -133,8 +145,12 @@ export default function BusinessProfile({
                 <section className="mt-8">
                     <h2 className="text-lg font-medium">Reviews ({reviews.total})</h2>
 
+                    <ReviewFilters url={route('businesses.show', business.slug)} filters={reviewFilters} locations={locations} />
+
                     {reviews.data.length === 0 ? (
-                        <p className="mt-2 text-sm text-neutral-600">No published reviews yet.</p>
+                        <p className="mt-2 text-sm text-neutral-600">
+                            {hasActiveFilters ? 'No reviews match these filters.' : 'No published reviews yet.'}
+                        </p>
                     ) : (
                         <div className="mt-2 space-y-4">
                             {reviews.data.map((review) => (

@@ -42,7 +42,7 @@ it('shows a location profile page with a "coming soon" score placeholder (FR-002
             ->component('public/location-profile')
             ->where('location.name', 'City Centre Branch')
             ->where('location.address.city', 'London')
-            ->has('pending_features', 2)
+            ->has('pending_features', 1)
         );
 });
 

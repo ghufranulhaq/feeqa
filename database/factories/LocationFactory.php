@@ -21,7 +21,7 @@ class LocationFactory extends Factory
         return [
             'business_id' => Business::factory(),
             'name' => $name,
-            'slug' => str($name)->slug(),
+            'slug' => (string) str($name)->slug(),
             'address' => [
                 'line1' => $this->faker->streetAddress(),
                 'city' => $this->faker->city(),

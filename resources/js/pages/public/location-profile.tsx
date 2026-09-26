@@ -1,4 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
+import { ReviewCard, type ReviewCardData } from '@/components/review-card';
+import { ReviewFilters, type ReviewFiltersState } from '@/components/review-filters';
 
 interface Address {
     line1: string;
@@ -9,6 +11,7 @@ interface Address {
 }
 
 interface LocationDetails {
+    slug: string;
     name: string;
     address: Address;
     latitude: string | null;
@@ -23,15 +26,35 @@ interface PendingFeature {
     spec: string;
 }
 
+interface ReviewsPage {
+    data: ReviewCardData[];
+    current_page: number;
+    last_page: number;
+    total: number;
+    next_page_url: string | null;
+    prev_page_url: string | null;
+}
+
 export default function LocationProfile({
     business,
     location,
+    reviews,
+    review_filters: reviewFilters,
     pending_features: pendingFeatures,
 }: {
     business: { name: string; slug: string };
     location: LocationDetails;
+    reviews: ReviewsPage;
+    review_filters: ReviewFiltersState;
     pending_features: PendingFeature[];
 }) {
+    const hasActiveFilters =
+        reviewFilters.star_rating.length > 0 ||
+        reviewFilters.source_label.length > 0 ||
+        reviewFilters.has_update ||
+        reviewFilters.language !== null ||
+        reviewFilters.date_from !== null ||
+        reviewFilters.date_to !== null;
     return (
         <>
             <Head title={`${location.name} — ${business.name}`} />
@@ -67,6 +90,39 @@ export default function LocationProfile({
                         </ul>
                     </section>
                 )}
+
+                <section className="mt-8">
+                    <h2 className="text-lg font-medium">Reviews ({reviews.total})</h2>
+
+                    <ReviewFilters url={route('businesses.locations.show', [business.slug, location.slug])} filters={reviewFilters} />
+
+                    {reviews.data.length === 0 ? (
+                        <p className="mt-2 text-sm text-neutral-600">
+                            {hasActiveFilters ? 'No reviews match these filters.' : 'No published reviews yet.'}
+                        </p>
+                    ) : (
+                        <div className="mt-2 space-y-4">
+                            {reviews.data.map((review) => (
+                                <ReviewCard key={review.id} review={review} />
+                            ))}
+                        </div>
+                    )}
+
+                    {(reviews.prev_page_url || reviews.next_page_url) && (
+                        <div className="mt-4 flex gap-4 text-sm">
+                            {reviews.prev_page_url && (
+                                <Link href={reviews.prev_page_url} className="underline" preserveScroll>
+                                    Previous
+                                </Link>
+                            )}
+                            {reviews.next_page_url && (
+                                <Link href={reviews.next_page_url} className="underline" preserveScroll>
+                                    Next
+                                </Link>
+                            )}
+                        </div>
+                    )}
+                </section>
 
                 <section className="mt-8">
                     <h2 className="text-lg font-medium">Coming soon</h2>
