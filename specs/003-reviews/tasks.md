@@ -33,7 +33,10 @@ wired), same pattern as spec 002.
       used at read time. FR-003-11, FR-003-12, FR-003-13, edge cases (empty/
       whitespace/length, HTML/script stripping, same text on several
       businesses).
-- [ ] **T3. Submit review (core).** `SubmitReview` action: membership block
+- [x] **T3. Submit review (core).** `SubmitReview` action: field validation
+      (star rating 1–5, title 5–100 characters, text 30–5,000 characters
+      with emoji counted toward length but >= 30 non-whitespace required,
+      reference number <= 64 characters — FR-003-02), membership block
       (FR-003-07, reuses `Business::hasMembership()`), date-of-experience
       window (FR-003-04), confirmation checkbox required (FR-003-06),
       language stored (fixed `en` at this single-locale launch, correctable
@@ -41,9 +44,10 @@ wired), same pattern as spec 002.
       review per business per 30 days (FR-003-08's base rule — the
       different-invitation/verified-transaction exception is a hook noted
       for specs 004/005, not built yet), calls T2's screening, source label
-      always `Organic` for now (T7 covers labelling properly). FR-003-04,
-      FR-003-06 through FR-003-09, edge cases (idempotency, duplicate
-      submission, date rules).
+      always `Organic` for now (T7 covers labelling properly). FR-003-02,
+      FR-003-04, FR-003-06 through FR-003-09, edge cases (empty/whitespace/
+      emoji title and text, rating missing/out of range, idempotency,
+      duplicate submission, date rules).
 - [ ] **T4. Question set answers on submission.** Loads the Business's (or
       Location's) `effectiveQuestions()` (002 T8); required questions must
       be answered, optional ones may be skipped; answers stored with the
