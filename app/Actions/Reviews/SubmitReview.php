@@ -2,6 +2,7 @@
 
 namespace App\Actions\Reviews;
 
+use App\Actions\Businesses\RecalculateBusinessScore;
 use App\Domain\Reviews\ReviewStatus;
 use App\Domain\Reviews\SourceLabel;
 use App\Models\Business;
@@ -81,6 +82,10 @@ class SubmitReview
         if ($outcome->status === ReviewStatus::Published && $taggedBusiness !== null) {
             Notification::send($taggedBusiness->members(), new ReviewTaggedNotification($review));
         }
+
+        // FR-003-30: never the tagged business (FR-003-32's zero-score-
+        // effect clause) — only the business actually being reviewed.
+        app(RecalculateBusinessScore::class)->handle($business);
 
         return $review;
     }

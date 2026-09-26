@@ -176,12 +176,22 @@ wired), same pattern as spec 002.
       acceptance line for this section from "always empty" to done, since
       it's now wired. FR-003-31, FR-003-33, edge cases (self-tag/multiple
       tags, Consumer-Warning business taggable).
-- [ ] **T13. Score-recalculation hook + invariance.** A `RecalculateBusinessScore`
-      no-op action (008's real target), called from every trigger point
-      built above (T3 publish, T10 edit/delete, T11 update) — same
-      "built now, filled later" pattern as spec 002's mentions hook.
-      Invariance test proving a tag never triggers a recalculation for the
-      *tagged* business. FR-003-30, FR-003-32's zero-score-effect clause.
+- [x] **T13. Score-recalculation hook + invariance.** `App\Actions\Businesses\
+      RecalculateBusinessScore` (008's real target) is a deliberate no-op,
+      resolved through the container at each call site rather than
+      constructor-injected — so every existing caller's constructor stayed
+      untouched, and a test can swap it out to observe which Business each
+      trigger point actually recalculates for. Called from every trigger
+      point built above: T3's `SubmitReview` (every submission, whatever
+      the screening outcome), T10's `UpdateReview` and `DeleteReview`
+      (every edit and delete), and T11's `SubmitLifecycleUpdate` (every
+      lifecycle update) — same "built now, filled later" pattern as spec
+      002 T13's mentions hook. Each call site passes the review's own
+      business, never a tagged one; an invariance test per trigger point
+      proves a tagged review recalculates only the business being
+      reviewed, confirming FR-003-32's zero-score-effect clause holds even
+      where a tag is present. FR-003-30, FR-003-32's zero-score-effect
+      clause.
 - [ ] **T14. Docs pass.** README, `docs/user-guides/`,
       `docs/system-overview/` updated for everything above (constitution
       §8 rule 9); `make docs-check` passes.

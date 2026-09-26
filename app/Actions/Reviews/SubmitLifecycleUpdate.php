@@ -2,6 +2,7 @@
 
 namespace App\Actions\Reviews;
 
+use App\Actions\Businesses\RecalculateBusinessScore;
 use App\Domain\Reviews\DurabilitySignal;
 use App\Domain\Reviews\LifecycleMilestone;
 use App\Domain\Reviews\ReviewStatus;
@@ -61,6 +62,11 @@ class SubmitLifecycleUpdate
         if ($outcome->status === ReviewStatus::Published) {
             $this->recalculateDurabilitySignal($review);
         }
+
+        // FR-003-30: the review's own current rating can change here
+        // (FR-003-21), which is enough to require a recalculation, held
+        // or not — spec 008 decides eligibility once it exists.
+        app(RecalculateBusinessScore::class)->handle($review->business);
 
         return $update;
     }

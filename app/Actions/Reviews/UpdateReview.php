@@ -2,6 +2,7 @@
 
 namespace App\Actions\Reviews;
 
+use App\Actions\Businesses\RecalculateBusinessScore;
 use App\Domain\Reviews\ReviewStatus;
 use App\Models\Review;
 use App\Models\User;
@@ -69,6 +70,10 @@ class UpdateReview
         if ($outcome->status === ReviewStatus::Published && $taggedBusiness !== null && $taggedBusiness->id !== $previousTaggedBusinessId) {
             Notification::send($taggedBusiness->members(), new ReviewTaggedNotification($review));
         }
+
+        // FR-003-30: never the tagged business (FR-003-32's zero-score-
+        // effect clause) — only the business actually being reviewed.
+        app(RecalculateBusinessScore::class)->handle($review->business);
 
         return $review;
     }
