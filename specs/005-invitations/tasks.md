@@ -38,7 +38,7 @@ in this codebase has with its own missing UI.
       `InvitationTemplate`. Reuses `App\Domain\Verification\
       TransactionRecordHash` for email/reference hashing rather than a
       second HMAC helper — one secret to manage for both specs. FR-005-05.
-- [ ] **T2. Template neutrality guard.** Pure, unit-tested
+- [x] **T2. Template neutrality guard.** Pure, unit-tested
       `GuardNeutralTemplate` (`app/Domain/Invitations/`): rejects a
       template missing `{review_link}`/`{unsubscribe_link}`, mentioning an
       incentive (discount/coupon/prize/gift/refund/points/"in return"/etc,
