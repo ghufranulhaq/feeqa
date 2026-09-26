@@ -40,9 +40,11 @@ class StatementOfReasonsNotification extends Notification
             ? 'This decision was made automatically by our screening system.'
             : 'This decision was made by a member of our moderation team.');
 
-        // FR-006-18: T7 (Appeals) doesn't exist yet — an honest
+        // FR-006-18: `SubmitAppeal` (T7) exists, but there's still no
+        // page or route for a reviewer to call it themselves (this spec's
+        // console/flag-button/appeal-form UI isn't built) — an honest
         // placeholder instruction rather than a link to a page that isn't
-        // built, same gap 005 T7 documented for its own token resolution.
+        // there, same gap 005 T7 documented for its own token resolution.
         $message->line('If you believe this is a mistake, reply to this email to appeal.');
 
         return $message;

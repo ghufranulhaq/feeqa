@@ -75,6 +75,22 @@ it('lifts an account_block step, unblocking the reviewer', function () {
     expect($reviewer->fresh()->isBlocked())->toBeFalse();
 });
 
+it('lifts a feature_restriction step, restoring invitations and profile edits', function () {
+    $business = Business::factory()->create([
+        'restricted_features' => [RestrictableFeature::Invitations->value, RestrictableFeature::ProfileEdits->value],
+    ]);
+    $action = EnforcementAction::factory()->for($business, 'subject')->create([
+        'step' => EnforcementStep::FeatureRestriction,
+        'applied_at' => now(),
+    ]);
+
+    (new LiftEnforcementStep)->handle(liftStaff(), $action, 'Earned it back.');
+
+    $business->refresh();
+    expect($business->hasFeatureRestricted(RestrictableFeature::Invitations))->toBeFalse()
+        ->and($business->hasFeatureRestricted(RestrictableFeature::ProfileEdits))->toBeFalse();
+});
+
 it('rejects lifting an already-lifted step', function () {
     $action = EnforcementAction::factory()->create([
         'step' => EnforcementStep::EducationalNotice,

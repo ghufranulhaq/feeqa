@@ -240,20 +240,52 @@ guessed at for content that isn't there yet.
       something), so it logs to compliance but doesn't send a statement of
       reasons — FR-006-13 is about actions against a user, not ones
       restoring them. FR-006-14 through FR-006-17.
-- [ ] **T7. Appeals.** `appeals` table (appealable — the
-      enforcement_action or moderation decision being appealed —
-      appellant_id, statement ≤ 2000 chars, evidence paths json, status:
-      pending/upheld/overturned, decided_by, decided_at, decision_reason,
-      timestamps). `SubmitAppeal`: one per decision, within 30 days
-      (rejected as late past that, per the edge cases table, unless a
-      staff override flag is set), guards against the same appellant
-      appealing twice. `DecideAppeal`: the decider must not be the
-      original `applied_by`/`decided_by` staff member (FR-006-19,
-      enforced, not just documented); a 7-day SLA field for T5's queue;
-      `overturned` fully reverses the original action (unblurs/republishes
-      the content, lifts the enforcement step, recalculates scores) and
-      notifies the appellant either way. FR-006-18, FR-006-19, edge case
-      (late appeal, staff override).
+- [x] **T7. Appeals.** `appeals` table: `appealable` (a morph covering the
+      three decision types that exist today — `EnforcementAction`, `Flag`,
+      and `Review` — the "enforcement_action or moderation decision"
+      this task's own sketch names), `appellant_id` (nullable/`nullOnDelete`,
+      same choice `flags.reporter_id` already made), `statement`,
+      `evidence_paths` json, `status` (pending/upheld/overturned),
+      `decided_by`, `decided_at`, `decision_reason`. No separate SLA
+      column: FR-006-19's 7-day window is a staff process target, not a
+      stored deadline, the same choice made everywhere else in this spec
+      that a *queue* deadline exists as a real column (flags'
+      `sla_due_at`) but a *process* target doesn't. `AppealableDecision`
+      (`App\Domain\Moderation`): a small lookup class both actions share,
+      since "when was this decided and by whom" differs by appealable
+      type — `EnforcementAction.applied_at`/`applied_by`, `Flag.
+      decided_at`/`decided_by`, or (since `Review` has neither column)
+      the latest matching `ComplianceLogEntry` `ModerateReview` already
+      wrote. `SubmitAppeal`: validates the statement (≤ 2,000 chars),
+      that the caller is the affected party (the reviewer for their
+      review, the flag's own filer — reusing `FlagReviews` for a business
+      flag — or the enforcement subject: the blocked reviewer, or any
+      business member, since no appeals-specific permission exists yet),
+      that no appeal from this same appellant against this same decision
+      already exists, and the 30-day window from `AppealableDecision`
+      (rejected as late past that unless a `bool $staffOverride` is set —
+      edge cases table). `DecideAppeal`: rejects a second decision on an
+      already-decided appeal; blocks the original decision-maker via
+      `AppealableDecision::deciderId()` (FR-006-19, enforced, not just
+      documented); `overturned` flips a flag's upheld/rejected verdict,
+      republishes a removed/mark-not-genuine'd review and recalls
+      `RecalculateBusinessScore` (redact can't be reversed this way — the
+      original text is gone, `ModerateReview::redact()` overwrites it in
+      place, an honest gap rather than a guess at reconstructing it), or
+      marks an enforcement action lifted and reverses its side effects —
+      deliberately bypassing `LiftEnforcementStep`'s own Senior-Moderator-
+      plus-6-month gate for a Consumer Warning, since an appeal being
+      upheld already means staff judged the step wrong, not that it ran
+      its course. That reversal (`EnforcementAction::reverseSideEffects()`)
+      moved onto the model so `LiftEnforcementStep` and `DecideAppeal`
+      share it rather than duplicating the mutation; writing it surfaced
+      a real T6 gap — lifting a `feature_restriction` step never actually
+      restored the two features, despite T6's own tasks.md description
+      already claiming it did — fixed here rather than narrowed to match
+      the old code, with a regression test added to
+      `LiftEnforcementStepTest`. `AppealDecidedNotification` sent to the
+      appellant either way. FR-006-18, FR-006-19, edge case (late appeal,
+      staff override).
 - [ ] **T8. Weekly audit sampling and auto-disable.** `AuditScreeningSample`
       action: pulls a random ≥ 2% sample of the week's `screenings` rows
       with a `publish`/`reject` recommendation, and creates an

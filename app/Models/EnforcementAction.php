@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Domain\Businesses\RestrictableFeature;
 use App\Domain\Moderation\EnforcementLadder;
 use App\Domain\Moderation\EnforcementStep;
 use App\Domain\Moderation\ReasonCode;
@@ -80,5 +81,54 @@ class EnforcementAction extends Model
     public function isLifted(): bool
     {
         return $this->lifted_at !== null;
+    }
+
+    /**
+     * Reverses whatever `ApplyEnforcementStep` did to the subject for this
+     * row's step. Shared by `LiftEnforcementStep` (a step earned its way
+     * back off) and `DecideAppeal` (a step overturned on appeal) so the
+     * two callers' own gating (a Senior Moderator + 6-month minimum for
+     * lifting a Consumer Warning; a different staff member for deciding
+     * an appeal) stays theirs while the mutation itself lives once.
+     *
+     * `feature_restriction` un-restricting on lift was missing until this
+     * method was written for T7 — tasks.md's own T6 description already
+     * claimed `LiftEnforcementStep` "un-restricts the two features"
+     * generally, not only inside a Consumer Warning, so this corrects the
+     * code to match that claim rather than narrowing the claim to match
+     * the code.
+     *
+     * Never restores a suspended `plan` — no billing record of the prior
+     * tier exists to restore it to (017 doesn't exist yet), the same
+     * honest gap `LiftEnforcementStep` already documented.
+     */
+    public function reverseSideEffects(): void
+    {
+        $subject = $this->subject;
+
+        if ($this->step === EnforcementStep::ConsumerWarning && $subject instanceof Business) {
+            $subject->update([
+                'consumer_warning_at' => null,
+                'consumer_warning_reason' => null,
+                'restricted_features' => $this->withoutLadderFeatures($subject),
+            ]);
+        } elseif ($this->step === EnforcementStep::FeatureRestriction && $subject instanceof Business) {
+            $subject->update(['restricted_features' => $this->withoutLadderFeatures($subject)]);
+        } elseif ($this->step === EnforcementStep::AccountBlock && $subject instanceof User) {
+            $subject->update(['blocked_at' => null, 'blocked_reason' => null]);
+        }
+    }
+
+    /**
+     * @return list<string>|null
+     */
+    private function withoutLadderFeatures(Business $business): ?array
+    {
+        $restricted = array_values(array_diff(
+            $business->restricted_features ?? [],
+            [RestrictableFeature::Invitations->value, RestrictableFeature::ProfileEdits->value],
+        ));
+
+        return $restricted ?: null;
     }
 }

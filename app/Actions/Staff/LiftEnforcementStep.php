@@ -2,10 +2,8 @@
 
 namespace App\Actions\Staff;
 
-use App\Domain\Businesses\RestrictableFeature;
 use App\Domain\Moderation\EnforcementStep;
 use App\Domain\Staff\StaffRole;
-use App\Models\Business;
 use App\Models\ComplianceLogEntry;
 use App\Models\EnforcementAction;
 use App\Models\User;
@@ -50,41 +48,18 @@ class LiftEnforcementStep
             'lift_reason' => $resolutionNotes,
         ]);
 
-        $subject = $action->subject;
-
-        if ($action->step === EnforcementStep::ConsumerWarning && $subject instanceof Business) {
-            $this->liftConsumerWarning($subject);
-        } elseif ($action->step === EnforcementStep::AccountBlock) {
-            $subject->update(['blocked_at' => null, 'blocked_reason' => null]);
-        }
+        // Shared with `DecideAppeal`'s overturn path — see
+        // `EnforcementAction::reverseSideEffects()`'s own docblock for why
+        // the mutation lives there rather than here.
+        $action->reverseSideEffects();
 
         ComplianceLogEntry::record(
             staff: $staff,
             action: "enforcement_{$action->step->value}_lifted",
             reasonCode: $resolutionNotes,
-            target: $subject,
+            target: $action->subject,
         );
 
         return $action->fresh();
-    }
-
-    /**
-     * Doesn't restore `plan` — there's no billing record of what the
-     * Business was on before the warning forced it to Free (017 doesn't
-     * exist), so re-subscribing is left to whatever future flow 017 adds,
-     * an honest gap rather than a guess.
-     */
-    private function liftConsumerWarning(Business $business): void
-    {
-        $restricted = array_values(array_diff(
-            $business->restricted_features ?? [],
-            [RestrictableFeature::Invitations->value, RestrictableFeature::ProfileEdits->value],
-        ));
-
-        $business->update([
-            'consumer_warning_at' => null,
-            'consumer_warning_reason' => null,
-            'restricted_features' => $restricted ?: null,
-        ]);
     }
 }
