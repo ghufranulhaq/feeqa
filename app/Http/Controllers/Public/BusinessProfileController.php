@@ -42,6 +42,7 @@ class BusinessProfileController extends Controller
                 'logo_path' => $business->logo_path,
                 'status' => $business->status->value,
                 'is_claimed' => $business->status === BusinessStatus::Claimed,
+                'is_closed' => $business->status === BusinessStatus::Closed,
                 'claimed_at' => $business->claimed_at?->toDateString(),
                 'description' => $business->description,
                 'website' => $business->website,

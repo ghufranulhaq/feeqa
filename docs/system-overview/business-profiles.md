@@ -52,6 +52,21 @@ industry before launching (FR-002-32) — its navigation entry, category
 page, and review-form questions; the ranking preview is honestly `null`
 until spec 009's search exists.
 
+### Moving, merging, and deleting categories
+
+A category that still has businesses in it can't be deleted outright
+(FR-002-36) — staff first move its businesses to another category, or
+merge the whole category into one. Merging moves its sub-categories,
+its businesses (primary and secondary), and its question sets into the
+surviving category — a question set's own version number is never
+reused, even if both categories already had one, so a version an
+existing review answered under (FR-002-20, once spec 003 exists) always
+still means the same thing. The old slug permanently redirects to the
+survivor either way, the same as a plain rename. None of this ever
+touches a Review Score or Trust Index (FR-002-37) — those don't exist
+yet, and the actions here only ever move category/business links, never
+score-bearing data.
+
 ### Question sets
 
 Travel, Airlines, Travel Agencies & OTAs, and Airports each have their
@@ -154,6 +169,25 @@ main profile once there's at least one). Adding, editing, or removing a
 location needs the same Owner/Admin permission as editing the profile
 (FR-002-16). A location's own Review Score is spec 008 — "coming soon"
 for now, same as the main profile.
+
+## Closing a business
+
+Either the Owner (its own business only) or any staff member (any
+business — e.g. one seeded that turns out not to exist any more) can
+mark a business `closed`. The profile stays readable with a "Closed"
+banner; it's never deleted, so anything already published about it stays
+in place. Reviews are spec 003, but the rule is already defined and
+ready for it: new ones are blocked starting 12 months after the closure
+date, not before.
+
+## Merging duplicate businesses
+
+When staff later discover two already-listed businesses are the same
+one — something FR-002-09's duplicate check at creation time didn't
+catch — they merge one into the other: its locations and secondary
+categories move to the survivor, and its slug permanently redirects.
+Reviews and score recalculation are specs 003/008, not built yet, so
+there's nothing to move or recalculate for those parts today.
 
 ## Seeding businesses (staff)
 

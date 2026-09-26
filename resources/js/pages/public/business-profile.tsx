@@ -18,6 +18,7 @@ interface Business {
     logo_path: string | null;
     status: string;
     is_claimed: boolean;
+    is_closed: boolean;
     claimed_at: string | null;
     description: string | null;
     website: string | null;
@@ -76,6 +77,10 @@ export default function BusinessProfile({
                         </p>
                     </div>
                 </div>
+
+                {business.is_closed && (
+                    <p className="mt-4 rounded border border-neutral-300 bg-neutral-100 px-4 py-3 text-sm font-medium text-neutral-800">Closed</p>
+                )}
 
                 {!business.is_claimed && (
                     <p className="mt-4 rounded border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">

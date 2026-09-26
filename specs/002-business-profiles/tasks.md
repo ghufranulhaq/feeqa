@@ -91,7 +91,7 @@ spec owns and extends it.
       employee-size-band dispute flow (business submits evidence, staff
       decide within 7 days, current band holds until then). FR-002-24,
       FR-002-25 dispute case, FR-002-34.
-- [ ] **T12. Category move/merge + closure.** Staff move-businesses and
+- [x] **T12. Category move/merge + closure.** Staff move-businesses and
       merge-categories actions (question-set answers keep their original
       version; old slug redirects; a category with businesses can't be
       deleted outright); business closure (`closed` status, "Closed"

@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Staff;
 
 use App\Actions\Staff\CreateCategory;
+use App\Actions\Staff\DeleteCategory;
 use App\Actions\Staff\LaunchIndustry;
+use App\Actions\Staff\MergeCategories;
+use App\Actions\Staff\MoveBusinessesToCategory;
 use App\Actions\Staff\PauseIndustry;
 use App\Actions\Staff\PreviewIndustry;
+use App\Actions\Staff\RenameCategorySlug;
 use App\Actions\Staff\SetCategoryLaunched;
 use App\Actions\Staff\UpdateCategoryDetails;
 use App\Http\Controllers\Controller;
@@ -77,5 +81,39 @@ class CategoryController extends Controller
         $action->handle($category, $request->user(), $validated['launched']);
 
         return back()->with('status', 'Category updated.');
+    }
+
+    public function renameSlug(Request $request, Category $category, RenameCategorySlug $action): RedirectResponse
+    {
+        $validated = $request->validate(['slug' => ['required', 'string', 'max:255']]);
+
+        $action->handle($category, $validated['slug'], $request->user());
+
+        return back()->with('status', 'Category slug updated.');
+    }
+
+    public function moveBusinesses(Request $request, Category $category, MoveBusinessesToCategory $action): RedirectResponse
+    {
+        $validated = $request->validate(['to' => ['required', Rule::exists(Category::class, 'id')]]);
+
+        $action->handle($category, Category::findOrFail($validated['to']), $request->user());
+
+        return back()->with('status', 'Businesses moved.');
+    }
+
+    public function merge(Request $request, Category $category, MergeCategories $action): RedirectResponse
+    {
+        $validated = $request->validate(['target' => ['required', Rule::exists(Category::class, 'id')]]);
+
+        $action->handle($category, Category::findOrFail($validated['target']), $request->user());
+
+        return back()->with('status', 'Categories merged.');
+    }
+
+    public function destroy(Request $request, Category $category, DeleteCategory $action): RedirectResponse
+    {
+        $action->handle($category, $request->user());
+
+        return back()->with('status', 'Category deleted.');
     }
 }

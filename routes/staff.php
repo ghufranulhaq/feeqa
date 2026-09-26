@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Staff\BusinessClaimReviewController;
 use App\Http\Controllers\Staff\BusinessImportController;
+use App\Http\Controllers\Staff\BusinessMergeController;
 use App\Http\Controllers\Staff\BusinessProfileChangeRequestController;
 use App\Http\Controllers\Staff\CategoryController;
 use App\Http\Controllers\Staff\EmployeeSizeBandDisputeController as StaffEmployeeSizeBandDisputeController;
@@ -34,8 +35,17 @@ Route::middleware(['auth', StaffIpAllowList::class])->prefix('staff')->group(fun
     // FR-002-32.
     Route::get('categories/{industry}/preview', [CategoryController::class, 'preview'])->name('staff.categories.preview');
 
+    // FR-002-36, edge cases table.
+    Route::patch('categories/{category}/slug', [CategoryController::class, 'renameSlug'])->name('staff.categories.rename-slug');
+    Route::post('categories/{category}/move-businesses', [CategoryController::class, 'moveBusinesses'])->name('staff.categories.move-businesses');
+    Route::post('categories/{category}/merge', [CategoryController::class, 'merge'])->name('staff.categories.merge');
+    Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('staff.categories.destroy');
+
     // FR-002-24, FR-002-34.
     Route::post('businesses/import', [BusinessImportController::class, 'store'])->name('staff.businesses.import');
+
+    // Edge cases table: duplicate businesses merged.
+    Route::post('businesses/{business}/merge', [BusinessMergeController::class, 'store'])->name('staff.businesses.merge');
 
     // FR-002-25 edge case.
     Route::post('employee-size-band-disputes/{dispute}/resolve', [StaffEmployeeSizeBandDisputeController::class, 'resolve'])

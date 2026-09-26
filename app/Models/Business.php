@@ -33,6 +33,7 @@ use Illuminate\Support\Str;
  * @property BusinessStatus $status
  * @property EmployeeSizeBand $employee_size_band
  * @property Carbon|null $claimed_at
+ * @property Carbon|null $closed_at
  */
 class Business extends Model
 {
@@ -60,6 +61,7 @@ class Business extends Model
         'city',
         'status',
         'claimed_at',
+        'closed_at',
         'description',
         'website',
         'email',
@@ -93,7 +95,22 @@ class Business extends Model
             'status' => BusinessStatus::class,
             'employee_size_band' => EmployeeSizeBand::class,
             'claimed_at' => 'datetime',
+            'closed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Edge cases table: "New reviews are blocked 12 months after the
+     * closure date." Nothing calls this yet — review submission is spec
+     * 003 — but the rule is defined here, in one place, ready for it.
+     */
+    public function acceptsNewReviews(): bool
+    {
+        if ($this->status !== BusinessStatus::Closed || $this->closed_at === null) {
+            return true;
+        }
+
+        return $this->closed_at->diffInMonths(now()) < 12;
     }
 
     public static function uniqueSlugFor(string $name, ?int $excludingId = null): string

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Public\BusinessClaimController;
+use App\Http\Controllers\Public\BusinessClosureController;
 use App\Http\Controllers\Public\BusinessCreateController;
 use App\Http\Controllers\Public\BusinessProfileController;
 use App\Http\Controllers\Public\LocationProfileController;
@@ -22,6 +23,9 @@ Route::middleware('auth')->group(function () {
     Route::post('business-claims/{claim}/verify-code', [BusinessClaimController::class, 'verifyCode'])->name('business-claims.verify-code');
     Route::post('business-claims/{claim}/verify-domain', [BusinessClaimController::class, 'verifyDomain'])->name('business-claims.verify-domain');
     Route::post('business-claims/{claim}/respond', [BusinessClaimController::class, 'respond'])->name('business-claims.respond');
+
+    // Edge cases table: reachable by an Owner or any staff member.
+    Route::post('businesses/{business}/close', [BusinessClosureController::class, 'store'])->name('businesses.close');
 });
 
 // FR-002-16.
