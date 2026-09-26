@@ -19,3 +19,12 @@ Schedule::command('reviews:send-lifecycle-reminders')->daily();
 
 // FR-004-23, constitution §5.6.
 Schedule::command('verification:delete-expired-proofs')->daily();
+
+// FR-005-08, FR-005-09.
+Schedule::command('review-invitations:send-due')->hourly();
+
+// FR-005-08.
+Schedule::command('review-invitations:send-reminders')->daily();
+
+// FR-005-10, FR-005-11.
+Schedule::command('review-invitations:expire')->daily();

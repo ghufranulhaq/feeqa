@@ -126,9 +126,7 @@ class CreateInvitation
 
     private function isSuppressed(Business $business, string $emailHash): bool
     {
-        return InvitationSuppression::where('recipient_email_hash', $emailHash)
-            ->where(fn ($query) => $query->whereNull('business_id')->orWhere('business_id', $business->id))
-            ->exists();
+        return InvitationSuppression::suppresses($business->id, $emailHash);
     }
 
     /**

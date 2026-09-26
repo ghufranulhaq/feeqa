@@ -229,6 +229,16 @@ return [
             // own `bcc_reference_pattern` column.
             'default_reference_pattern' => env('INVITATIONS_BCC_DEFAULT_REFERENCE_PATTERN', '/[A-Z]{2}-\d{6}/'),
         ],
+        // FR-005-13: used whenever a Business hasn't set up its own
+        // template for the invitation's locale (T2's UpsertInvitationTemplate
+        // is opt-in) — already passes GuardNeutralTemplate itself, so
+        // sending never blocks on a Business having configured anything.
+        'default_template' => [
+            'subject' => 'How was your experience?',
+            'body' => "We'd love to hear about your recent experience. Leave a review: {review_link}\n\nDon't want these emails? Unsubscribe: {unsubscribe_link}",
+        ],
+        // FR-005-08: "reminder ... sent 3-7 days after an unopened invitation."
+        'reminder_after_days' => (int) env('INVITATIONS_REMINDER_AFTER_DAYS', 3),
     ],
 
 ];

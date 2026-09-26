@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
  */
 class InvitationUnsubscribeController extends Controller
 {
-    public function store(Request $request, string $token, Unsubscribe $action): JsonResponse
+    public function show(Request $request, string $token, Unsubscribe $action): JsonResponse
     {
         $validated = $request->validate([
             'global' => ['nullable', 'boolean'],

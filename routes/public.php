@@ -10,6 +10,7 @@ use App\Http\Controllers\Public\PlatformKeysController;
 use App\Http\Controllers\Public\ReviewController;
 use App\Http\Controllers\Public\ReviewDraftController;
 use App\Http\Controllers\Public\ReviewerProfileController;
+use App\Http\Controllers\Public\ReviewInvitationLinkController;
 use App\Http\Controllers\Public\ReviewLifecycleUpdateController;
 use App\Http\Controllers\Public\ReviewReferenceMatchController;
 use App\Http\Controllers\Public\ReviewUsefulVoteController;
@@ -27,9 +28,19 @@ Route::get('.well-known/platform-keys.json', [PlatformKeysController::class, 'in
 Route::get('verification-revocations', [VerificationAttestationController::class, 'revocations'])->name('verification.revocations');
 Route::get('verification-check/{attestation}', [VerificationAttestationController::class, 'show'])->name('verification.check');
 
-// FR-005-15: no sign-in needed, so this stays outside every `auth` group.
-Route::post('invitations/{token}/unsubscribe', [InvitationUnsubscribeController::class, 'store'])
+// FR-005-15: "one click" from a plain link in an email body means GET, not
+// a form POST — no sign-in needed, so this stays outside every `auth` group.
+Route::get('invitations/{token}/unsubscribe', [InvitationUnsubscribeController::class, 'show'])
     ->name('invitations.unsubscribe');
+
+// FR-005-10, FR-005-11: the review-invitation email's own two links.
+// Distinct top-level path from `business/{business}/review-invitations`
+// (dashboard-scoped) and from `invitations/{token}` above (an unrelated,
+// pre-existing team-invitation concept).
+Route::get('review-invitations/{token}/open.gif', [ReviewInvitationLinkController::class, 'pixel'])
+    ->name('review-invitations.open-pixel');
+Route::get('review-invitations/{token}', [ReviewInvitationLinkController::class, 'show'])
+    ->name('review-invitations.show');
 
 // FR-002-08: signed-in only. Plural `/businesses/...`, distinct from the
 // singular `/business/{slug}` profile route below, so "new" can never be

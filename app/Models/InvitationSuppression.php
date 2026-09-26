@@ -30,4 +30,16 @@ class InvitationSuppression extends Model
     {
         return $this->belongsTo(Business::class);
     }
+
+    /**
+     * FR-005-09, FR-005-15: a business-level suppression blocks that
+     * Business only; a `business_id` null row (platform-wide unsubscribe,
+     * or FR-005-17's own hard-bounce/complaint rows) blocks every Business.
+     */
+    public static function suppresses(int $businessId, string $recipientEmailHash): bool
+    {
+        return self::where('recipient_email_hash', $recipientEmailHash)
+            ->where(fn ($query) => $query->whereNull('business_id')->orWhere('business_id', $businessId))
+            ->exists();
+    }
 }
