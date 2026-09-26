@@ -55,7 +55,15 @@ it('never exposes the proof fingerprint or the raw JWS on the public check page'
 
 it('detects a tampered attestation payload (spec 004 §6 acceptance)', function () {
     $attestation = issueTestAttestation();
-    $tamperedJws = substr_replace($attestation->jws, $attestation->jws[-1] === 'A' ? 'B' : 'A', -1);
+    // Flip a character 6 positions from the end rather than the very last
+    // one: base64url's final 1-2 characters can carry unused padding bits
+    // that a strict decoder still ignores, so a flip there occasionally
+    // decodes to the exact same signature bytes (flaky pass). Position -6
+    // is fully byte-aligned, so any flip here always changes the decoded
+    // signature.
+    $position = strlen($attestation->jws) - 6;
+    $replacement = $attestation->jws[$position] === 'A' ? 'B' : 'A';
+    $tamperedJws = substr_replace($attestation->jws, $replacement, $position, 1);
     $attestation->forceFill(['jws' => $tamperedJws])->save();
 
     $response = $this->get(route('verification.check', $attestation->id));
