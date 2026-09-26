@@ -6,6 +6,7 @@ use App\Http\Controllers\Business\EmployeeSizeBandDisputeController;
 use App\Http\Controllers\Business\InvitationController;
 use App\Http\Controllers\Business\InvitationTemplateController;
 use App\Http\Controllers\Business\LocationController;
+use App\Http\Controllers\Business\ReviewInvitationController;
 use App\Http\Controllers\Business\TransactionRecordController;
 use App\Http\Controllers\Business\VerificationRequestController;
 use App\Http\Middleware\SetPermissionTeam;
@@ -54,4 +55,12 @@ Route::middleware(['auth', SetPermissionTeam::class])->prefix('business/{busines
     // GuardNeutralTemplate on every write.
     Route::post('invitation-templates', [InvitationTemplateController::class, 'store'])
         ->name('business.invitation-templates.store');
+
+    // FR-005-01 (manual), FR-005-12. Distinct path/name from the
+    // team-member `invitations` routes above — same word, unrelated
+    // concept.
+    Route::post('review-invitations', [ReviewInvitationController::class, 'store'])
+        ->name('business.review-invitations.store');
+    Route::delete('review-invitations/{reviewInvitation}', [ReviewInvitationController::class, 'destroy'])
+        ->name('business.review-invitations.destroy');
 });
