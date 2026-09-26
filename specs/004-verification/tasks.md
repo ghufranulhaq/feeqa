@@ -71,7 +71,7 @@ wires them up rather than creating them.
       after a new key is generated and made active. FR-004-14 through
       FR-004-17, FR-004-22, edge cases (unknown attestation ID, staff
       approving their own review's proof — blocked).
-- [ ] **T5. Verification queue (staff decision).** `DecideVerificationProof`
+- [x] **T5. Verification queue (staff decision).** `DecideVerificationProof`
       action mirroring `ReviewBusinessClaim`'s shape: staff approve/reject
       a pending `review_verifications` row with a reason code, writes a
       compliance log entry, notifies the reviewer, and (on approve) calls
