@@ -192,9 +192,27 @@ wired), same pattern as spec 002.
       reviewed, confirming FR-003-32's zero-score-effect clause holds even
       where a tag is present. FR-003-30, FR-003-32's zero-score-effect
       clause.
-- [ ] **T14. Docs pass.** README, `docs/user-guides/`,
-      `docs/system-overview/` updated for everything above (constitution
-      §8 rule 9); `make docs-check` passes.
+- [x] **T14. Docs pass.** New `docs/system-overview/reviews.md` covers
+      everything T1-T13 built. `docs/user-guides/consumer.md` gets a real
+      "Reading reviews" section (its old "reviews aren't wired up yet"
+      line was stale since T6) and an honest note that writing, editing,
+      deleting, and voting are real but reachable only as application
+      actions/endpoints today, no page reaches them yet.
+      `docs/system-overview/business-profiles.md`'s "Mentioned in
+      reviews" section (stale "always empty, spec 003 not built" wording)
+      and its merge section are both corrected. README gets the
+      `REVIEW_SCREENING_*` env vars it was missing. This pass also
+      surfaced two real gaps neither fixed here nor previously noted
+      anywhere: constitution §5.6 requires review-update windows to
+      always be open in the demo environment, which was never built in
+      T11; and spec 002's `MergeDuplicateBusinesses` still doesn't move
+      reviews to the surviving business on a merge, so merging a business
+      that already has reviews today cascade-deletes them instead (its
+      foreign key to `businesses` is `cascadeOnDelete()`, and reviews
+      didn't exist when that action was written). Both are documented as
+      known gaps in `docs/system-overview/reviews.md` rather than fixed
+      here, since each needs its own scoped fix and test rewrite, not a
+      docs-pass change. `make docs-check` passes.
 - [ ] **T15. Acceptance sweep.** Re-check every box in spec.md §6 against
       what's actually built; mark fully-satisfied criteria `[x]` and
       partially-satisfied ones `[~]` with an inline note naming the

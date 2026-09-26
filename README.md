@@ -118,6 +118,13 @@ default already or is documented inline in that file.
   as above. **`BUSINESS_CLAIM_FREE_EMAIL_DOMAINS`**: comma-separated list
   a business's own domain can never be (gmail.com, etc. by default) —
   blocks claim method (a) for it entirely (FR-002-12).
+- **`REVIEW_SCREENING_BLOCKLIST_WORDS`**: comma-separated words that get a
+  review rejected outright (FR-003-11). **`REVIEW_SCREENING_NEAR_IDENTICAL_WINDOW_DAYS`**
+  / **`_THRESHOLD`**: how many days back, and how similar (0–100), text has
+  to be to the same person's review of a *different* business before it's
+  held for review instead of published (FR-003-13). Rules only, not one of
+  the constitution §5.1 providers — there's no `fake` variant because
+  there's no external service to fake.
 
 ## Testing
 

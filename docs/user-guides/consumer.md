@@ -2,8 +2,9 @@
 
 For anyone signing up to write and manage reviews. Business and staff
 guides land in this same folder once there's a dashboard/console UI for
-them to use (see `docs/system-overview/business-profiles.md` in the
-meantime for what a business owner or staff member can already do).
+them to use (see `docs/system-overview/business-profiles.md` and
+`docs/system-overview/reviews.md` in the meantime for what a business
+owner, staff member, or reviewer can already do).
 
 ## Creating an account
 
@@ -40,16 +41,35 @@ anyone — it never shows your email address.
 Every business has a public profile at `/business/{slug}` — you don't need
 an account to see it. It shows the business's name, logo, description,
 contact details, whether it's **Claimed** or **Unclaimed** (an unclaimed
-profile says so plainly), and links to its branch locations if it has
-any. Reviews, scores, and everything else aren't wired up to this page
-yet — sections for those show as "coming soon" until their own specs
-land.
+profile says so plainly), links to its branch locations if it has any,
+and its published reviews (see **Reading reviews** below). Its Review
+Score, Trust Index, and everything else a later spec owns still show as
+"coming soon" until their own specs land.
 
 If a business isn't listed, **Add a business** (`/businesses/new`,
 sign-in required) adds it by its website domain, or by name, country, and
 city if it has none. If it looks like something already listed, you're
 pointed at that profile instead of creating a duplicate. A category is
 required — pick "Other / Uncategorised" if nothing fits.
+
+## Reading reviews
+
+A business or location profile's review list can be sorted (most recent
+or most useful first) and filtered by star rating, source label,
+whether a review has a lifecycle update, language, and date range — a
+business's own page can also filter to one of its locations. Every
+review shows who wrote it, their rating, title, text, both dates, how
+many people found it useful, and its source label with a tooltip
+explaining what the label means. A review that's received a dated
+follow-up (30 days, 6 months, or 1 year after it published) shows its
+full timeline, and its headline rating is always the most recent one.
+Every review also has its own permanent link.
+
+**Writing, editing, deleting, or voting on a review isn't reachable from
+any page yet** — see `docs/system-overview/reviews.md` for exactly what
+exists behind the scenes today (real, tested application logic with no
+form in front of it yet, the same situation spec 002's own dashboard/
+console pages are in).
 
 ## Sessions
 

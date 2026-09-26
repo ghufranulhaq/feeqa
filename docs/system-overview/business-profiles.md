@@ -91,18 +91,19 @@ country, its Claimed/Unclaimed label (with the claim date once claimed),
 and its primary and secondary categories. An unclaimed profile says so in
 plain words: "This business has not claimed its profile."
 
-Everything owned by a later spec — Review Score and Trust Index, the
-review list, the AI summary, reply-behaviour signals, case statistics,
+Its published reviews (spec 003) are real too — sorted, filtered, and
+paginated. Everything still owned by a later spec — Review Score and
+Trust Index, the AI summary, reply-behaviour signals, case statistics,
 similar businesses, and Consumer Warnings — is listed as "coming soon"
 rather than shown with fake numbers, so the page is always honest about
 what's actually live.
 
-A **"Mentioned in reviews"** section is different: it's a real, built
-section (FR-002-27, not a "coming soon" placeholder), shown separately
-from the business's own reviews, for when another business's review
-tags this one. It's always empty today — there's no review to tag with
-yet (spec 003) — but it never counts toward this business's own scores,
-now or once reviews exist.
+A **"Mentioned in reviews"** section (FR-002-27) lists published reviews
+of *other* businesses that tag this one — shown separately from the
+business's own reviews, and clearly marked with which business each one
+is actually reviewing. See `docs/system-overview/reviews.md` for how
+tagging works. It never counts toward this business's own scores: a tag
+writes nothing to the tagged business at all.
 
 If a business's slug ever changes, the old one keeps working as a
 permanent redirect to the new profile page — there's no dead link left
@@ -197,8 +198,13 @@ When staff later discover two already-listed businesses are the same
 one — something FR-002-09's duplicate check at creation time didn't
 catch — they merge one into the other: its locations and secondary
 categories move to the survivor, and its slug permanently redirects.
-Reviews and score recalculation are specs 003/008, not built yet, so
-there's nothing to move or recalculate for those parts today.
+**This predates reviews existing and hasn't been revisited since spec
+003 landed:** reviews aren't moved to the survivor today, and because
+the losing business is hard-deleted with its reviews foreign-keyed to
+cascade, merging a business that already has reviews deletes them
+instead of moving them. Score recalculation is spec 008, still not
+built. Flagged in `docs/system-overview/reviews.md` as a known cross-spec
+gap, not yet fixed.
 
 ## Seeding businesses (staff)
 
