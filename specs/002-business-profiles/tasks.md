@@ -24,7 +24,7 @@ spec owns and extends it.
       nullable until T4 backfills it), data_source, import_batch. Update
       `Business` model (casts, fillable) and add a `BusinessFactory`.
       FR-002-01, FR-002-25.
-- [ ] **T3. Public business profile page (read-only).** Route
+- [x] **T3. Public business profile page (read-only).** Route
       `/business/{slug}`, controller, Inertia page rendering the FR-002-04
       fields that exist today (name, logo, Claimed/Unclaimed label,
       description, contact details, categories); everything owned by a

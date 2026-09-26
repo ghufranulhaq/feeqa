@@ -1,0 +1,95 @@
+import { Head } from '@inertiajs/react';
+
+interface Category {
+    slug: string;
+    name: string;
+}
+
+interface Business {
+    id: number;
+    name: string;
+    slug: string;
+    logo_path: string | null;
+    status: string;
+    is_claimed: boolean;
+    claimed_at: string | null;
+    description: string | null;
+    website: string | null;
+    email: string | null;
+    phone: string | null;
+    address: Record<string, string> | null;
+    social_links: Record<string, string> | null;
+    country: string | null;
+    primary_category: Category | null;
+    secondary_categories: Category[];
+}
+
+interface PendingFeature {
+    key: string;
+    label: string;
+    spec: string;
+}
+
+export default function BusinessProfile({ business, pending_features: pendingFeatures }: { business: Business; pending_features: PendingFeature[] }) {
+    const categories = [business.primary_category, ...business.secondary_categories].filter((category): category is Category => category !== null);
+
+    return (
+        <>
+            <Head title={business.name} />
+
+            <main className="mx-auto max-w-2xl px-4 py-12">
+                <div className="flex items-center gap-4">
+                    {business.logo_path ? (
+                        <img src={business.logo_path} alt="" className="h-16 w-16 rounded object-contain" />
+                    ) : (
+                        <div
+                            aria-hidden="true"
+                            className="flex h-16 w-16 items-center justify-center rounded bg-neutral-200 text-xl font-semibold text-neutral-600"
+                        >
+                            {business.name.charAt(0).toUpperCase()}
+                        </div>
+                    )}
+
+                    <div>
+                        <h1 className="text-2xl font-semibold">{business.name}</h1>
+                        <p className="text-sm text-neutral-600">
+                            {business.is_claimed ? (
+                                <span className="font-medium text-emerald-700">Claimed{business.claimed_at ? ` on ${business.claimed_at}` : ''}</span>
+                            ) : (
+                                <span className="font-medium text-neutral-500">Unclaimed</span>
+                            )}
+                            {categories.length > 0 && ` · ${categories.map((category) => category.name).join(', ')}`}
+                        </p>
+                    </div>
+                </div>
+
+                {!business.is_claimed && (
+                    <p className="mt-4 rounded border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
+                        This business has not claimed its profile.
+                    </p>
+                )}
+
+                <section className="mt-8">
+                    <h2 className="text-lg font-medium">About</h2>
+                    <p className="mt-2 text-sm text-neutral-700">{business.description ?? 'No description provided.'}</p>
+                </section>
+
+                <section className="mt-8 space-y-1 text-sm text-neutral-700">
+                    {business.website && <p>Website: {business.website}</p>}
+                    {business.email && <p>Email: {business.email}</p>}
+                    {business.phone && <p>Phone: {business.phone}</p>}
+                    {business.country && <p>Country: {business.country}</p>}
+                </section>
+
+                <section className="mt-8">
+                    <h2 className="text-lg font-medium">Coming soon</h2>
+                    <ul className="mt-2 space-y-1 text-sm text-neutral-500">
+                        {pendingFeatures.map((feature) => (
+                            <li key={feature.key}>{feature.label}</li>
+                        ))}
+                    </ul>
+                </section>
+            </main>
+        </>
+    );
+}

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -26,6 +27,10 @@ use Illuminate\Support\Str;
  * these methods are also used to check a *different* user — e.g. "is the
  * target already an Owner?" — where switching the global team context
  * mid-request would be fragile and easy to get wrong).
+ *
+ * @property BusinessStatus $status
+ * @property EmployeeSizeBand $employee_size_band
+ * @property Carbon|null $claimed_at
  */
 class Business extends Model
 {
@@ -106,6 +111,9 @@ class Business extends Model
         return $slug;
     }
 
+    /**
+     * @return BelongsTo<Category, $this>
+     */
     public function primaryCategory(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'primary_category_id');
@@ -113,6 +121,8 @@ class Business extends Model
 
     /**
      * FR-002-03: up to 5 secondary categories, alongside the primary one.
+     *
+     * @return BelongsToMany<Category, $this>
      */
     public function secondaryCategories(): BelongsToMany
     {

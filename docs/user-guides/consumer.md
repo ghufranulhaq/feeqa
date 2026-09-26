@@ -33,6 +33,16 @@ Your public profile (`/reviewers/{you}`) shows your display name, photo,
 country, how long you've been a member, and your published reviews to
 anyone — it never shows your email address.
 
+## Looking up a business
+
+Every business has a public profile at `/business/{slug}` — you don't need
+an account to see it. It shows the business's name, logo, description,
+contact details, and whether it's **Claimed** or **Unclaimed** (an
+unclaimed profile says so plainly). Reviews, scores, and everything else
+aren't wired up to this page yet — sections for those show as "coming
+soon" until their own specs land. You can't add a missing business
+yourself yet either.
+
 ## Sessions
 
 **Settings → Sessions** lists every device currently signed in to your
