@@ -57,7 +57,8 @@ wires them up rather than creating them.
       FR-004-09, FR-004-11, edge cases (empty/corrupt/oversized upload,
       wrong business named, date out of window, agency/airline shared
       e-ticket, refund-only proof, reused receipt, unpublished review).
-- [ ] **T4. Attestation issuance, public check & revocation.** `IssueAttestation`
+- [x] **T4. Attestation issuance, public check & revocation.** Built ahead
+      of T3 (see T3's own note) since T3 depends on `IssueAttestation`. `IssueAttestation`
       action (signs the payload with the existing `SigningService`,
       stores `verification_attestations`, flips the review's verified
       badge on). Public endpoint + Inertia page: check an attestation by
