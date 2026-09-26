@@ -214,4 +214,21 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Review invitations (spec 005)
+    |--------------------------------------------------------------------------
+    | The BCC SPF/DKIM-alignment check is rules only (FR-005-06) — same
+    | "no external provider to swap" shape as review screening above, not a
+    | driver.
+    */
+    'invitations' => [
+        'bcc' => [
+            'domain' => env('INVITATIONS_BCC_DOMAIN', 'bcc.feeqa.appsarray.com'),
+            // FR-005-07's example pattern. A Business overrides this on its
+            // own `bcc_reference_pattern` column.
+            'default_reference_pattern' => env('INVITATIONS_BCC_DEFAULT_REFERENCE_PATTERN', '/[A-Z]{2}-\d{6}/'),
+        ],
+    ],
+
 ];

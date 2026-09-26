@@ -84,6 +84,35 @@ it('forbids a Responder from importing a CSV over HTTP', function () {
     ])->assertForbidden();
 });
 
+it('lets an Owner request an API invitation over HTTP (FR-005-01 api)', function () {
+    $this->seed(BusinessRolesSeeder::class);
+    $business = Business::factory()->create();
+    $owner = User::factory()->create();
+    app(PermissionRegistrar::class)->setPermissionsTeamId($business->id);
+    $owner->assignRole(BusinessRole::Owner->value);
+
+    $response = $this->actingAs($owner)->post(route('business.review-invitations.store-api', $business), [
+        'recipient_email' => 'flyer@example.com',
+        'reference' => 'BK-100200',
+    ]);
+
+    $response->assertOk()->assertJson(['status' => 'queued']);
+    expect(ReviewInvitation::where('business_id', $business->id)->count())->toBe(1);
+});
+
+it('forbids a Responder from requesting an API invitation over HTTP', function () {
+    $this->seed(BusinessRolesSeeder::class);
+    $business = Business::factory()->create();
+    $responder = User::factory()->create();
+    app(PermissionRegistrar::class)->setPermissionsTeamId($business->id);
+    $responder->assignRole(BusinessRole::Responder->value);
+
+    $this->actingAs($responder)->post(route('business.review-invitations.store-api', $business), [
+        'recipient_email' => 'flyer@example.com',
+        'reference' => 'BK-100201',
+    ])->assertForbidden();
+});
+
 it('requires authentication', function () {
     $business = Business::factory()->create();
 

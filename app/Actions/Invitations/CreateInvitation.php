@@ -33,6 +33,7 @@ class CreateInvitation
      *     recipient_email: string, recipient_name?: ?string, locale?: string,
      *     reference?: ?string, product_skus?: ?array<int, string>,
      *     travel_date?: ?\DateTimeInterface, send_delay_days?: ?int,
+     *     scheduled_at?: ?\DateTimeInterface,
      * }  $data
      */
     public function handle(Business $business, InvitationMethod $method, array $data, ?Location $location = null, ?User $createdBy = null): ReviewInvitation
@@ -71,11 +72,20 @@ class CreateInvitation
 
         $isSuppressed = $isBusinessMember || $this->isSuppressed($business, $emailHash);
 
-        $days = $data['send_delay_days'] ?? DefaultSendDelay::days(
-            $this->categorySlugs($business),
-            isset($data['travel_date']),
-        );
-        $anchor = isset($data['travel_date']) ? Carbon::parse($data['travel_date']) : now();
+        if (isset($data['scheduled_at'])) {
+            // FR-005-01 (api): the caller already computed an absolute send
+            // time (e.g. "1 day after this flight") rather than asking us
+            // to derive one from a delay — RequestApiInvitation is the only
+            // caller that sets this today.
+            $scheduledAt = Carbon::parse($data['scheduled_at']);
+        } else {
+            $days = $data['send_delay_days'] ?? DefaultSendDelay::days(
+                $this->categorySlugs($business),
+                isset($data['travel_date']),
+            );
+            $anchor = isset($data['travel_date']) ? Carbon::parse($data['travel_date']) : now();
+            $scheduledAt = $anchor->copy()->addDays($days);
+        }
 
         return ReviewInvitation::create([
             'business_id' => $business->id,
@@ -89,7 +99,7 @@ class CreateInvitation
             'reference' => $reference,
             'product_skus' => $data['product_skus'] ?? null,
             'token' => Str::random(48),
-            'scheduled_at' => $anchor->copy()->addDays($days),
+            'scheduled_at' => $scheduledAt,
             'expires_at' => now()->addDays(60),
         ]);
     }

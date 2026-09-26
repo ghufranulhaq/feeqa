@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Business\BccInvitationController;
 use App\Http\Controllers\Business\BusinessInvitationAcceptController;
 use App\Http\Controllers\Business\BusinessProfileController;
 use App\Http\Controllers\Business\EmployeeSizeBandDisputeController;
@@ -67,4 +68,18 @@ Route::middleware(['auth', SetPermissionTeam::class])->prefix('business/{busines
     // FR-005-01 (csv), FR-005-03.
     Route::post('review-invitations/csv', [ReviewInvitationController::class, 'importCsv'])
         ->name('business.review-invitations.import-csv');
+
+    // FR-005-01 (api), FR-005-02: the "Invitation API" data shape, reachable
+    // from the dashboard today — see 004's own Business API stand-in.
+    Route::post('review-invitations/api', [ReviewInvitationController::class, 'storeApi'])
+        ->name('business.review-invitations.store-api');
+
+    // FR-005-01 (bcc), FR-005-06, FR-005-07: a demo-only stand-in for real
+    // inbound mail (plan D14), plus the method's own settings.
+    Route::post('bcc-invitations/email', [BccInvitationController::class, 'importEmail'])
+        ->name('business.bcc-invitations.import-email');
+    Route::post('bcc-invitations/rotate-address', [BccInvitationController::class, 'rotateAddress'])
+        ->name('business.bcc-invitations.rotate-address');
+    Route::patch('bcc-invitations/settings', [BccInvitationController::class, 'updateSettings'])
+        ->name('business.bcc-invitations.update-settings');
 });

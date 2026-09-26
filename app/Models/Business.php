@@ -58,6 +58,9 @@ class Business extends Model
         'slug',
         'primary_domain',
         'additional_domains',
+        'bcc_address',
+        'bcc_registered_senders',
+        'bcc_reference_pattern',
         'country',
         'city',
         'status',
@@ -84,6 +87,7 @@ class Business extends Model
         // without every caller having to compute one.
         static::creating(function (Business $business): void {
             $business->slug ??= self::uniqueSlugFor($business->name);
+            $business->bcc_address ??= self::generateUniqueBccAddress();
         });
     }
 
@@ -91,6 +95,7 @@ class Business extends Model
     {
         return [
             'additional_domains' => 'array',
+            'bcc_registered_senders' => 'array',
             'address' => 'array',
             'social_links' => 'array',
             'status' => BusinessStatus::class,
@@ -130,6 +135,20 @@ class Business extends Model
         }
 
         return $slug;
+    }
+
+    /**
+     * FR-005-06: every Business gets a unique forwarding address without a
+     * separate "activate BCC" step. `RotateBusinessBccAddress` is what
+     * makes it rotatable after creation.
+     */
+    public static function generateUniqueBccAddress(): string
+    {
+        do {
+            $address = 'biz-'.Str::lower(Str::random(16)).'@'.config('platform.invitations.bcc.domain');
+        } while (self::where('bcc_address', $address)->exists());
+
+        return $address;
     }
 
     /**
