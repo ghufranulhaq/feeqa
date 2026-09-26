@@ -42,7 +42,7 @@ wires them up rather than creating them.
       against an editing-tool blocklist, near-duplicate perceptual hash
       across *different* accounts, and a configurable known-fake-template
       hash list. FR-004-06, FR-004-07, FR-004-10.
-- [ ] **T3. Document proof upload.** `RequestDocumentVerification` action:
+- [x] **T3. Document proof upload.** `RequestDocumentVerification` action:
       file count/size validation (≤3, ≤10MB), content-type sniffing (not
       extension) for PDF/JPEG/PNG/HEIC/.eml, corrupt/password-protected
       PDF rejected with a specific message, malware scan (existing
