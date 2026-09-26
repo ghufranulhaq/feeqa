@@ -16,3 +16,6 @@ Schedule::command('business-claims:escalate-stale-reclaims')->daily();
 
 // FR-003-19.
 Schedule::command('reviews:send-lifecycle-reminders')->daily();
+
+// FR-004-23, constitution §5.6.
+Schedule::command('verification:delete-expired-proofs')->daily();

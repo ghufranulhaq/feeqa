@@ -79,6 +79,25 @@ class Environment
     }
 
     /**
+     * FR-004-23, constitution §5.6: whether the scheduled job deletes raw
+     * proof files (and the extracted-field data beyond what the
+     * attestation keeps) 30 days after a verification decision. Always
+     * true in production, whatever `.env` says — elsewhere it follows
+     * `platform.verification.delete_raw_proof_files_on_schedule`, true by
+     * default so local development and automated tests exercise the real
+     * deletion behaviour; the demo server's own `.env` turns it off so
+     * proof files aren't deleted in the demo (constitution §5.6).
+     */
+    public static function rawProofFilesDeletedOnSchedule(): bool
+    {
+        if (self::isProduction()) {
+            return true;
+        }
+
+        return (bool) config('platform.verification.delete_raw_proof_files_on_schedule', true);
+    }
+
+    /**
      * Refuses to boot in production if a demo-only `fake` driver is
      * configured (constitution §5.6, plan D26). Call from a service
      * provider's boot() method.

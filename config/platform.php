@@ -57,6 +57,8 @@ return [
             'max_per_request' => (int) env('TRANSACTION_RECORDS_MAX_PER_REQUEST', 10000),
             'max_per_day' => (int) env('TRANSACTION_RECORDS_MAX_PER_DAY', 1000000),
         ],
+        // FR-004-23, constitution §5.6: see App\Support\Environment::rawProofFilesDeletedOnSchedule().
+        'delete_raw_proof_files_on_schedule' => (bool) env('VERIFICATION_DELETE_RAW_PROOF_FILES_ON_SCHEDULE', true),
     ],
 
     /*

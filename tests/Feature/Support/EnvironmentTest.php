@@ -72,6 +72,25 @@ it('follows the lifecycle-update-windows config toggle outside production', func
     ['demo', true],
 ]);
 
+it('always deletes raw proof files on schedule in production, whatever .env says (constitution §5.6)', function () {
+    app()['env'] = 'production';
+    config(['platform.verification.delete_raw_proof_files_on_schedule' => false]);
+
+    expect(Environment::rawProofFilesDeletedOnSchedule())->toBeTrue();
+});
+
+it('follows the raw-proof-file-deletion config toggle outside production', function (string $env, bool $configured) {
+    app()['env'] = $env;
+    config(['platform.verification.delete_raw_proof_files_on_schedule' => $configured]);
+
+    expect(Environment::rawProofFilesDeletedOnSchedule())->toBe($configured);
+})->with([
+    ['local', true],
+    ['local', false],
+    ['testing', false],
+    ['demo', true],
+]);
+
 it('does nothing outside production, even with fake drivers configured', function () {
     app()['env'] = 'demo';
     config(['platform.ai.driver' => 'fake']);
