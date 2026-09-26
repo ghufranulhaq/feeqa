@@ -19,6 +19,17 @@ const METHOD_LABELS: Record<string, string> = {
     payment_link: 'Payment link',
 };
 
+// FR-004-25: what each method checks and what it keeps (P4 transparency).
+const METHOD_DESCRIPTIONS: Record<string, string> = {
+    transaction_invitation:
+        "The review came from an invitation created from a real transaction record the business supplied. We check that the invitation matches the review; we never keep the transaction record itself, only this attestation.",
+    reference_match:
+        "The reviewer's order reference and verified email were matched, as one-way hashes, against a transaction record the business supplied. We never see either in plain text, and never share them with the business unless the reviewer explicitly agrees to.",
+    document_proof:
+        'The reviewer uploaded a receipt, invoice, booking confirmation, or e-ticket. We check the merchant, transaction date, and reference against the review, and screen the file for signs of tampering. The file itself is deleted within 30 days of the decision; only this attestation is kept.',
+    payment_link: 'The reviewer linked a payment-provider transaction to the review. Not yet available (Phase 2).',
+};
+
 function formatMethod(value: string): string {
     return METHOD_LABELS[value] ?? value;
 }
@@ -76,6 +87,9 @@ export default function VerificationCheckPage({ attestation }: { attestation: At
                         <dd className="font-mono text-xs break-all">{attestation.id}</dd>
                     </div>
                 </dl>
+
+                <h2 className="mt-8 text-sm font-medium">What this means</h2>
+                <p className="mt-1 text-sm text-neutral-600">{METHOD_DESCRIPTIONS[attestation.method] ?? 'Method details are not available.'}</p>
             </main>
         </>
     );

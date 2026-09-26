@@ -3,8 +3,10 @@
 use App\Actions\Accounts\EraseUserAccount;
 use App\Models\Consent;
 use App\Models\DataExport;
+use App\Models\Review;
 use App\Models\User;
 use App\Models\UserProvider;
+use App\Models\VerificationAttestation;
 use App\Notifications\AccountDeletionScheduledNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -99,6 +101,33 @@ it('pseudonymises the account once 30 days have passed', function () {
     expect(UserProvider::where('user_id', $user->id)->exists())->toBeFalse();
     expect(Consent::where('user_id', $user->id)->exists())->toBeFalse();
     expect(DB::table('sessions')->where('user_id', $user->id)->exists())->toBeFalse();
+});
+
+it("revokes the user's verification attestations with reason review_deleted, keeping the fingerprint (spec 004 edge case)", function () {
+    $user = User::factory()->create();
+    $review = Review::factory()->create(['reviewer_id' => $user->id]);
+    $attestation = VerificationAttestation::factory()->create(['review_id' => $review->id]);
+
+    (new EraseUserAccount)->handle($user);
+
+    $fresh = $attestation->fresh();
+    expect($fresh->revoked_at)->not->toBeNull()
+        ->and($fresh->revoked_reason_code)->toBe('review_deleted')
+        ->and($fresh->revoked_by)->toBeNull();
+});
+
+it('leaves an already-revoked attestation alone', function () {
+    $user = User::factory()->create();
+    $review = Review::factory()->create(['reviewer_id' => $user->id]);
+    $attestation = VerificationAttestation::factory()->create([
+        'review_id' => $review->id,
+        'revoked_at' => now()->subDay(),
+        'revoked_reason_code' => 'fraud_found',
+    ]);
+
+    (new EraseUserAccount)->handle($user);
+
+    expect($attestation->fresh()->revoked_reason_code)->toBe('fraud_found');
 });
 
 it('deletes stored export files when erasing the account', function () {

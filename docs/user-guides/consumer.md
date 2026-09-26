@@ -71,6 +71,22 @@ exists behind the scenes today (real, tested application logic with no
 form in front of it yet, the same situation spec 002's own dashboard/
 console pages are in).
 
+## Checking a Verified Experience badge
+
+Tap a **Verified Experience** badge (or open `/verification-check/{id}`
+directly) to see when it was verified, which method was used and what
+that method actually checks and keeps, the experience month, the
+business, and whether the signature still checks out. A revoked
+attestation says so, with the date and reason. `/verification-revocations`
+lists every revocation platform-wide (ID, date, and reason only).
+
+**Uploading proof, entering an order reference, or responding to a
+business's request to verify your review isn't reachable from any page
+yet** — see `docs/system-overview/verification.md` for what already
+works behind the scenes (real, tested application logic with no form in
+front of it yet, the same situation this guide's other "not reachable
+yet" features are in).
+
 ## Sessions
 
 **Settings → Sessions** lists every device currently signed in to your

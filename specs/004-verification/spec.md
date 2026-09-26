@@ -90,15 +90,15 @@ Fake reviews are the biggest problem with review sites. Any reviewer can prove t
 
 ## 6. Acceptance Criteria
 
-- [ ] All Phase 1 methods produce a correct signed attestation and badge.
-- [ ] Auto-approval rules are covered by tests for every condition in FR-004-06, and each failure path lands in the verification queue.
-- [ ] Reusing a proof fingerprint is rejected (test with the same receipt from 2 accounts).
-- [ ] The attestation check page confirms valid signatures, detects tampered payloads, shows revocations, and exposes no personal data.
-- [ ] Key rotation keeps old attestations checkable.
-- [ ] A scheduled job deletes raw proof files ≤ 30 days after the decision (tested with time travel).
-- [ ] Business verification requests: limits enforced, ignored requests never hide reviews, and disproportionate-targeting alerts fire.
-- [ ] Businesses cannot access proofs (authorization test).
-- [ ] The verification percentage matches a hand-calculated fixture.
+- [~] All Phase 1 methods produce a correct signed attestation and badge. *`document_proof` and `reference_match` both produce a correct signed attestation and badge, fully tested. `transaction_invitation` needs spec 005's invitation system, not built yet — the method is modelled but nothing produces it. Revisit when it ships.*
+- [x] Auto-approval rules are covered by tests for every condition in FR-004-06, and each failure path lands in the verification queue. Every condition (merchant match, date window, reference reuse, tamper checks) has a dedicated test, and `EvaluateAutoApproval` never silently rejects — any single failure holds for the staff queue with the specific reason recorded.
+- [x] Reusing a proof fingerprint is rejected (test with the same receipt from 2 accounts).
+- [x] The attestation check page confirms valid signatures, detects tampered payloads, shows revocations, and exposes no personal data. The signature is re-verified on every request rather than trusted from the database, so a tampered `jws` is caught live (added a test proving it as part of this sweep).
+- [x] Key rotation keeps old attestations checkable.
+- [x] A scheduled job deletes raw proof files ≤ 30 days after the decision (tested with time travel).
+- [x] Business verification requests: limits enforced, ignored requests never hide reviews, and disproportionate-targeting alerts fire.
+- [x] Businesses cannot access proofs (authorization test). No endpoint anywhere serves a raw proof file or extracted fields to a business account; added a test proving the reviewed business's own Owner gets 403 from the staff queue as direct evidence.
+- [x] The verification percentage matches a hand-calculated fixture.
 
 ## 7. Dependencies & Open Questions
 

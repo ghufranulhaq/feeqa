@@ -115,11 +115,21 @@ wires them up rather than creating them.
       §5.6 (proof files aren't deleted in the demo), tested the same way
       as the existing lifecycle-window relaxation. FR-004-23, constitution
       §5.6.
-- [ ] **T10. Docs pass + acceptance sweep.** `docs/system-overview/verification.md`,
-      updates to the consumer and business user guides, README env vars
-      (`VERIFICATION_FINGERPRINT_KEY` etc.), and the public methodology
-      text addition for each method (FR-004-25) — placed wherever spec
-      002/003's existing public pages already live, since 006/008's own
-      methodology pages don't exist yet. Re-checks every acceptance
-      criterion in spec.md §6, notes what's dependent on 005/006/008/016
-      the same way spec 003's T17 did. FR-004-25, full acceptance sweep.
+- [x] **T10. Docs pass + acceptance sweep.** Added `docs/system-overview/verification.md`;
+      a "Checking a Verified Experience badge" section in the consumer
+      guide (the only part of this spec with a real page today); README
+      env vars for every setting T2/T6/T9 added; and a "What this means"
+      methodology line per method on the public attestation check page
+      itself (FR-004-25) — there's no dedicated public methodology page
+      for *any* spec yet (006/008 own that), so this is the nearest real
+      public surface rather than a new page with nothing to attach it to.
+      Re-checked every box in spec.md §6: 8 fully satisfied (`[x]`), 1
+      partially (`[~]`, `transaction_invitation` needs spec 005's
+      invitations, not built). Two real gaps turned up and were fixed
+      rather than just noted: (1) `EraseUserAccount` never revoked the
+      user's verification attestations on account deletion, despite it
+      being spec.md's own edge case (`review_deleted` reason, fingerprint
+      kept) — fixed and tested; (2) the attestation check page's "detects
+      tampered payloads" and "businesses cannot access proofs"
+      acceptance rows had no direct test, only architectural inference —
+      added one test for each. FR-004-25, full acceptance sweep.

@@ -125,6 +125,22 @@ default already or is documented inline in that file.
   held for review instead of published (FR-003-13). Rules only, not one of
   the constitution §5.1 providers — there's no `fake` variant because
   there's no external service to fake.
+- **`VERIFICATION_FINGERPRINT_KEY`**: the HMAC secret behind every proof
+  fingerprint (FR-004-10) — never derived from `APP_KEY`, so rotating
+  `APP_KEY` doesn't silently make every stored fingerprint unmatchable.
+  Required outside tests (they generate their own). **`VERIFICATION_EDITING_TOOL_BLOCKLIST`**
+  / **`VERIFICATION_KNOWN_FAKE_TEMPLATE_HASHES`**: comma-separated tamper
+  signals for document proof uploads (FR-004-07). **`VERIFICATION_MAX_AGE_MONTHS`**
+  / **`VERIFICATION_GRACE_DAYS_AFTER_EXPERIENCE`**: the auto-approval date
+  window (FR-004-06), 12 months / 30 days by default.
+- **`TRANSACTION_RECORDS_MAX_PER_REQUEST`** / **`TRANSACTION_RECORDS_MAX_PER_DAY`**:
+  batch limits on a business submitting hashed transaction records for
+  reference matching (FR-004-12), 10,000 / 1,000,000 by default.
+- **`VERIFICATION_DELETE_RAW_PROOF_FILES_ON_SCHEDULE`**: whether the daily
+  job deletes raw proof files and their extracted fields 30 days after a
+  verification decision (FR-004-23). Production always deletes regardless
+  of this value; the demo server sets it to `false` so proofs stay in
+  place for repeat walkthroughs (constitution §5.6).
 
 ## Testing
 

@@ -3,6 +3,8 @@
 namespace App\Actions\Accounts;
 
 use App\Models\User;
+use App\Models\VerificationAttestation;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -20,6 +22,8 @@ class EraseUserAccount
 {
     public function handle(User $user): void
     {
+        $this->revokeAttestations($user);
+
         if ($user->avatar_path) {
             Storage::disk('public')->delete($user->avatar_path);
         }
@@ -44,5 +48,23 @@ class EraseUserAccount
         $user->consents()->delete();
         $user->dataExports()->delete();
         DB::table('sessions')->where('user_id', $user->id)->delete();
+    }
+
+    /**
+     * Spec 004 edge case: "Consumer deletes their account: attestations
+     * are revoked with the reason `review_deleted`, and fingerprints are
+     * kept (without personal data) to prevent reuse." Not a staff
+     * decision, so it skips RevokeAttestation's staff-role guard and
+     * compliance log entry — this is automatic pseudonymisation, not
+     * moderation (constitution §5.1's compliance log is staff decisions
+     * only). The review itself, and its verification's proof fingerprint,
+     * are left untouched.
+     */
+    private function revokeAttestations(User $user): void
+    {
+        VerificationAttestation::query()
+            ->whereHas('review', fn (Builder $query) => $query->where('reviewer_id', $user->id))
+            ->whereNull('revoked_at')
+            ->update(['revoked_at' => now(), 'revoked_reason_code' => 'review_deleted']);
     }
 }

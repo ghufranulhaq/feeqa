@@ -53,6 +53,18 @@ it('never exposes the proof fingerprint or the raw JWS on the public check page'
     expect($response->getContent())->not->toContain('super-secret-fp');
 });
 
+it('detects a tampered attestation payload (spec 004 §6 acceptance)', function () {
+    $attestation = issueTestAttestation();
+    $tamperedJws = substr_replace($attestation->jws, $attestation->jws[-1] === 'A' ? 'B' : 'A', -1);
+    $attestation->forceFill(['jws' => $tamperedJws])->save();
+
+    $response = $this->get(route('verification.check', $attestation->id));
+
+    $response->assertInertia(fn (AssertableInertia $page) => $page
+        ->component('public/verification-check')
+        ->where('attestation.signature_valid', false));
+});
+
 it('shows a revoked attestation as revoked', function () {
     $attestation = issueTestAttestation();
     $staff = User::factory()->create(['staff_role' => StaffRole::Moderator->value]);

@@ -1,11 +1,15 @@
 <?php
 
+use App\Domain\Businesses\BusinessRole;
 use App\Domain\Staff\StaffRole;
 use App\Domain\Verification\VerificationStatus;
 use App\Drivers\Signing\SigningService;
+use App\Models\Business;
 use App\Models\Review;
 use App\Models\ReviewVerification;
 use App\Models\User;
+use Database\Seeders\Base\BusinessRolesSeeder;
+use Spatie\Permission\PermissionRegistrar;
 
 beforeEach(function () {
     config(['platform.signing.keys_path' => storage_path('framework/testing/signing-'.uniqid().'.json')]);
@@ -49,6 +53,24 @@ it('forbids a non-staff user from deciding a verification proof', function () {
     $verification = ReviewVerification::factory()->create();
 
     $this->actingAs($notStaff)
+        ->post(route('staff.review-verifications.approve', $verification))
+        ->assertForbidden();
+});
+
+it('forbids the review\'s own business Owner from reaching the verification proof queue (spec 004 §6 acceptance)', function () {
+    $this->seed(BusinessRolesSeeder::class);
+    $business = Business::factory()->claimed()->create();
+    $owner = User::factory()->create();
+    app(PermissionRegistrar::class)->setPermissionsTeamId($business->id);
+    $owner->assignRole(BusinessRole::Owner->value);
+    $review = Review::factory()->for($business)->create();
+    $verification = ReviewVerification::factory()->for($review)->create();
+
+    $this->actingAs($owner)
+        ->get(route('staff.review-verifications.index'))
+        ->assertForbidden();
+
+    $this->actingAs($owner)
         ->post(route('staff.review-verifications.approve', $verification))
         ->assertForbidden();
 });
