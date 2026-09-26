@@ -7,7 +7,7 @@ verification, 005 invitations, 006 moderation, 007 replies, 008 scores) —
 those are built as honest placeholders ("coming soon" / hook exists, not
 wired), same pattern as spec 002.
 
-- [ ] **T1. Reviews schema & domain model.** `reviews` table (business_id,
+- [x] **T1. Reviews schema & domain model.** `reviews` table (business_id,
       location_id nullable, reviewer_id, status, source_label, star_rating,
       title, text, date_of_experience, reference_number nullable, language,
       question_set_version nullable, answers json nullable,

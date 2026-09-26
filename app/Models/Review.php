@@ -1,0 +1,117 @@
+<?php
+
+namespace App\Models;
+
+use App\Domain\Reviews\ReviewStatus;
+use App\Domain\Reviews\SourceLabel;
+use Database\Factories\ReviewFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+
+/**
+ * FR-003-01, FR-003-02: a consumer's rating and account of one experience
+ * with a Business (or one of its Locations).
+ *
+ * @property ReviewStatus $status
+ * @property SourceLabel $source_label
+ * @property array<string, mixed>|null $answers
+ * @property Carbon $date_of_experience
+ * @property Carbon|null $published_at
+ * @property Carbon|null $edited_at
+ */
+class Review extends Model
+{
+    /** @use HasFactory<ReviewFactory> */
+    use HasFactory;
+
+    use SoftDeletes;
+
+    protected $fillable = [
+        'business_id',
+        'location_id',
+        'reviewer_id',
+        'status',
+        'source_label',
+        'star_rating',
+        'title',
+        'text',
+        'date_of_experience',
+        'reference_number',
+        'language',
+        'question_set_version',
+        'answers',
+        'tagged_business_id',
+        'confirmed_genuine',
+        'idempotency_key',
+        'published_at',
+        'edited_at',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'status' => ReviewStatus::class,
+            'source_label' => SourceLabel::class,
+            'answers' => 'array',
+            'date_of_experience' => 'date',
+            'confirmed_genuine' => 'boolean',
+            'published_at' => 'datetime',
+            'edited_at' => 'datetime',
+        ];
+    }
+
+    /**
+     * @return BelongsTo<Business, $this>
+     */
+    public function business(): BelongsTo
+    {
+        return $this->belongsTo(Business::class);
+    }
+
+    /**
+     * @return BelongsTo<Location, $this>
+     */
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(Location::class);
+    }
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewer_id');
+    }
+
+    /**
+     * FR-003-31: the other Business this review optionally names (e.g. the
+     * agency that sold the ticket).
+     *
+     * @return BelongsTo<Business, $this>
+     */
+    public function taggedBusiness(): BelongsTo
+    {
+        return $this->belongsTo(Business::class, 'tagged_business_id');
+    }
+
+    /**
+     * @return HasMany<ReviewLifecycleUpdate, $this>
+     */
+    public function lifecycleUpdates(): HasMany
+    {
+        return $this->hasMany(ReviewLifecycleUpdate::class);
+    }
+
+    /**
+     * @return HasMany<ReviewUsefulVote, $this>
+     */
+    public function usefulVotes(): HasMany
+    {
+        return $this->hasMany(ReviewUsefulVote::class);
+    }
+}

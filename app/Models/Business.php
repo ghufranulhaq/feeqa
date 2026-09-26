@@ -173,12 +173,20 @@ class Business extends Model
     }
 
     /**
+     * @return HasMany<Review, $this>
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /**
      * FR-002-27: "published reviews of other businesses that tag this
      * Business" — shown separately from the Business's own reviews and
-     * never counted toward its scores. Always empty until spec 003 adds
-     * a Review model with a tagged-business relation to query here; the
-     * section itself is built now (same "built now, filled later"
-     * pattern as spec 001 T5's reviewer profile).
+     * never counted toward its scores. Always empty until spec 003 T12
+     * wires it to a real Review query; the section itself was built in
+     * spec 002 T13 (same "built now, filled later" pattern as spec 001
+     * T5's reviewer profile).
      *
      * @return Collection<int, mixed>
      */

@@ -105,6 +105,14 @@ class User extends Authenticatable
     }
 
     /**
+     * @return HasMany<Review, $this>
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class, 'reviewer_id');
+    }
+
+    /**
      * FR-001-21: "must ask again for consent when the terms change in a
      * material way" — true when there's no consent on record, or the most
      * recent one no longer matches the published terms/privacy versions.
