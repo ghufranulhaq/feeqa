@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Actions\Businesses\RecalculateBusinessScore;
 use App\Domain\Businesses\BusinessPermission;
 use App\Domain\Businesses\BusinessRole;
 use App\Domain\Businesses\BusinessStatus;
@@ -196,6 +197,36 @@ class Business extends Model
             ->where('tagged_business_id', $this->id)
             ->latest('published_at')
             ->get();
+    }
+
+    /**
+     * FR-004-24: verified published customer reviews ÷ all published
+     * customer reviews, rolling 12 months. A hook for specs 008/015 to
+     * read later — same "built now, filled later" shape as
+     * {@see RecalculateBusinessScore}. There is no
+     * insider-review concept yet (spec 013 isn't built), so every publicly
+     * visible review counts as a customer review today.
+     */
+    public function verificationPercentage(): float
+    {
+        $windowStart = now()->subMonths(12);
+
+        $reviewIds = $this->reviews()
+            ->publiclyVisible()
+            ->where('published_at', '>=', $windowStart)
+            ->pluck('id');
+
+        if ($reviewIds->isEmpty()) {
+            return 0.0;
+        }
+
+        $verifiedCount = VerificationAttestation::query()
+            ->whereIn('review_id', $reviewIds)
+            ->whereNull('revoked_at')
+            ->distinct()
+            ->count('review_id');
+
+        return round($verifiedCount / $reviewIds->count() * 100, 1);
     }
 
     /**
