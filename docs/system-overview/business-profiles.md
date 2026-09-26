@@ -83,9 +83,29 @@ A description can't link to a different website than the business's own
 200×200 minimum — unlike a photo, transparency is kept rather than
 flattened.
 
+## Claiming a profile
+
+A signed-in consumer can claim an unclaimed business four ways
+(FR-002-11): a verification code emailed to an address on the business's
+own domain (never a free email provider like Gmail — FR-002-12), a DNS
+TXT record, an HTML meta tag/file on the domain root, or — when the
+business has no domain at all — manual staff review with uploaded
+documents. The first three complete automatically the moment the check
+passes and make the claimant an Owner right away; nothing about any
+existing review, score, or label changes when that happens.
+
+If someone else has already claimed the profile, proving domain control
+doesn't hand it over immediately — the current Owners get 7 days to
+approve or reject the newcomer joining as an Owner too, and it goes to
+staff review automatically if they never respond. Rejecting a claim,
+however it happens, emails the person who asked for it why. As with
+profile editing above, there's no claim-flow UI yet — every step here is
+a real, working endpoint under `/businesses/{business}/claim` and
+`/business-claims/{claim}/...`.
+
 ## What's not built yet
 
-Consumers can't yet claim a profile themselves, there are no locations, no
-question sets are attached to a review form yet, and there's no staff
-console for industries/categories or for the profile-change queue above.
-All of that is still on spec 002's `tasks.md`.
+There are no locations, no question sets are attached to a review form
+yet, and there's no staff console for industries/categories or for the
+profile-change/claim queues above. All of that is still on spec 002's
+`tasks.md`.

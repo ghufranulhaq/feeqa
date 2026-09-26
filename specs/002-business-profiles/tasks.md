@@ -47,7 +47,7 @@ spec owns and extends it.
       publishing immediately; validation edge cases (empty description
       allowed, URL/phone-in-name/ALL-CAPS rejected, logo type/size/
       animated-vs-transparent). FR-002-03, FR-002-07, edge cases table.
-- [ ] **T6. Claiming.** All four methods (email code on the domain with
+- [x] **T6. Claiming.** All four methods (email code on the domain with
       free-domain-provider block + 30 min expiry + 5-attempt cap, DNS TXT
       record, HTML meta tag/file, manual staff review with documents);
       automatic claim on success for (a)-(c); claiming never touches any

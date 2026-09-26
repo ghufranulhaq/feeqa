@@ -8,6 +8,9 @@ use App\Drivers\Ai\OpenAiCompatibleAiDriver;
 use App\Drivers\Billing\Contracts\BillingDriver;
 use App\Drivers\Billing\FakeBillingDriver;
 use App\Drivers\Billing\StripeBillingDriver;
+use App\Drivers\BusinessClaiming\Contracts\DomainClaimChecker;
+use App\Drivers\BusinessClaiming\DnsAndHttpDomainClaimChecker;
+use App\Drivers\BusinessClaiming\FakeDomainClaimChecker;
 use App\Drivers\BusinessListing\Contracts\BusinessListingChecker;
 use App\Drivers\BusinessListing\DnsBusinessListingChecker;
 use App\Drivers\BusinessListing\FakeBusinessListingChecker;
@@ -61,6 +64,11 @@ class DriverServiceProvider extends ServiceProvider
         $this->app->singleton(BusinessListingChecker::class, fn () => match (config('platform.business_listing.checker')) {
             'fake' => new FakeBusinessListingChecker,
             default => new DnsBusinessListingChecker,
+        });
+
+        $this->app->singleton(DomainClaimChecker::class, fn () => match (config('platform.business_claiming.domain_checker')) {
+            'fake' => new FakeDomainClaimChecker,
+            default => new DnsAndHttpDomainClaimChecker,
         });
 
         $this->app->singleton(SigningService::class, fn () => new SigningService(

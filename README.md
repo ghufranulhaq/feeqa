@@ -112,6 +112,12 @@ default already or is documented inline in that file.
   actually resolves and isn't on the `BUSINESS_LISTING_BLOCKLIST_DOMAINS` /
   `_KEYWORDS` lists first (FR-002-10). Not one of the constitution §5.1
   providers, so it isn't covered by `Environment::assertProductionIsSafe()`.
+- **`BUSINESS_CLAIM_DOMAIN_CHECKER`**: `fake` (default) approves every DNS
+  TXT/HTML-file claim without a real lookup; `dns_and_http` (production)
+  actually checks (FR-002-11 methods b/c). Same not-a-§5.1-provider note
+  as above. **`BUSINESS_CLAIM_FREE_EMAIL_DOMAINS`**: comma-separated list
+  a business's own domain can never be (gmail.com, etc. by default) —
+  blocks claim method (a) for it entirely (FR-002-12).
 
 ## Testing
 

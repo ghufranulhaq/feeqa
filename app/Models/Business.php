@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -191,6 +192,22 @@ class Business extends Model
     public function userCan(User $user, BusinessPermission $permission): bool
     {
         return in_array($permission->value, $this->permissionsFor($user), true);
+    }
+
+    /**
+     * FR-002-14: who to notify about a re-claim request.
+     *
+     * @return Collection<int, User>
+     */
+    public function owners(): Collection
+    {
+        $userIds = DB::table('model_has_roles')
+            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->where('model_has_roles.business_id', $this->id)
+            ->where('roles.name', BusinessRole::Owner->value)
+            ->pluck('model_has_roles.model_id');
+
+        return User::whereIn('id', $userIds)->get();
     }
 
     /**

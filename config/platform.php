@@ -138,4 +138,21 @@ return [
         ))),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Business claiming (FR-002-11 through FR-002-15)
+    |--------------------------------------------------------------------------
+    | Not one of constitution §5.1's named providers either — same
+    | fake-locally/demo, real-in-production shape as business_listing above.
+    */
+    'business_claiming' => [
+        'domain_checker' => env('BUSINESS_CLAIM_DOMAIN_CHECKER', 'fake'),
+        // FR-002-12: a business whose own domain is one of these can never
+        // be claimed by method (a) — anyone could get an address there.
+        'free_email_domains' => array_filter(explode(',', env(
+            'BUSINESS_CLAIM_FREE_EMAIL_DOMAINS',
+            'gmail.com,yahoo.com,outlook.com,hotmail.com,icloud.com,aol.com,protonmail.com,mail.com,yandex.com,gmx.com',
+        ))),
+    ],
+
 ];

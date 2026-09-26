@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // FR-001-20.
 Schedule::command('accounts:erase-pending-deletions')->daily();
+
+// FR-002-14.
+Schedule::command('business-claims:escalate-stale-reclaims')->daily();
