@@ -31,3 +31,6 @@ Schedule::command('review-invitations:expire')->daily();
 
 // FR-005-20.
 Schedule::command('review-invitations:release-plan-limited')->daily();
+
+// FR-005-18.
+Schedule::command('review-invitations:neutrality-report')->daily();

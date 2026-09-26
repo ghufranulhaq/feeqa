@@ -4,6 +4,7 @@ use App\Http\Controllers\Business\BccInvitationController;
 use App\Http\Controllers\Business\BusinessInvitationAcceptController;
 use App\Http\Controllers\Business\BusinessProfileController;
 use App\Http\Controllers\Business\EmployeeSizeBandDisputeController;
+use App\Http\Controllers\Business\InvitationAnalyticsController;
 use App\Http\Controllers\Business\InvitationController;
 use App\Http\Controllers\Business\InvitationTemplateController;
 use App\Http\Controllers\Business\LocationController;
@@ -82,4 +83,9 @@ Route::middleware(['auth', SetPermissionTeam::class])->prefix('business/{busines
         ->name('business.bcc-invitations.rotate-address');
     Route::patch('bcc-invitations/settings', [BccInvitationController::class, 'updateSettings'])
         ->name('business.bcc-invitations.update-settings');
+
+    // FR-005-19: funnel, conversion, by-method, by-template, and over-time
+    // invitation analytics for the Analyst role and above.
+    Route::get('review-invitations/analytics', [InvitationAnalyticsController::class, 'index'])
+        ->name('business.review-invitations.analytics');
 });
