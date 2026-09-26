@@ -304,6 +304,29 @@ return [
             'new_account_cluster_account_age_days' => (int) env('MODERATION_NEW_ACCOUNT_CLUSTER_ACCOUNT_AGE_DAYS', 7),
             'max_freeze_hours' => (int) env('MODERATION_MAX_FREEZE_HOURS', 72),
         ],
+        // FR-006-07 through FR-006-10: flagging (notice-and-action).
+        'flags' => [
+            'max_details_length' => (int) env('MODERATION_FLAG_MAX_DETAILS_LENGTH', 1000),
+            'max_evidence_files' => (int) env('MODERATION_FLAG_MAX_EVIDENCE_FILES', 5),
+            'max_evidence_file_bytes' => (int) env('MODERATION_FLAG_MAX_EVIDENCE_FILE_BYTES', 10 * 1024 * 1024),
+            // FR-006-08: blur automatically once a trusted reporter (or, if
+            // none is trusted, this many distinct reporters) flags the same
+            // item for harmful/personal-info content.
+            'blur_min_distinct_reporters' => (int) env('MODERATION_FLAG_BLUR_MIN_DISTINCT_REPORTERS', 3),
+            'harmful_sla_hours' => (int) env('MODERATION_FLAG_HARMFUL_SLA_HOURS', 24),
+            'default_sla_days' => (int) env('MODERATION_FLAG_DEFAULT_SLA_DAYS', 7),
+            // Edge case table: "> 20 flags/hour from one account" — a
+            // fraud signal (Log::warning), not a hard reject; rejecting a
+            // genuine batch of harmful-content reports outright would cut
+            // against FR-006-08's own SLA.
+            'mass_flagging_hourly_threshold' => (int) env('MODERATION_FLAG_MASS_FLAGGING_HOURLY_THRESHOLD', 20),
+            // FR-006-10's own cap — this one *is* a hard reject once a
+            // Business already has this many flags of its own still open.
+            'business_open_flag_cap' => (int) env('MODERATION_FLAG_BUSINESS_OPEN_CAP', 50),
+            'business_reject_rate_window_days' => (int) env('MODERATION_FLAG_BUSINESS_REJECT_RATE_WINDOW_DAYS', 90),
+            'business_reject_rate_min_flags' => (int) env('MODERATION_FLAG_BUSINESS_REJECT_RATE_MIN_FLAGS', 20),
+            'business_reject_rate_threshold' => (float) env('MODERATION_FLAG_BUSINESS_REJECT_RATE_THRESHOLD', 0.8),
+        ],
     ],
 
 ];

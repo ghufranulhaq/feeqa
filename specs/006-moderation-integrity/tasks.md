@@ -92,29 +92,43 @@ guessed at for content that isn't there yet.
       spec's own neutral wording ("We're checking unusual activity on this
       profile") when true, skipping the rest of T2's signals — a frozen
       business holds everything, full stop. FR-006-06.
-- [ ] **T4. Flagging (notice-and-action).** `flags` table (polymorphic
+- [x] **T4. Flagging (notice-and-action).** `flags` table (polymorphic
       `flaggable`, reporter_id nullable, reporter_email nullable — required
       when reporter_id is null, FR-006-07 — reason_code, details nullable
       ≤ 1000 chars, evidence file paths json, status: open/blurred/upheld/
       rejected, is_business_flag bool, decided_by nullable, decided_at,
-      decision_reason, sla_due_at, timestamps) + model. `CreateFlag`
-      action: any visitor (guest needs email) or business; rejects a
+      decision_reason, sla_due_at, timestamps) + model. Two additions
+      beyond this sketch, both documented in the migration itself: a
+      `business_id` nullable FK (only set when `is_business_flag`) so
+      FR-006-10's per-business open-flag cap and reject-rate check don't
+      need a fragile polymorphic join through whatever `flaggable` happens
+      to be; and `assigned_to` (nullable FK to users), added now rather
+      than by a later ALTER TABLE in T5, same call already made for
+      `moderation_incidents` in T3. `CreateFlag`
+      action: any visitor (guest needs email) or business (checked against
+      `BusinessPermission::FlagReviews`); rejects a
       missing reason code, details over 1,000 characters, or more than 5
       evidence files / 10 MB each (edge cases table); a repeat flag by the
       same reporter (or same business) on the same item is a no-op
       returning the existing flag; `harmful_illegal`/`personal_info`
       reasons auto-blur when the reporter is trusted (an account in good
-      standing, no upheld-against-them flags) or ≥ 3 distinct reporters
-      have flagged the same item, with a 24h SLA — everything else gets a
+      standing, no upheld-against-them flags — `User::hasUpheldFlagAgainstThem()`,
+      the honest-placeholder definition of "good standing" today) or ≥ 3
+      distinct reporters have flagged the same item, with a 24h SLA —
+      everything else gets a
       7-day SLA (FR-006-08); a business flag never sets status past `open`
       by itself (FR-006-09, tested explicitly per the acceptance
       checklist) and a `not_genuine` business flag re-runs T2's screening
       engine against the flagged review's stored text. Per-business open-
-      flag cap of 50 plus a rolling 90-day reject-rate check (≥ 20 flags,
+      flag cap of 50 (hard reject) plus a rolling 90-day reject-rate check (≥ 20 flags,
       > 80% rejected ⇒ `Log::warning` educational-notice signal, same
       staff-alert shape as 005 T10, feeding T6's ladder step 1) —
       FR-006-10. Rate limit: > 20 flags/hour from one account raises the
-      same kind of fraud-signal log 005 T10 already established. FR-006-07
+      same kind of fraud-signal log 005 T10 already established (a logged
+      signal, not a hard reject — rejecting a genuine batch of harmful-
+      content reports outright would fight FR-006-08's own SLA, a
+      documented judgment call). `Review::isBlurred()` / `scopePubliclyVisible()`
+      now exclude a review with any `blurred` flag on it. FR-006-07
       through FR-006-10, edge cases table (no reason code, oversized
       details/evidence, duplicate flag, mass flagging, business flags
       every negative review).

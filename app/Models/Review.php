@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Domain\Moderation\FlagStatus;
 use App\Domain\Reviews\DurabilitySignal;
 use App\Domain\Reviews\ReviewStatus;
 use App\Domain\Reviews\SourceLabel;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -129,6 +131,24 @@ class Review extends Model
     }
 
     /**
+     * @return MorphMany<Flag, $this>
+     */
+    public function flags(): MorphMany
+    {
+        return $this->morphMany(Flag::class, 'flaggable');
+    }
+
+    /**
+     * FR-006-08: true the moment any flag on this review carries the
+     * `blurred` status — a flag-level fact, not a column on the review
+     * itself, so a second flag never needs to "un-blur" the first one.
+     */
+    public function isBlurred(): bool
+    {
+        return $this->flags()->where('status', FlagStatus::Blurred)->exists();
+    }
+
+    /**
      * FR-004-22: the Verified Experience badge — computed live from
      * whether an unrevoked attestation exists, never a stored column, so
      * a revocation (FR-004-17) takes effect the instant it's recorded.
@@ -166,12 +186,14 @@ class Review extends Model
      */
     public function scopePubliclyVisible(Builder $query): Builder
     {
-        return $query->published()->whereHas('reviewer', fn (Builder $reviewer) => $reviewer->whereNull('deletion_requested_at'));
+        return $query->published()
+            ->whereHas('reviewer', fn (Builder $reviewer) => $reviewer->whereNull('deletion_requested_at'))
+            ->whereDoesntHave('flags', fn (Builder $flags) => $flags->where('status', FlagStatus::Blurred));
     }
 
     public function isPubliclyVisible(): bool
     {
-        return $this->status === ReviewStatus::Published && ! $this->reviewer->hasPendingDeletion();
+        return $this->status === ReviewStatus::Published && ! $this->reviewer->hasPendingDeletion() && ! $this->isBlurred();
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Domain\Moderation\FlagStatus;
 use App\Domain\Staff\StaffRole;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -158,5 +159,18 @@ class User extends Authenticatable
     public function hasOptedOutOfLifecycleReminders(): bool
     {
         return $this->lifecycle_reminders_opted_out_at !== null;
+    }
+
+    /**
+     * FR-006-08: "an account in good standing" — the honest-placeholder
+     * definition today: no flag has been upheld against content they
+     * authored. Only Review is flaggable content yet (006 T4).
+     */
+    public function hasUpheldFlagAgainstThem(): bool
+    {
+        return Flag::query()
+            ->where('status', FlagStatus::Upheld)
+            ->whereHasMorph('flaggable', [Review::class], fn ($query) => $query->where('reviewer_id', $this->id))
+            ->exists();
     }
 }
