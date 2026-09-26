@@ -22,7 +22,7 @@ wired), same pattern as spec 002.
       (improved/unchanged/declined). Models + factories. Product reviews
       (FR-003-01, FR-003-03) stay deferred — the schema doesn't need a
       product column until that spec exists. FR-003-01.
-- [ ] **T2. Content screening rules + safe rendering.** A pure
+- [x] **T2. Content screening rules + safe rendering.** A pure
       `ScreenReviewSubmission` action (rules only, no external provider —
       not a driver): blocklist words → `rejected` with a reason; text
       near-identical to the same author's text on a *different* business

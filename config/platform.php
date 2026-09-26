@@ -155,4 +155,27 @@ return [
         ))),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Review screening (FR-003-11 through FR-003-13)
+    |--------------------------------------------------------------------------
+    | Rules only (word list, near-identical text, speed checks) — specs/
+    | plan.md keeps this off the driver pattern deliberately, since there is
+    | no external provider to swap. That's why it's a plain env-configurable
+    | list here rather than a `.env`-selected driver like ai/verification
+    | above.
+    */
+    'reviews' => [
+        'screening' => [
+            'blocklist_words' => array_filter(explode(',', env(
+                'REVIEW_SCREENING_BLOCKLIST_WORDS',
+                'fuck,shit,bastard,cunt,asshole',
+            ))),
+            // Edge case table: "Same text posted to several businesses" —
+            // held for fraud review (006), not rejected outright.
+            'near_identical_window_days' => (int) env('REVIEW_SCREENING_NEAR_IDENTICAL_WINDOW_DAYS', 30),
+            'near_identical_similarity_threshold' => (int) env('REVIEW_SCREENING_NEAR_IDENTICAL_THRESHOLD', 90),
+        ],
+    ],
+
 ];
