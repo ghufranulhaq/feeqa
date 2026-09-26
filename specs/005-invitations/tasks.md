@@ -15,7 +15,7 @@ form" (FR-005-10) is built as real, tested resolution logic with nothing to
 render it yet, the same honest-placeholder relationship every other spec
 in this codebase has with its own missing UI.
 
-- [ ] **T1. Invitation schema & domain model.** `review_invitations` table
+- [x] **T1. Invitation schema & domain model.** `review_invitations` table
       (business_id, method, recipient_email encrypted nullable,
       recipient_email_hash nullable+indexed, recipient_name nullable,
       locale, reference encrypted nullable, reference_hash
