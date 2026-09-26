@@ -4,6 +4,7 @@ use App\Http\Controllers\Public\BusinessClaimController;
 use App\Http\Controllers\Public\BusinessClosureController;
 use App\Http\Controllers\Public\BusinessCreateController;
 use App\Http\Controllers\Public\BusinessProfileController;
+use App\Http\Controllers\Public\InvitationUnsubscribeController;
 use App\Http\Controllers\Public\LocationProfileController;
 use App\Http\Controllers\Public\PlatformKeysController;
 use App\Http\Controllers\Public\ReviewController;
@@ -25,6 +26,10 @@ Route::get('reviewers/{user}', [ReviewerProfileController::class, 'show'])->name
 Route::get('.well-known/platform-keys.json', [PlatformKeysController::class, 'index'])->name('platform-keys');
 Route::get('verification-revocations', [VerificationAttestationController::class, 'revocations'])->name('verification.revocations');
 Route::get('verification-check/{attestation}', [VerificationAttestationController::class, 'show'])->name('verification.check');
+
+// FR-005-15: no sign-in needed, so this stays outside every `auth` group.
+Route::post('invitations/{token}/unsubscribe', [InvitationUnsubscribeController::class, 'store'])
+    ->name('invitations.unsubscribe');
 
 // FR-002-08: signed-in only. Plural `/businesses/...`, distinct from the
 // singular `/business/{slug}` profile route below, so "new" can never be

@@ -88,6 +88,7 @@ class Business extends Model
         static::creating(function (Business $business): void {
             $business->slug ??= self::uniqueSlugFor($business->name);
             $business->bcc_address ??= self::generateUniqueBccAddress();
+            $business->review_link_token ??= self::generateUniqueReviewLinkToken();
         });
     }
 
@@ -149,6 +150,26 @@ class Business extends Model
         } while (self::where('bcc_address', $address)->exists());
 
         return $address;
+    }
+
+    public static function generateUniqueReviewLinkToken(): string
+    {
+        do {
+            $token = Str::lower(Str::random(20));
+        } while (self::where('review_link_token', $token)->exists());
+
+        return $token;
+    }
+
+    /**
+     * FR-005-04: the generic `link` method's own public, QR-encodable URL
+     * — the same public profile page every other visitor reaches, tagged
+     * so a future review-submission flow can tell a `link` visit apart
+     * from an organic one and label the resulting review `Redirected`.
+     */
+    public function reviewLinkUrl(): string
+    {
+        return route('businesses.show', $this->slug).'?rl='.$this->review_link_token;
     }
 
     /**
