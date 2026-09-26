@@ -8,10 +8,9 @@ use App\Models\Review;
 use App\Models\ReviewLifecycleUpdate;
 
 /**
- * FR-003-26: the fields a review card shows today. Reply, case summary,
- * and Verified Experience badge stay "coming soon" until specs 007, 010,
- * and 004 exist. Share/Report aren't owned by any task yet, so they still
- * aren't part of this shape.
+ * FR-003-26: the fields a review card shows today. Reply and case summary
+ * stay "coming soon" until specs 007 and 010 exist. Share/Report aren't
+ * owned by any task yet, so they still aren't part of this shape.
  */
 class ReviewCard
 {
@@ -24,6 +23,7 @@ class ReviewCard
      *     date_of_experience: string, published_at: ?string, edited_at: ?string, source_label: string,
      *     useful_count: int,
      *     current_rating: int, durability_signal: ?string,
+     *     verified_attestation_id: ?string,
      *     lifecycle_updates: list<array{milestone: string, star_rating: int, text: string, published_at: ?string}>,
      *     question_answers: list<array{label: string, type: string, value: mixed}>,
      * }
@@ -62,6 +62,9 @@ class ReviewCard
             // update's rating, or the original rating."
             'current_rating' => $review->currentRating(),
             'durability_signal' => $review->durability_signal?->value,
+            // FR-004-22: the badge is present only when an unrevoked
+            // attestation exists — computed live, never a stored flag.
+            'verified_attestation_id' => $review->verifiedAttestation()?->id,
             'lifecycle_updates' => self::lifecycleUpdates($review),
             'question_answers' => self::questionAnswers($review),
         ];

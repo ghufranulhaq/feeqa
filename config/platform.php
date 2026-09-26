@@ -47,6 +47,10 @@ return [
             'max_age_months' => (int) env('VERIFICATION_MAX_AGE_MONTHS', 12),
             'grace_days_after_experience' => (int) env('VERIFICATION_GRACE_DAYS_AFTER_EXPERIENCE', 30),
         ],
+        // FR-004-14: bump when the attestation payload shape or the rules
+        // behind an approval decision change, same idea as spec 008's
+        // score methodology version.
+        'methodology_version' => 1,
     ],
 
     /*

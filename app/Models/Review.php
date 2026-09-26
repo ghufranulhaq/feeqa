@@ -129,6 +129,25 @@ class Review extends Model
     }
 
     /**
+     * FR-004-22: the Verified Experience badge — computed live from
+     * whether an unrevoked attestation exists, never a stored column, so
+     * a revocation (FR-004-17) takes effect the instant it's recorded.
+     */
+    public function verifiedAttestation(): ?VerificationAttestation
+    {
+        return VerificationAttestation::query()
+            ->where('review_id', $this->id)
+            ->whereNull('revoked_at')
+            ->latest('decision_time')
+            ->first();
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->verifiedAttestation() !== null;
+    }
+
+    /**
      * @param  Builder<Review>  $query
      * @return Builder<Review>
      */

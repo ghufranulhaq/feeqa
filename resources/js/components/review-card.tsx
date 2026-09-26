@@ -41,6 +41,7 @@ export interface ReviewCardData {
     useful_count: number;
     current_rating: number;
     durability_signal: string | null;
+    verified_attestation_id: string | null;
     lifecycle_updates: ReviewCardLifecycleUpdate[];
     question_answers: ReviewCardQuestionAnswer[];
 }
@@ -90,11 +91,10 @@ function formatAnswer(answer: ReviewCardQuestionAnswer): string {
 }
 
 /**
- * FR-003-26. Reply, case summary, and Verified Experience badge stay
- * "coming soon" (007/010/004). Useful count is real (FR-003-27); the
- * tap-to-vote endpoint (`reviews.useful-vote.store`) exists but no button
- * reaches it here yet, same "endpoint before UI" situation as spec 003
- * T5's drafts.
+ * FR-003-26. Reply and case summary stay "coming soon" (007/010). Useful
+ * count is real (FR-003-27); the tap-to-vote endpoint
+ * (`reviews.useful-vote.store`) exists but no button reaches it here yet,
+ * same "endpoint before UI" situation as spec 003 T5's drafts.
  */
 export function ReviewCard({
     review,
@@ -151,6 +151,17 @@ export function ReviewCard({
                 {'★'.repeat(review.current_rating)}
                 {'☆'.repeat(5 - review.current_rating)}
             </p>
+
+            {review.verified_attestation_id && (
+                <p className="mt-1">
+                    <Link
+                        href={route('verification.check', review.verified_attestation_id)}
+                        className="inline-flex items-center rounded bg-green-50 px-2 py-0.5 text-xs font-medium text-green-800 underline decoration-dotted"
+                    >
+                        Verified Experience
+                    </Link>
+                </p>
+            )}
 
             <h3 className="mt-1 font-medium">{title}</h3>
             <p className="mt-1 text-sm whitespace-pre-line text-neutral-700">{review.text}</p>

@@ -5,14 +5,23 @@ use App\Http\Controllers\Public\BusinessClosureController;
 use App\Http\Controllers\Public\BusinessCreateController;
 use App\Http\Controllers\Public\BusinessProfileController;
 use App\Http\Controllers\Public\LocationProfileController;
+use App\Http\Controllers\Public\PlatformKeysController;
 use App\Http\Controllers\Public\ReviewController;
 use App\Http\Controllers\Public\ReviewDraftController;
 use App\Http\Controllers\Public\ReviewerProfileController;
 use App\Http\Controllers\Public\ReviewLifecycleUpdateController;
 use App\Http\Controllers\Public\ReviewUsefulVoteController;
+use App\Http\Controllers\Public\VerificationAttestationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('reviewers/{user}', [ReviewerProfileController::class, 'show'])->name('reviewers.show');
+
+// FR-004-15, FR-004-16, FR-004-17: fully public, no auth. Registered before
+// the {slug} business routes below so a literal path segment is never
+// mistaken for one.
+Route::get('.well-known/platform-keys.json', [PlatformKeysController::class, 'index'])->name('platform-keys');
+Route::get('verification-revocations', [VerificationAttestationController::class, 'revocations'])->name('verification.revocations');
+Route::get('verification-check/{attestation}', [VerificationAttestationController::class, 'show'])->name('verification.check');
 
 // FR-002-08: signed-in only. Plural `/businesses/...`, distinct from the
 // singular `/business/{slug}` profile route below, so "new" can never be

@@ -76,7 +76,10 @@ it('writes a compliance log entry when a staff account is created (FR-001-15)', 
     $entry = ComplianceLogEntry::where('staff_id', $admin->id)->firstOrFail();
     expect($entry->action)->toBe('staff_account_created');
     expect($entry->target_type)->toBe($created->getMorphClass());
-    expect($entry->target_id)->toBe($created->id);
+    // target_id is a string column (widened in spec 004 T4 to also hold
+    // UUID targets), so compare as a string rather than assume the DB
+    // driver hands back an int for this particular target's bigint id.
+    expect($entry->target_id)->toBe((string) $created->id);
     expect($entry->reason_code)->not->toBeEmpty();
 });
 
