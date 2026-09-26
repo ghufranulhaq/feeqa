@@ -51,6 +51,12 @@ return [
         // behind an approval decision change, same idea as spec 008's
         // score methodology version.
         'methodology_version' => 1,
+        // FR-004-12 batch limits for a business submitting transaction
+        // records.
+        'transaction_records' => [
+            'max_per_request' => (int) env('TRANSACTION_RECORDS_MAX_PER_REQUEST', 10000),
+            'max_per_day' => (int) env('TRANSACTION_RECORDS_MAX_PER_DAY', 1000000),
+        ],
     ],
 
     /*

@@ -10,6 +10,7 @@ use App\Http\Controllers\Public\ReviewController;
 use App\Http\Controllers\Public\ReviewDraftController;
 use App\Http\Controllers\Public\ReviewerProfileController;
 use App\Http\Controllers\Public\ReviewLifecycleUpdateController;
+use App\Http\Controllers\Public\ReviewReferenceMatchController;
 use App\Http\Controllers\Public\ReviewUsefulVoteController;
 use App\Http\Controllers\Public\ReviewVerificationController;
 use App\Http\Controllers\Public\VerificationAttestationController;
@@ -60,6 +61,10 @@ Route::middleware('auth')->group(function () {
     // FR-004-02 through FR-004-11: author-only, review must be published.
     Route::post('reviews/{review}/verifications', [ReviewVerificationController::class, 'store'])
         ->name('reviews.verifications.store');
+
+    // FR-004-13: author-only, review must be published.
+    Route::post('reviews/{review}/reference-match', [ReviewReferenceMatchController::class, 'store'])
+        ->name('reviews.reference-match.store');
 });
 
 // FR-002-16.

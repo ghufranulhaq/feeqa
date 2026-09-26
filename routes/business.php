@@ -5,6 +5,7 @@ use App\Http\Controllers\Business\BusinessProfileController;
 use App\Http\Controllers\Business\EmployeeSizeBandDisputeController;
 use App\Http\Controllers\Business\InvitationController;
 use App\Http\Controllers\Business\LocationController;
+use App\Http\Controllers\Business\TransactionRecordController;
 use App\Http\Middleware\SetPermissionTeam;
 use Illuminate\Support\Facades\Route;
 
@@ -37,4 +38,9 @@ Route::middleware(['auth', SetPermissionTeam::class])->prefix('business/{busines
     // FR-002-25 edge case.
     Route::post('employee-size-band-disputes', [EmployeeSizeBandDisputeController::class, 'store'])
         ->name('business.employee-size-band-disputes.store');
+
+    // FR-004-12: the "Business API" data shape for submitting hashed
+    // transaction records, reachable from the dashboard today.
+    Route::post('transaction-records', [TransactionRecordController::class, 'store'])
+        ->name('business.transaction-records.store');
 });
