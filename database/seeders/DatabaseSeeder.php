@@ -6,6 +6,7 @@ use App\Models\User;
 use Database\Seeders\Base\BusinessRolesSeeder;
 use Database\Seeders\Base\CategoriesSeeder;
 use Database\Seeders\Base\CategoryQuestionSetsSeeder;
+use Database\Seeders\Base\GuidelineVersionsSeeder;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -21,6 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call(BusinessRolesSeeder::class);
         $this->call(CategoriesSeeder::class);
         $this->call(CategoryQuestionSetsSeeder::class);
+        $this->call(GuidelineVersionsSeeder::class);
 
         // User::factory(10)->create();
 
