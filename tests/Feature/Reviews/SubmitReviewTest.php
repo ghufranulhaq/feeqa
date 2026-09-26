@@ -147,6 +147,22 @@ it('blocks a business member from submitting a review of that business (FR-003-0
     (new SubmitReview(new ScreenReviewSubmission))->handle($member, $business, validReviewData());
 })->throws(ValidationException::class);
 
+it('allows a review of a business closed less than 12 months ago (edge cases table)', function () {
+    $reviewer = User::factory()->create();
+    $business = Business::factory()->create(['status' => 'closed', 'closed_at' => now()->subMonths(6)]);
+
+    $review = (new SubmitReview(new ScreenReviewSubmission))->handle($reviewer, $business, validReviewData());
+
+    expect($review->business_id)->toBe($business->id);
+});
+
+it('rejects a review of a business closed more than 12 months ago (edge cases table)', function () {
+    $reviewer = User::factory()->create();
+    $business = Business::factory()->create(['status' => 'closed', 'closed_at' => now()->subMonths(13)]);
+
+    (new SubmitReview(new ScreenReviewSubmission))->handle($reviewer, $business, validReviewData());
+})->throws(ValidationException::class);
+
 it('rejects a second review of the same business within 30 days (FR-003-08 edge case: duplicate submission)', function () {
     $reviewer = User::factory()->create();
     $business = Business::factory()->create();

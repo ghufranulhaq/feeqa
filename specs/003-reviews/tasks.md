@@ -242,8 +242,18 @@ wired), same pattern as spec 002.
       `location_id` stays valid without touching it. Invariance test:
       none of a moved review's own fields (rating, text, status, dates)
       change, only its business/tag pointers.
-- [ ] **T17. Acceptance sweep.** Re-check every box in spec.md §6 against
-      what's actually built; mark fully-satisfied criteria `[x]` and
-      partially-satisfied ones `[~]` with an inline note naming the
-      dependent spec, same convention as specs 001/002's own sweeps. Fix
-      any real gap the sweep turns up rather than just noting it.
+- [x] **T17. Acceptance sweep.** Re-checked every box in spec.md §6:
+      6 fully satisfied (`[x]`), 3 partially (`[~]`, each naming the
+      dependent spec — 005 for Invited/Redirected labels, 007 for the
+      tagged business's one reply, 008 for real score recalculation — none
+      of them things this spec can finish on its own). One real gap
+      turned up and was fixed rather than just noted: `Business::
+      acceptsNewReviews()` (spec 002's closed-business 12-month cutoff)
+      was defined and unit-tested in isolation but never actually called
+      from `SubmitReview` — a review of a business closed over a year ago
+      would have gone through untouched. Also added a test proving a
+      client-supplied `status` field on an edit has no effect, closing
+      out the "no business-facing endpoint can delay or approve
+      publication" criterion with direct evidence rather than an
+      inference from the architecture. FR-003-02 through FR-003-33, every
+      edge case in §4.

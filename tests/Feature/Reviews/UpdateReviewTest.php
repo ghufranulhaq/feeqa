@@ -110,6 +110,21 @@ it('lets the author edit their review over HTTP', function () {
     expect($review->fresh()->title)->toBe('Updated after a small mix-up');
 });
 
+it('ignores a client-supplied status field — only re-screening decides it (FR-003-13, acceptance criteria §6)', function () {
+    $business = Business::factory()->create();
+    $author = User::factory()->create();
+    $review = Review::factory()->for($business)->create(['reviewer_id' => $author->id, 'status' => ReviewStatus::Published]);
+
+    $this->actingAs($author)
+        ->patch(route('reviews.update', $review), validUpdateData([
+            'text' => 'What a load of bullshit this whole experience was, honestly disappointing.',
+            'status' => 'published',
+        ]))
+        ->assertRedirect();
+
+    expect($review->fresh()->status)->toBe(ReviewStatus::Rejected);
+});
+
 it('rejects a business member editing a review over HTTP with a 403 (FR-003-25, edge case)', function () {
     $this->seed(BusinessRolesSeeder::class);
     $business = Business::factory()->claimed()->create();

@@ -16,7 +16,9 @@ Locations can be reviewed the same way, scoped to that specific branch.
 A member of the business being reviewed (an Owner, Admin, Responder, or
 Analyst) cannot review it. Only one review per business every 30 days is
 allowed per person; re-submitting with the same idempotency key returns
-the original review instead of creating a duplicate.
+the original review instead of creating a duplicate. A business closed
+(spec 002) more than 12 months ago can no longer be reviewed; a more
+recent closure still accepts them.
 
 If the business's category has review questions (spec 002), a review
 also collects an answer to each required one and stores which version of

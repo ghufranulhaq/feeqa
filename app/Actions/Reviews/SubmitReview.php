@@ -19,7 +19,9 @@ use Illuminate\Validation\ValidationException;
  * FR-003-02, FR-003-04 through FR-003-09: the core submission rules.
  * FR-003-14, FR-003-15: source label is set here, by the system only, and
  * is always `Organic` — `Invited`/`Redirected` both need the invitation/
- * generic-link system (005), not built yet.
+ * generic-link system (005), not built yet. Edge cases table: a `closed`
+ * Business (002) still accepts reviews until 12 months after its closure
+ * date (`Business::acceptsNewReviews()`).
  */
 class SubmitReview
 {
@@ -55,6 +57,7 @@ class SubmitReview
         $taggedBusiness = ReviewFieldGuards::taggedBusiness($business, $data['tagged_business_ids'] ?? []);
 
         $this->guardMembership($business, $reviewer);
+        $this->guardBusinessAcceptsReviews($business);
         $this->guardOneReviewPerBusinessPer30Days($business, $reviewer);
 
         $outcome = $this->screening->handle($reviewer, $business, $title, $text);
@@ -183,6 +186,19 @@ class SubmitReview
         if ($business->hasMembership($reviewer)) {
             throw ValidationException::withMessages([
                 'business' => 'You cannot review a business you are a member of.',
+            ]);
+        }
+    }
+
+    /**
+     * Edge cases table: "Review of a closed Business: allowed until 12
+     * months after the closure date."
+     */
+    private function guardBusinessAcceptsReviews(Business $business): void
+    {
+        if (! $business->acceptsNewReviews()) {
+            throw ValidationException::withMessages([
+                'business' => 'This business closed more than 12 months ago and can no longer be reviewed.',
             ]);
         }
     }

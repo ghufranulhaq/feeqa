@@ -108,15 +108,15 @@ Let consumers write honest, useful reviews of a business or a location (product 
 
 ## 6. Acceptance Criteria
 
-- [ ] Service and location reviews can be created with all validation rules enforced (a test for each rule in §3 and §4).
-- [ ] Tagging: the mention appears on the tagged profile, the tagged business gets one reply, and the tag has zero score effect (invariance test).
-- [ ] Members of a Business cannot review it.
-- [ ] Source labels are set correctly for the invitation, generic link, and organic paths, and cannot be edited.
-- [ ] Lifecycle windows open and close on the right days (time-travel tests at days 29/30/179/180/364/365/455). The current rating and durability signal are correct.
-- [ ] Edit and delete by the author work. Nobody else can edit or delete (API authorization tests).
-- [ ] Scores recalculate within 60 s of each triggering event.
-- [ ] Filters and sorts return correct results on a seeded dataset.
-- [ ] No business-facing endpoint can delay or approve publication.
+- [x] Service and location reviews can be created with all validation rules enforced (a test for each rule in §3 and §4). Every §3 rule (rating/title/text bounds, date window, confirmation checkbox, membership block, 30-day limit, language, question-set answers, idempotency) and every testable §4 edge case (empty/whitespace/emoji, HTML/script stripping, duplicate submission, closed-business 12-month cutoff, deleted-review updates, unauthenticated draft-only, unknown question-set answer dropped-and-logged, self-tag/multiple-tag rejection) has a passing test. The closed-business cutoff (`Business::acceptsNewReviews()`, spec 002) was defined but never actually enforced until this sweep found the gap and wired it into `SubmitReview`.
+- [~] Tagging: the mention appears on the tagged profile, the tagged business gets one reply, and the tag has zero score effect (invariance test). *Mention display and the zero-score-effect invariance test are both built and passing. The one-reply-from-the-tagged-business part needs spec 007 (replies), not built yet — stays "coming soon". Revisit when it ships.*
+- [x] Members of a Business cannot review it.
+- [~] Source labels are set correctly for the invitation, generic link, and organic paths, and cannot be edited. *Organic is fully tested, including that it can't be overridden by client input. Invited and Redirected both need spec 005 (invitations/generic links), not built yet — every review is Organic today. Revisit when it ships.*
+- [x] Lifecycle windows open and close on the right days (time-travel tests at days 29/30/179/180/364/365/455). The current rating and durability signal are correct.
+- [x] Edit and delete by the author work. Nobody else can edit or delete (API authorization tests). Includes proof that a client-supplied `status` field on an edit has no effect — only re-screening decides it (FR-003-13).
+- [~] Scores recalculate within 60 s of each triggering event. *The recalculation hook (`RecalculateBusinessScore`) is called from every trigger point (publish, edit, delete, lifecycle update) and proven, per trigger, to fire for the right business — but it's a deliberate no-op today, since spec 008 owns the actual Review Score/Trust Index and the 60-second budget is only meaningful once a real calculation exists to time. Revisit when it ships.*
+- [x] Filters and sorts return correct results on a seeded dataset.
+- [x] No business-facing endpoint can delay or approve publication. Structurally impossible, not just untested: neither `SubmitReview` nor `UpdateReview` ever reads a client-supplied `status`, and there is no endpoint a business member can reach that writes one — proven by the same client-supplied-`status` test above, plus the existing 403 tests for a business member attempting to edit/delete at all.
 
 ## 7. Dependencies & Open Questions
 
