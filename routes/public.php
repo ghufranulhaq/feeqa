@@ -11,6 +11,7 @@ use App\Http\Controllers\Public\ReviewDraftController;
 use App\Http\Controllers\Public\ReviewerProfileController;
 use App\Http\Controllers\Public\ReviewLifecycleUpdateController;
 use App\Http\Controllers\Public\ReviewUsefulVoteController;
+use App\Http\Controllers\Public\ReviewVerificationController;
 use App\Http\Controllers\Public\VerificationAttestationController;
 use Illuminate\Support\Facades\Route;
 
@@ -55,6 +56,10 @@ Route::middleware('auth')->group(function () {
     // FR-003-17 through FR-003-22.
     Route::post('reviews/{review}/lifecycle-updates', [ReviewLifecycleUpdateController::class, 'store'])
         ->name('reviews.lifecycle-updates.store');
+
+    // FR-004-02 through FR-004-11: author-only, review must be published.
+    Route::post('reviews/{review}/verifications', [ReviewVerificationController::class, 'store'])
+        ->name('reviews.verifications.store');
 });
 
 // FR-002-16.
