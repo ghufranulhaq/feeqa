@@ -127,7 +127,7 @@ in this codebase has with its own missing UI.
       an expired one (edge case) — no page renders this yet, per this
       spec's own opening note. FR-005-08, FR-005-10, FR-005-11, edge case
       (expired link).
-- [ ] **T8. Review submission integration.** `SubmitReview` (003) accepts
+- [x] **T8. Review submission integration.** `SubmitReview` (003) accepts
       an optional invitation token: sets `source_label` from the
       invitation's method (`Invited` for bcc/integration/api/csv/manual,
       `Redirected` for link) instead of always `Organic`, marks the
