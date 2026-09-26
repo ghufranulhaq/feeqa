@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Staff\BusinessClaimReviewController;
 use App\Http\Controllers\Staff\BusinessProfileChangeRequestController;
+use App\Http\Controllers\Staff\CategoryController;
 use App\Http\Controllers\Staff\StaffAccountController;
 use App\Http\Middleware\StaffIpAllowList;
 use Illuminate\Support\Facades\Route;
@@ -21,4 +22,11 @@ Route::middleware(['auth', StaffIpAllowList::class])->prefix('staff')->group(fun
         ->name('staff.business-claims.approve');
     Route::post('business-claims/{claim}/reject', [BusinessClaimReviewController::class, 'reject'])
         ->name('staff.business-claims.reject');
+
+    // FR-002-28, FR-002-30, FR-002-33.
+    Route::post('categories', [CategoryController::class, 'store'])->name('staff.categories.store');
+    Route::patch('categories/{category}', [CategoryController::class, 'update'])->name('staff.categories.update');
+    Route::post('categories/{industry}/launch', [CategoryController::class, 'launch'])->name('staff.categories.launch');
+    Route::post('categories/{industry}/pause', [CategoryController::class, 'pause'])->name('staff.categories.pause');
+    Route::post('categories/{category}/set-launched', [CategoryController::class, 'setLaunched'])->name('staff.categories.set-launched');
 });

@@ -67,7 +67,7 @@ spec owns and extends it.
       Nothing consumes a question set yet (review submission is spec 003) —
       this task only builds and tests the versioned data model and the
       inheritance resolution. FR-002-19, FR-002-20.
-- [ ] **T9. Industries staff console: CRUD + lifecycle.** Staff pages to
+- [x] **T9. Industries staff console: CRUD + lifecycle.** Staff pages to
       create/edit an industry or category, and to move it through
       `draft → launched → paused → launched`; state changes take effect on
       public pages (nav, category pages, rankings placeholder) within 5

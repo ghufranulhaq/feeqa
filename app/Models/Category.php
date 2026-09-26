@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Domain\Businesses\CategoryState;
 use Database\Factories\CategoryFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,6 +18,8 @@ use Illuminate\Support\Collection;
  * node only has the plain FR-002-18/22 `launched` flag.
  *
  * @property array<string, string> $name
+ * @property array<string, string>|null $description
+ * @property CategoryState|null $state
  */
 class Category extends Model
 {
@@ -35,6 +38,7 @@ class Category extends Model
         'parent_id',
         'slug',
         'name',
+        'description',
         'icon',
         'launched',
         'state',
@@ -45,6 +49,7 @@ class Category extends Model
     {
         return [
             'name' => 'array',
+            'description' => 'array',
             'launched' => 'boolean',
             'is_system' => 'boolean',
             'state' => CategoryState::class,
@@ -70,6 +75,20 @@ class Category extends Model
     public function isIndustry(): bool
     {
         return $this->parent_id === null;
+    }
+
+    /**
+     * FR-002-22/FR-002-30: what navigation, category pages, and rankings
+     * filter on — a plain column read, so a state change (FR-002-28)
+     * takes effect immediately, well inside the 5-minute budget, with no
+     * deploy and (today) no cache to wait out either.
+     *
+     * @param  Builder<Category>  $query
+     * @return Builder<Category>
+     */
+    public function scopeVisibleInNavigation(Builder $query): Builder
+    {
+        return $query->where('launched', true);
     }
 
     /**

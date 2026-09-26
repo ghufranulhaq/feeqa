@@ -18,12 +18,27 @@ The platform ships with the full top-level taxonomy from day one (Travel,
 Finance & Insurance, Retail & E-commerce, and so on, plus a system
 "Other / Uncategorised" fallback), but at launch **only Travel is
 launched**. Everything else exists so businesses can already be listed
-under it, ready for staff to launch later without a code change (the
-console to do that isn't built yet). Travel's own sub-tree — Airlines,
-Travel Agencies & OTAs (with Online Travel Agencies and High-street/Tour
-Agencies underneath), and Airports — is launched; Hotels, Car Hire, and
-Tour Operators exist under Travel but aren't launched yet, per
-`travel-content.md`.
+under it, ready for staff to launch later without a code change. Travel's
+own sub-tree — Airlines, Travel Agencies & OTAs (with Online Travel
+Agencies and High-street/Tour Agencies underneath), and Airports — is
+launched; Hotels, Car Hire, and Tour Operators exist under Travel but
+aren't launched yet, per `travel-content.md`.
+
+### Managing categories (staff)
+
+Staff can create a new industry or sub-category, rename one, and move an
+industry through its `draft → launched → paused → launched` lifecycle
+(FR-002-28, FR-002-30) — a staff **Admin** creates, launches, and pauses;
+a **Senior Moderator** can rename a category and edit its description;
+every other staff role is read-only (FR-002-33). A state change is a
+plain column update, so it's reflected anywhere that reads it (nothing
+caches categories yet) immediately — well inside the FR-002-28 5-minute
+budget. Pausing or launching an industry never touches any Business's
+data, and every launch/pause is written to the compliance log (the public
+Transparency Center changelog itself is spec 006). There's no staff
+console UI for any of this yet, nor the FR-002-31 readiness checklist
+that will gate launching — every endpoint under `/staff/categories/...`
+is real and usable today, just not linked from anywhere or checklist-gated.
 
 ### Question sets
 
@@ -130,6 +145,8 @@ for now, same as the main profile.
 
 ## What's not built yet
 
-No question sets are attached to a review form yet, and there's no staff
-console for industries/categories or for the profile-change/claim queues
-above. All of that is still on spec 002's `tasks.md`.
+No question sets are attached to a review form yet, and there's no
+console UI anywhere for staff — for industries/categories, for the
+profile-change/claim queues above, or for the FR-002-31 readiness
+checklist and preview that will gate launching an industry. All of that
+is still on spec 002's `tasks.md`.
