@@ -37,3 +37,6 @@ Schedule::command('review-invitations:neutrality-report')->daily();
 
 // FR-006-06.
 Schedule::command('moderation:detect-anomalies')->hourly();
+
+// FR-006-20.
+Schedule::command('moderation:weekly-audit')->weekly();

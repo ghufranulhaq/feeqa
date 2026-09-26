@@ -286,18 +286,33 @@ guessed at for content that isn't there yet.
       `LiftEnforcementStepTest`. `AppealDecidedNotification` sent to the
       appellant either way. FR-006-18, FR-006-19, edge case (late appeal,
       staff override).
-- [ ] **T8. Weekly audit sampling and auto-disable.** `AuditScreeningSample`
-      action: pulls a random ≥ 2% sample of the week's `screenings` rows
-      with a `publish`/`reject` recommendation, and creates an
-      `audit_samples` table row per one (screening_id, staff decision
-      pending, correct bool nullable, staff_id, decided_at) for a staff
-      member to mark correct/incorrect against what actually happened
-      (upheld on appeal, later flagged and upheld, etc.) — the queue slots
-      into T5. `ComputeRulePrecision`: per rule_id, precision over the
-      trailing audit window; any **reject**-type rule (T2's registry)
-      under 99% precision calls `ScreeningRuleState::disable()` and logs
-      why — FR-006-20's automatic disabling, not a staff step. Weekly
-      scheduled command. FR-006-20.
+- [x] **T8. Weekly audit sampling and auto-disable.** `audit_samples`
+      table: `screening_id` (unique — a screening is never sampled twice),
+      `correct` (nullable bool: null is "pending a staff decision" rather
+      than a separate status column, since there's nothing else a decided
+      row can be), `staff_id`, `decided_at`. `AuditScreeningSample`: pulls
+      a random ≥ 2% sample of the trailing week's `screenings` rows with a
+      `publish`/`reject` recommendation (a `hold` isn't an automated
+      *decision* — it's already a referral to a human) via `firstOrCreate`
+      per row. `ScreenReviewSubmission::autoRejectRuleIds()`: the
+      previously-private auto-reject registry, made public so T8 can read
+      it without duplicating the list. `ComputeRulePrecision`: for each of
+      those rule IDs, precision over decided samples (`correct` not null)
+      in the trailing 90 days; below 99% calls `ScreeningRuleState::
+      disable()` with the measured numbers in the reason — FR-006-20's
+      automatic disabling, not a staff step; a rule with no decided
+      samples yet is left alone rather than disabled on zero evidence (not
+      specified either way, an honest choice over guessing). Two
+      "necessary but unnamed" additions, the same class of gap T5's
+      `DecideFlag` was: `ListAuditSamplesQueue` (`App\Actions\Staff\
+      Queues`, defaulting to pending samples — without it nothing ever
+      slots the sample into T5's console as promised) and
+      `DecideAuditSample` (a staff correct/incorrect verdict; no
+      compliance log, same reasoning `AssignQueueItem` already gives —
+      this is quality control on an automated decision, not a moderation
+      or enforcement decision against a user). One weekly scheduled
+      command, `moderation:weekly-audit`, runs both actions in sequence
+      (routes/console.php). FR-006-20.
 - [ ] **T9. Transparency Center.** `ComputeTransparencyReport` action:
       a quarterly, reproducible aggregation straight from `compliance_log`,
       `flags`, `appeals`, and `screenings` (FR-006-22 — no numbers stored

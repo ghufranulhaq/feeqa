@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\Staff\AssignQueueItem;
+use App\Actions\Staff\Queues\ListAuditSamplesQueue;
 use App\Actions\Staff\Queues\ListFlagsQueue;
 use App\Actions\Staff\Queues\ListHeldReviewsQueue;
 use App\Actions\Staff\Queues\ListModerationIncidentsQueue;
@@ -8,6 +9,7 @@ use App\Domain\Moderation\FlagStatus;
 use App\Domain\Moderation\IncidentStatus;
 use App\Domain\Moderation\IncidentType;
 use App\Domain\Staff\StaffRole;
+use App\Models\AuditSample;
 use App\Models\Business;
 use App\Models\Flag;
 use App\Models\ModerationIncident;
@@ -101,4 +103,17 @@ it('rejects a non-staff actor assigning a queue item', function () {
     $review = Review::factory()->held()->create();
 
     (new AssignQueueItem)->handle(User::factory()->create(), $review, queueStaff());
+})->throws(AuthorizationException::class);
+
+it('defaults the audit sample queue to pending samples, oldest first (FR-006-20)', function () {
+    $pending = AuditSample::factory()->create();
+    AuditSample::factory()->create(['correct' => true, 'staff_id' => queueStaff()->id, 'decided_at' => now()]);
+
+    $queue = (new ListAuditSamplesQueue)->handle(queueStaff());
+
+    expect($queue->pluck('id')->all())->toBe([$pending->id]);
+});
+
+it('rejects a non-staff user listing the audit sample queue', function () {
+    (new ListAuditSamplesQueue)->handle(User::factory()->create());
 })->throws(AuthorizationException::class);

@@ -46,6 +46,18 @@ class ScreenReviewSubmission
         self::RULE_EXACT_DUPLICATE_CLUSTER,
     ];
 
+    /**
+     * FR-006-20: `ComputeRulePrecision` (T8) only ever measures and
+     * disables this registry's own rules — every other signal already
+     * never recommends `reject`, so it has no precision bar to fail.
+     *
+     * @return list<string>
+     */
+    public static function autoRejectRuleIds(): array
+    {
+        return self::AUTO_REJECT_RULES;
+    }
+
     public function handle(User $reviewer, Business $business, string $title, string $text, ?string $ipAddress = null): ScreeningOutcome
     {
         // FR-006-06: a staff-ordered freeze holds everything on this

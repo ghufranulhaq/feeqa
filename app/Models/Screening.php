@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Domain\Reviews\ReviewStatus;
+use Database\Factories\ScreeningFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -19,6 +21,9 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 class Screening extends Model
 {
+    /** @use HasFactory<ScreeningFactory> */
+    use HasFactory;
+
     protected $fillable = [
         'screenable_type',
         'screenable_id',
