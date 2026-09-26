@@ -196,15 +196,13 @@ date, not before.
 
 When staff later discover two already-listed businesses are the same
 one — something FR-002-09's duplicate check at creation time didn't
-catch — they merge one into the other: its locations and secondary
-categories move to the survivor, and its slug permanently redirects.
-**This predates reviews existing and hasn't been revisited since spec
-003 landed:** reviews aren't moved to the survivor today, and because
-the losing business is hard-deleted with its reviews foreign-keyed to
-cascade, merging a business that already has reviews deletes them
-instead of moving them. Score recalculation is spec 008, still not
-built. Flagged in `docs/system-overview/reviews.md` as a known cross-spec
-gap, not yet fixed.
+catch — they merge one into the other: its locations, secondary
+categories, and reviews (spec 003 T16) all move to the survivor, and its
+slug permanently redirects. A review that tags the losing business (spec
+003's tagging) is retargeted to tag the survivor instead — unless the
+survivor is the one being reviewed, in which case the tag is dropped
+rather than becoming a self-tag. Score recalculation is spec 008, still
+not built, so there's nothing to recalculate for that part yet.
 
 ## Seeding businesses (staff)
 
