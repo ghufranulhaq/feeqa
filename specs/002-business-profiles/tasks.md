@@ -99,7 +99,7 @@ spec owns and extends it.
       test proving none of this changes a Review Score or Trust Index.
       FR-002-36, FR-002-37, edge cases (industries merged, seeded profile
       no longer exists, business closes).
-- [ ] **T13. "Mentioned in reviews" placeholder.** The profile section and
+- [x] **T13. "Mentioned in reviews" placeholder.** The profile section and
       its data hook exist and are tested to show nothing and affect no
       score today — the actual tagging happens when a review is submitted
       (spec 003 FR-003-31), same "built now, filled later" pattern as

@@ -49,7 +49,7 @@ it('lists what a later spec still owns, instead of faking the data (FR-002-04)',
 
     $this->get(route('businesses.show', $business->slug))
         ->assertInertia(fn (AssertableInertia $page) => $page
-            ->has('pending_features', 8)
+            ->has('pending_features', 7)
             ->where('pending_features.0.key', 'review_score')
         );
 });

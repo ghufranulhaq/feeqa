@@ -65,6 +65,10 @@ class BusinessProfileController extends Controller
                 'name' => $location->name,
                 'city' => $location->address['city'] ?? null,
             ])->values(),
+            // FR-002-27: a real section, shown separately from the
+            // Business's own reviews — always empty until spec 003 exists,
+            // not a "coming soon" placeholder like the list below.
+            'mentions' => $business->mentions(),
             'pending_features' => [
                 ['key' => 'review_score', 'label' => 'Review Score & Trust Index', 'spec' => '008'],
                 ['key' => 'reviews', 'label' => 'Reviews', 'spec' => '003'],
@@ -73,7 +77,6 @@ class BusinessProfileController extends Controller
                 ['key' => 'case_stats', 'label' => 'Case statistics', 'spec' => '010'],
                 ['key' => 'similar_businesses', 'label' => 'Similar businesses', 'spec' => '009'],
                 ['key' => 'consumer_warning', 'label' => 'Consumer Warning', 'spec' => '006'],
-                ['key' => 'mentions', 'label' => 'Mentioned in reviews', 'spec' => '002 (T13)'],
             ],
         ]);
     }

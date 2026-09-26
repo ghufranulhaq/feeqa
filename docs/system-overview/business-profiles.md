@@ -97,6 +97,13 @@ similar businesses, and Consumer Warnings — is listed as "coming soon"
 rather than shown with fake numbers, so the page is always honest about
 what's actually live.
 
+A **"Mentioned in reviews"** section is different: it's a real, built
+section (FR-002-27, not a "coming soon" placeholder), shown separately
+from the business's own reviews, for when another business's review
+tags this one. It's always empty today — there's no review to tag with
+yet (spec 003) — but it never counts toward this business's own scores,
+now or once reviews exist.
+
 If a business's slug ever changes, the old one keeps working as a
 permanent redirect to the new profile page — there's no dead link left
 behind.

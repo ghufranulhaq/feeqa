@@ -40,10 +40,12 @@ interface PendingFeature {
 export default function BusinessProfile({
     business,
     locations,
+    mentions,
     pending_features: pendingFeatures,
 }: {
     business: Business;
     locations: LocationSummary[];
+    mentions: unknown[];
     pending_features: PendingFeature[];
 }) {
     const categories = [business.primary_category, ...business.secondary_categories].filter((category): category is Category => category !== null);
@@ -115,6 +117,15 @@ export default function BusinessProfile({
                         </ul>
                     </section>
                 )}
+
+                <section className="mt-8">
+                    <h2 className="text-lg font-medium">Mentioned in reviews</h2>
+                    <p className="mt-2 text-sm text-neutral-600">
+                        {mentions.length === 0
+                            ? 'No mentions yet.'
+                            : `${mentions.length} review(s) of other businesses mention this one.`}
+                    </p>
+                </section>
 
                 <section className="mt-8">
                     <h2 className="text-lg font-medium">Coming soon</h2>
