@@ -36,5 +36,7 @@
         <env name="QUEUE_CONNECTION" value="sync" force="true"/>
         <env name="SESSION_DRIVER" value="array" force="true"/>
         <env name="TELESCOPE_ENABLED" value="false" force="true"/>
+        <!-- FR-004-10: fixed test key so fingerprint tests are deterministic. -->
+        <env name="VERIFICATION_FINGERPRINT_KEY" value="test-fingerprint-key-do-not-use-in-production" force="true"/>
     </php>
 </phpunit>

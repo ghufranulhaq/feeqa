@@ -32,6 +32,21 @@ return [
     'verification' => [
         'extractor' => env('VERIFICATION_EXTRACTOR', 'fake'),
         'ocr_languages' => env('OCR_LANGUAGES', 'eng'),
+        // FR-004-10: the HMAC key behind every proof fingerprint. Never
+        // logged, never derived from APP_KEY (rotating APP_KEY must not
+        // silently make every stored fingerprint unmatchable).
+        'fingerprint_key' => env('VERIFICATION_FINGERPRINT_KEY'),
+        // FR-004-07 tamper checks.
+        'editing_tool_blocklist' => array_filter(explode(',', env(
+            'VERIFICATION_EDITING_TOOL_BLOCKLIST',
+            'photoshop,gimp,photopea,pixlr,paint.net',
+        ))),
+        'known_fake_template_hashes' => array_filter(explode(',', env('VERIFICATION_KNOWN_FAKE_TEMPLATE_HASHES', ''))),
+        // FR-004-06 auto-approval date window.
+        'auto_approval' => [
+            'max_age_months' => (int) env('VERIFICATION_MAX_AGE_MONTHS', 12),
+            'grace_days_after_experience' => (int) env('VERIFICATION_GRACE_DAYS_AFTER_EXPERIENCE', 30),
+        ],
     ],
 
     /*
