@@ -9,7 +9,9 @@ use App\Models\CategoryQuestion;
 use App\Models\Location;
 use App\Models\Review;
 use App\Models\User;
+use App\Notifications\ReviewTaggedNotification;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -27,7 +29,7 @@ class SubmitReview
      *     star_rating: int, title: string, text: string,
      *     date_of_experience: string, reference_number?: ?string,
      *     confirmed_genuine: bool, idempotency_key?: ?string,
-     *     answers?: array<string, mixed>,
+     *     answers?: array<string, mixed>, tagged_business_ids?: list<int>,
      * } $data
      */
     public function handle(User $reviewer, Business $business, array $data, ?Location $location = null): Review
@@ -49,13 +51,14 @@ class SubmitReview
         $dateOfExperience = ReviewFieldGuards::dateOfExperience($data['date_of_experience']);
         $referenceNumber = ReviewFieldGuards::referenceNumber($data['reference_number'] ?? null);
         [$questionSetVersion, $answers] = $this->guardAnswers($business, $data['answers'] ?? []);
+        $taggedBusiness = ReviewFieldGuards::taggedBusiness($business, $data['tagged_business_ids'] ?? []);
 
         $this->guardMembership($business, $reviewer);
         $this->guardOneReviewPerBusinessPer30Days($business, $reviewer);
 
         $outcome = $this->screening->handle($reviewer, $business, $title, $text);
 
-        return Review::create([
+        $review = Review::create([
             'business_id' => $business->id,
             'location_id' => $location?->id,
             'reviewer_id' => $reviewer->id,
@@ -69,10 +72,17 @@ class SubmitReview
             'language' => 'en',
             'question_set_version' => $questionSetVersion,
             'answers' => $answers,
+            'tagged_business_id' => $taggedBusiness?->id,
             'confirmed_genuine' => true,
             'idempotency_key' => $idempotencyKey,
             'published_at' => $outcome->status === ReviewStatus::Published ? now() : null,
         ]);
+
+        if ($outcome->status === ReviewStatus::Published && $taggedBusiness !== null) {
+            Notification::send($taggedBusiness->members(), new ReviewTaggedNotification($review));
+        }
+
+        return $review;
     }
 
     private function guardLocationBelongsToBusiness(Business $business, Location $location): void

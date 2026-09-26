@@ -58,7 +58,7 @@ export default function BusinessProfile({
 }: {
     business: Business;
     locations: LocationSummary[];
-    mentions: unknown[];
+    mentions: ReviewCardData[];
     reviews: ReviewsPage;
     review_filters: ReviewFiltersState;
     pending_features: PendingFeature[];
@@ -177,11 +177,15 @@ export default function BusinessProfile({
 
                 <section className="mt-8">
                     <h2 className="text-lg font-medium">Mentioned in reviews</h2>
-                    <p className="mt-2 text-sm text-neutral-600">
-                        {mentions.length === 0
-                            ? 'No mentions yet.'
-                            : `${mentions.length} review(s) of other businesses mention this one.`}
-                    </p>
+                    {mentions.length === 0 ? (
+                        <p className="mt-2 text-sm text-neutral-600">No mentions yet.</p>
+                    ) : (
+                        <div className="mt-2 space-y-4">
+                            {mentions.map((mention) => (
+                                <ReviewCard key={mention.id} review={mention} showBusiness />
+                            ))}
+                        </div>
+                    )}
                 </section>
 
                 <section className="mt-8">

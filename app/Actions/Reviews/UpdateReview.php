@@ -5,7 +5,9 @@ namespace App\Actions\Reviews;
 use App\Domain\Reviews\ReviewStatus;
 use App\Models\Review;
 use App\Models\User;
+use App\Notifications\ReviewTaggedNotification;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Notification;
 
 /**
  * FR-003-23, FR-003-25: only the author may edit a review, and edited
@@ -20,6 +22,7 @@ class UpdateReview
      * @param  array{
      *     star_rating: int, title: string, text: string,
      *     date_of_experience: string, reference_number?: ?string,
+     *     tagged_business_ids?: list<int>,
      * }  $data
      *
      * @throws AuthorizationException
@@ -35,6 +38,11 @@ class UpdateReview
         $text = ReviewFieldGuards::text($data['text']);
         $dateOfExperience = ReviewFieldGuards::dateOfExperience($data['date_of_experience']);
         $referenceNumber = ReviewFieldGuards::referenceNumber($data['reference_number'] ?? null);
+        // FR-003-33: the tag may be added, changed, or removed on every
+        // edit — like every other field here, the edit fully replaces it
+        // rather than patching it, so an omitted tag means "no tag".
+        $taggedBusiness = ReviewFieldGuards::taggedBusiness($review->business, $data['tagged_business_ids'] ?? []);
+        $previousTaggedBusinessId = $review->tagged_business_id;
 
         $outcome = $this->screening->handle($review->reviewer, $review->business, $title, $text);
 
@@ -44,6 +52,7 @@ class UpdateReview
             'text' => $text,
             'date_of_experience' => $dateOfExperience,
             'reference_number' => $referenceNumber,
+            'tagged_business_id' => $taggedBusiness?->id,
             'status' => $outcome->status,
             // Keeps the review's original publish date if it already had
             // one; only sets it the first time an edit newly clears
@@ -52,6 +61,15 @@ class UpdateReview
             'edited_at' => now(),
         ]);
 
-        return $review->fresh();
+        $review = $review->fresh();
+
+        // FR-003-32: only notify when the tag is newly set or changed to a
+        // different business, and only once the review is actually
+        // visible — an edit that doesn't touch the tag never re-notifies.
+        if ($outcome->status === ReviewStatus::Published && $taggedBusiness !== null && $taggedBusiness->id !== $previousTaggedBusinessId) {
+            Notification::send($taggedBusiness->members(), new ReviewTaggedNotification($review));
+        }
+
+        return $review;
     }
 }

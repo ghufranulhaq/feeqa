@@ -7,7 +7,7 @@ use Inertia\Testing\AssertableInertia;
 
 uses(RefreshDatabase::class);
 
-it('always returns an empty mentions collection until spec 003 exists (FR-002-27)', function () {
+it('returns an empty mentions collection when no review tags this business (FR-002-27)', function () {
     $business = Business::factory()->create();
 
     expect($business->mentions())->toBeInstanceOf(Collection::class)

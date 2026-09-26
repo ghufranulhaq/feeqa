@@ -182,17 +182,20 @@ class Business extends Model
 
     /**
      * FR-002-27: "published reviews of other businesses that tag this
-     * Business" — shown separately from the Business's own reviews and
-     * never counted toward its scores. Always empty until spec 003 T12
-     * wires it to a real Review query; the section itself was built in
-     * spec 002 T13 (same "built now, filled later" pattern as spec 001
-     * T5's reviewer profile).
+     * Business" — published reviews of another Business that tag this one
+     * (FR-003-31), shown separately from the Business's own reviews and
+     * never counted toward its scores (FR-003-32).
      *
-     * @return Collection<int, mixed>
+     * @return Collection<int, Review>
      */
     public function mentions(): Collection
     {
-        return collect();
+        return Review::query()
+            ->with(['business', 'reviewer'])
+            ->publiclyVisible()
+            ->where('tagged_business_id', $this->id)
+            ->latest('published_at')
+            ->get();
     }
 
     /**
@@ -256,6 +259,21 @@ class Business extends Model
             ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
             ->where('model_has_roles.business_id', $this->id)
             ->where('roles.name', BusinessRole::Owner->value)
+            ->pluck('model_has_roles.model_id');
+
+        return User::whereIn('id', $userIds)->get();
+    }
+
+    /**
+     * FR-003-32: "notification to the tagged Business's members" — every
+     * user holding any role here, not just Owners (contrast owners()).
+     *
+     * @return Collection<int, User>
+     */
+    public function members(): Collection
+    {
+        $userIds = DB::table('model_has_roles')
+            ->where('model_has_roles.business_id', $this->id)
             ->pluck('model_has_roles.model_id');
 
         return User::whereIn('id', $userIds)->get();

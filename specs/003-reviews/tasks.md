@@ -150,15 +150,32 @@ wired), same pattern as spec 002.
       a dated timeline. Time-travel tests at days 29/30/179/180/364/365/
       455. FR-003-17 through FR-003-22, edge cases (update outside
       window, update on a deleted review).
-- [ ] **T12. Tagging a second business.** Tag validation (must exist, can't
-      be the reviewed business, at most one — reject otherwise); wires
-      spec 002's `Business::mentions()` placeholder to a real query;
-      notification to the tagged business's members (007's preference
-      rules are noted as pending — everyone is notified for now); the tag
-      can be added/changed/removed on edit. The one-reply-from-the-tagged-
-      business part of FR-003-32 stays "coming soon" until 007 exists.
-      FR-003-31, FR-003-33, edge cases (self-tag/multiple tags,
-      Consumer-Warning business taggable).
+- [x] **T12. Tagging a second business.** `ReviewFieldGuards::taggedBusiness()`
+      rejects a nonexistent business, the reviewed business itself
+      (self-tag), and more than one tag in the same submission — shared by
+      `SubmitReview` and `UpdateReview` so the rule is identical on
+      creation and edit. `Business::mentions()` (spec 002's placeholder)
+      now runs a real query: published reviews tagging this Business,
+      never added to its own `reviews()` (so nothing about it can feed a
+      score — FR-003-32's zero-effect clause needs no extra guard, since
+      nothing is written to the tagged Business at all). A new
+      `Business::members()` (every role holder, not just Owners) and
+      `ReviewTaggedNotification` (mail) notify the tagged business the
+      moment a tagged review is actually published — never for a held one
+      — with 007's preference rules noted as pending (everyone is
+      notified today). On edit, the tag can be added, changed, or removed
+      like every other field (an edit fully replaces it, so omitting it
+      means "no tag"); a notification only fires when the tag is newly
+      set or points at a different business, never on an edit that leaves
+      it alone. Consumer-Warning-status businesses are taggable with no
+      extra code, since no such flag exists on `Business` yet (006) — the
+      guard only checks existence and self-tag, so nothing blocks it;
+      noted as pending until 006 adds the flag itself to test against.
+      The one-reply-from-the-tagged-business part of FR-003-32 stays
+      "coming soon" until 007 exists. Also updated spec 002's own
+      acceptance line for this section from "always empty" to done, since
+      it's now wired. FR-003-31, FR-003-33, edge cases (self-tag/multiple
+      tags, Consumer-Warning business taggable).
 - [ ] **T13. Score-recalculation hook + invariance.** A `RecalculateBusinessScore`
       no-op action (008's real target), called from every trigger point
       built above (T3 publish, T10 edit/delete, T11 update) — same

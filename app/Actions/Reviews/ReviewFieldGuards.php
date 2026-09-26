@@ -2,6 +2,7 @@
 
 namespace App\Actions\Reviews;
 
+use App\Models\Business;
 use App\Support\Reviews\ReviewText;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -116,5 +117,40 @@ class ReviewFieldGuards
         }
 
         return $value;
+    }
+
+    /**
+     * FR-003-31, edge case: "Author tags the same business they are
+     * reviewing, or tags more than one business" — reject either way.
+     *
+     * @param  list<int>  $taggedBusinessIds
+     */
+    public static function taggedBusiness(Business $reviewedBusiness, array $taggedBusinessIds): ?Business
+    {
+        if ($taggedBusinessIds === []) {
+            return null;
+        }
+
+        if (count($taggedBusinessIds) > 1) {
+            throw ValidationException::withMessages([
+                'tagged_business_id' => 'You can tag at most one other business.',
+            ]);
+        }
+
+        $taggedBusiness = Business::find($taggedBusinessIds[0]);
+
+        if ($taggedBusiness === null) {
+            throw ValidationException::withMessages([
+                'tagged_business_id' => 'The tagged business could not be found.',
+            ]);
+        }
+
+        if ($taggedBusiness->id === $reviewedBusiness->id) {
+            throw ValidationException::withMessages([
+                'tagged_business_id' => 'You cannot tag the business you are reviewing.',
+            ]);
+        }
+
+        return $taggedBusiness;
     }
 }

@@ -43,9 +43,20 @@ class ReviewController extends Controller
             'text' => ['required', 'string'],
             'date_of_experience' => ['required', 'date'],
             'reference_number' => ['nullable', 'string'],
+            // FR-003-31, FR-003-33: whether it exists, isn't the reviewed
+            // business, and isn't more than one tag is a business rule
+            // enforced by the action (ReviewFieldGuards::taggedBusiness),
+            // not here.
+            'tagged_business_id' => ['nullable', 'integer'],
         ]);
 
-        $action->handle($request->user(), $review, $validated);
+        $taggedBusinessId = $validated['tagged_business_id'] ?? null;
+        unset($validated['tagged_business_id']);
+
+        $action->handle($request->user(), $review, [
+            ...$validated,
+            'tagged_business_ids' => $taggedBusinessId !== null ? [$taggedBusinessId] : [],
+        ]);
 
         return back()->with('status', 'Review updated.');
     }

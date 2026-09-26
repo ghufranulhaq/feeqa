@@ -73,10 +73,12 @@ class BusinessProfileController extends Controller
                 'name' => $location->name,
                 'city' => $location->address['city'] ?? null,
             ])->values(),
-            // FR-002-27: a real section, shown separately from the
-            // Business's own reviews — always empty until spec 003 exists,
-            // not a "coming soon" placeholder like the list below.
-            'mentions' => $business->mentions(),
+            // FR-002-27, FR-003-32: published reviews of other businesses
+            // that tag this one, shown separately from the Business's own
+            // reviews.
+            'mentions' => $business->mentions()
+                ->map(fn (Review $review) => ReviewCard::present($review))
+                ->values(),
             // FR-003-26, FR-003-28, FR-003-29: real reviews, sorted,
             // filtered, and paginated (max page size 50 — 20 here, well
             // under the cap).
