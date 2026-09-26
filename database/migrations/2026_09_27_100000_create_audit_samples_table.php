@@ -20,7 +20,7 @@ return new class extends Migration
         // never sampled twice.
         Schema::create('audit_samples', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('screening_id')->constrained()->cascadeOnDelete()->unique();
+            $table->foreignId('screening_id')->unique()->constrained()->cascadeOnDelete();
             $table->boolean('correct')->nullable();
             $table->foreignId('staff_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('decided_at')->nullable();

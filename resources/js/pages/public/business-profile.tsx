@@ -39,6 +39,11 @@ interface PendingFeature {
     spec: string;
 }
 
+interface ConsumerWarning {
+    reason: string | null;
+    since: string;
+}
+
 interface ReviewsPage {
     data: ReviewCardData[];
     current_page: number;
@@ -55,6 +60,7 @@ export default function BusinessProfile({
     reviews,
     review_filters: reviewFilters,
     pending_features: pendingFeatures,
+    consumer_warning: consumerWarning,
 }: {
     business: Business;
     locations: LocationSummary[];
@@ -62,6 +68,7 @@ export default function BusinessProfile({
     reviews: ReviewsPage;
     review_filters: ReviewFiltersState;
     pending_features: PendingFeature[];
+    consumer_warning: ConsumerWarning | null;
 }) {
     const categories = [business.primary_category, ...business.secondary_categories].filter((category): category is Category => category !== null);
 
@@ -103,6 +110,13 @@ export default function BusinessProfile({
                         </p>
                     </div>
                 </div>
+
+                {consumerWarning && (
+                    <p className="mt-4 rounded border border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">
+                        Consumer Warning, in effect since {consumerWarning.since}. This business's Review Score and Trust Index are hidden while the
+                        warning is active.
+                    </p>
+                )}
 
                 {business.is_closed && (
                     <p className="mt-4 rounded border border-neutral-300 bg-neutral-100 px-4 py-3 text-sm font-medium text-neutral-800">Closed</p>

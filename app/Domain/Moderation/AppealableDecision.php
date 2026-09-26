@@ -34,7 +34,7 @@ class AppealableDecision
         return match (true) {
             $appealable instanceof EnforcementAction => $appealable->applied_at,
             $appealable instanceof Flag => $appealable->decided_at,
-            $appealable instanceof Review => static::reviewDecisionLogEntry($appealable)?->occurred_at,
+            $appealable instanceof Review => self::reviewDecisionLogEntry($appealable)?->occurred_at,
             default => throw ValidationException::withMessages(['appealable' => 'This decision type cannot be appealed.']),
         };
     }
@@ -47,7 +47,7 @@ class AppealableDecision
         return match (true) {
             $appealable instanceof EnforcementAction => $appealable->applied_by,
             $appealable instanceof Flag => $appealable->decided_by,
-            $appealable instanceof Review => static::reviewDecisionLogEntry($appealable)?->staff_id,
+            $appealable instanceof Review => self::reviewDecisionLogEntry($appealable)?->staff_id,
             default => throw ValidationException::withMessages(['appealable' => 'This decision type cannot be appealed.']),
         };
     }
@@ -60,7 +60,7 @@ class AppealableDecision
      */
     public static function reviewDecisionAction(Review $review): ?string
     {
-        return static::reviewDecisionLogEntry($review)?->action;
+        return self::reviewDecisionLogEntry($review)?->action;
     }
 
     private static function reviewDecisionLogEntry(Review $review): ?ComplianceLogEntry

@@ -75,7 +75,7 @@ class CreateFlag
         }
 
         foreach ($evidence as $file) {
-            if (($file['size'] ?? 0) > $this->maxEvidenceFileBytes()) {
+            if ($file['size'] > $this->maxEvidenceFileBytes()) {
                 throw ValidationException::withMessages(['evidence' => 'Each evidence file must be 10 MB or smaller.']);
             }
         }
@@ -104,7 +104,7 @@ class CreateFlag
             'reporter_email' => $reporter === null ? $reporterEmail : null,
             'reason_code' => $reasonCode,
             'details' => $details,
-            'evidence_paths' => array_values(array_column($evidence, 'path')) ?: null,
+            'evidence_paths' => array_column($evidence, 'path') ?: null,
             'status' => $status,
             'is_business_flag' => $actingBusiness !== null,
             'business_id' => $actingBusiness?->id,

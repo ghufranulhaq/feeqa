@@ -119,12 +119,44 @@ default already or is documented inline in that file.
   a business's own domain can never be (gmail.com, etc. by default) —
   blocks claim method (a) for it entirely (FR-002-12).
 - **`REVIEW_SCREENING_BLOCKLIST_WORDS`**: comma-separated words that get a
-  review rejected outright (FR-003-11). **`REVIEW_SCREENING_NEAR_IDENTICAL_WINDOW_DAYS`**
-  / **`_THRESHOLD`**: how many days back, and how similar (0–100), text has
-  to be to the same person's review of a *different* business before it's
-  held for review instead of published (FR-003-13). Rules only, not one of
-  the constitution §5.1 providers — there's no `fake` variant because
-  there's no external service to fake.
+  review auto-rejected, one of only two rules allowed to (FR-006-05).
+  **`REVIEW_SCREENING_NEAR_IDENTICAL_WINDOW_DAYS`** / **`_THRESHOLD`**: how
+  many days back, and how similar (0–100), text has to be to the same
+  person's review of a *different* business before it's held instead of
+  published. **`REVIEW_SCREENING_EXACT_DUPLICATE_WINDOW_HOURS`** /
+  **`_MIN_ACCOUNTS`**: the other auto-reject rule — exact duplicate text
+  shared by this many distinct accounts within the window (FR-006-05).
+  **`REVIEW_SCREENING_COORDINATED_CLUSTER_WINDOW_HOURS`** / **`_MIN_ACCOUNTS`**:
+  near-identical (not exact) text from several distinct reviewers about
+  the *same* business in a short window — held, never auto-rejected
+  (FR-006-04, User Scenario 1). **`REVIEW_SCREENING_NEW_ACCOUNT_DAYS`**,
+  **`REVIEW_SCREENING_REVIEWER_VELOCITY_24H_THRESHOLD`**,
+  **`REVIEW_SCREENING_BUSINESS_VELOCITY_1H_THRESHOLD`**: the account-age
+  and velocity signals feeding the weighted risk score (FR-006-04).
+  **`REVIEW_SCREENING_HOLD_RISK_SCORE_THRESHOLD`**: the 0–1 score (above
+  the auto-reject rules) past which a submission holds instead of
+  publishing. Rules only, not one of the constitution §5.1 providers —
+  there's no `fake` variant because there's no external service to fake.
+- **`MODERATION_NETWORK_KNOWN_BAD_RANGES`**: comma-separated CIDR ranges
+  treated as suspicious for FR-006-04's network-reputation signal — empty
+  by default, since there's no real IP-reputation source yet (no request
+  reaches screening with a real IP at all today; see
+  `docs/system-overview/moderation.md`). **`MODERATION_REVIEW_SPIKE_MULTIPLIER`**
+  / **`_MIN_REVIEWS`**, **`MODERATION_RATING_SHIFT_THRESHOLD`** /
+  **`_MIN_REVIEWS`**, **`MODERATION_NEW_ACCOUNT_CLUSTER_MIN_REVIEWS`** /
+  **`_ACCOUNT_AGE_DAYS`**: the hourly business-anomaly-detection
+  thresholds (FR-006-06). **`MODERATION_MAX_FREEZE_HOURS`**: how long a
+  staff review freeze on a Business can last (72 by default).
+  **`MODERATION_FLAG_MAX_DETAILS_LENGTH`** / **`_MAX_EVIDENCE_FILES`** /
+  **`_MAX_EVIDENCE_FILE_BYTES`**: flag submission limits (FR-006-07).
+  **`MODERATION_FLAG_BLUR_MIN_DISTINCT_REPORTERS`**,
+  **`MODERATION_FLAG_HARMFUL_SLA_HOURS`**, **`MODERATION_FLAG_DEFAULT_SLA_DAYS`**:
+  when a flag auto-blurs and its SLA (FR-006-08).
+  **`MODERATION_FLAG_MASS_FLAGGING_HOURLY_THRESHOLD`**: a fraud-signal
+  log line, not a hard reject. **`MODERATION_FLAG_BUSINESS_OPEN_CAP`**,
+  **`MODERATION_FLAG_BUSINESS_REJECT_RATE_WINDOW_DAYS`** /
+  **`_MIN_FLAGS`** / **`_THRESHOLD`**: the per-business open-flag cap and
+  reject-rate signal (FR-006-10).
 - **`VERIFICATION_FINGERPRINT_KEY`**: the HMAC secret behind every proof
   fingerprint (FR-004-10) — never derived from `APP_KEY`, so rotating
   `APP_KEY` doesn't silently make every stored fingerprint unmatchable.

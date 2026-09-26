@@ -19,12 +19,13 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class BusinessProfileController extends Controller
 {
     /**
-     * FR-002-01, FR-002-02, FR-002-04, FR-002-05. Everything owned by a
-     * later spec (scores, AI summary, replies, cases, similar businesses,
-     * Consumer Warnings) is listed in `pending_features` instead of being
-     * faked — the profile page shows those sections as "coming soon"
-     * rather than pretending the data exists. Reviews (spec 003 T6, T9) are
-     * real.
+     * FR-002-01, FR-002-02, FR-002-04, FR-002-05. Everything still owned
+     * by a later spec (scores, AI summary, replies, cases, similar
+     * businesses) is listed in `pending_features` instead of being faked
+     * — the profile page shows those sections as "coming soon" rather
+     * than pretending the data exists. Reviews (spec 003 T6, T9) are
+     * real. Consumer Warnings (spec 006 FR-006-16) are real too, now that
+     * 006 exists — no longer a `pending_features` placeholder.
      */
     public function show(Request $request, string $slug): Response|RedirectResponse
     {
@@ -66,6 +67,14 @@ class BusinessProfileController extends Controller
                     ->map(fn ($category) => ['slug' => $category->slug, 'name' => $category->localisedName()])
                     ->values(),
             ],
+            // FR-006-16: a public banner while a Consumer Warning is
+            // active — trust signals (Review Score, Trust Index) stay
+            // hidden via `trustSignalsHidden()` once 008/009 exist to show
+            // them here at all.
+            'consumer_warning' => $business->trustSignalsHidden() ? [
+                'reason' => $business->consumer_warning_reason,
+                'since' => $business->consumer_warning_at->toDateString(),
+            ] : null,
             // FR-002-16 scenario 4: a multi-location business links out to
             // each branch's own sub-page.
             'locations' => $business->locations->map(fn ($location) => [
@@ -91,7 +100,6 @@ class BusinessProfileController extends Controller
                 ['key' => 'reply_behaviour', 'label' => 'Reply-behaviour signals', 'spec' => '007'],
                 ['key' => 'case_stats', 'label' => 'Case statistics', 'spec' => '010'],
                 ['key' => 'similar_businesses', 'label' => 'Similar businesses', 'spec' => '009'],
-                ['key' => 'consumer_warning', 'label' => 'Consumer Warning', 'spec' => '006'],
             ],
         ]);
     }

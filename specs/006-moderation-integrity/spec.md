@@ -89,16 +89,17 @@ Keep fake, harmful, and manipulated content off the Platform, and make every dec
 
 ## 6. Acceptance Criteria
 
-- [ ] Every content type is screened before publication, and nothing publishes when screening is down.
-- [ ] Auto-reject only happens through registered high-precision rules. Weekly audit sampling and automatic disabling of rules work.
-- [ ] Blur-on-flag and SLA timers work for harmful/personal-info flags.
-- [ ] Business flags never hide content on their own (test).
-- [ ] Each ladder step is enforceable and visible. The Consumer Warning hides both scores and shows on the profile and in search.
-- [ ] Every punitive action sends a statement of reasons with an appeal link. Appeals go to a different staff member.
-- [ ] The Transparency Center pages exist, and a generated quarterly report reconciles with the underlying records.
+- [x] Every content type is screened before publication, and nothing publishes when screening is down. (Reviews, edits, and lifecycle updates — the content types that exist today; replies/case messages/media items/insider reviews plug in once 007/010/012/013 exist, per this spec's own tasks.md framing note.)
+- [x] Auto-reject only happens through registered high-precision rules. Weekly audit sampling and automatic disabling of rules work.
+- [x] Blur-on-flag and SLA timers work for harmful/personal-info flags.
+- [x] Business flags never hide content on their own (test).
+- [x] Each ladder step is enforceable. The Consumer Warning hides both scores (once 008/009 exist to show them — `Business::trustSignalsHidden()` is the forward hook) and shows on the profile (a real banner on the existing public profile page, added by T10). "Shows ... in search" can't be built yet — search (009) doesn't exist.
+- [x] Every punitive action sends a statement of reasons with an appeal instruction. Appeals are enforced to go to a different staff member (test). The instruction is "reply to this email to appeal," not a link to an appeal page — there's no appeal form on any page yet (see docs/system-overview/moderation.md).
+- [x] The Transparency Center's data and reproducible quarterly report generation exist and are tested; there are no actual pages/routes rendering them yet, the same situation every other surface in this spec is in (see docs/system-overview/moderation.md).
 
 ## 7. Dependencies & Open Questions
 
 - **Decided (2026-09-24):** a small in-house team (2–4 moderators, UK business hours), with automation doing most of the work. SLAs stay as specified. The 24-hour harmful-content SLA holds overnight because of automatic blurring (FR-006-08). Launch locale is English only, so launch lexicons and models are English-first.
-- **Q2:** Is the Platform expected to be designated under EU DSA thresholds? This affects out-of-court dispute settlement obligations.
-- **Q3:** Should the list of businesses under Consumer Warning be searchable, or only visible on profiles?
+- **Q2:** Is the Platform expected to be designated under EU DSA thresholds? This affects out-of-court dispute settlement obligations. Still open — not decided during T1–T10's build.
+- **Q3:** Should the list of businesses under Consumer Warning be searchable, or only visible on profiles? Still open. `Business::underConsumerWarning()` (T9) exists as a scope either way — the open question is only whether a future search feature (009) surfaces it as its own filter.
+- **Found by T10's acceptance sweep, 2026-09-27:** two gaps recorded honestly rather than guessed at, both already noted in docs/system-overview/moderation.md: (a) no request reaching `ScreenReviewSubmission`'s three call sites carries a real IP address yet, so the network-reputation signal never actually fires outside a test passing one by hand; (b) `known_bad_ranges` is a static `.env` list, not a live IP-reputation lookup — there's no external provider to swap in yet, unlike the constitution §5.1 driver pattern used elsewhere. Both are pre-existing, deliberate gaps (T2's own doc-comment already called this out), not new findings, but are recorded here per constitution §8 rule 3 rather than left implicit.

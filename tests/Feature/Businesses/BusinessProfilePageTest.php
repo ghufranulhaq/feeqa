@@ -49,9 +49,27 @@ it('lists what a later spec still owns, instead of faking the data (FR-002-04)',
 
     $this->get(route('businesses.show', $business->slug))
         ->assertInertia(fn (AssertableInertia $page) => $page
-            ->has('pending_features', 6)
+            ->has('pending_features', 5)
             ->where('pending_features.0.key', 'review_score')
         );
+});
+
+it('shows a Consumer Warning banner and hides it once none is active (FR-006-16)', function () {
+    $warned = Business::factory()->create([
+        'consumer_warning_at' => now()->subDay(),
+        'consumer_warning_reason' => 'incentivised',
+    ]);
+
+    $this->get(route('businesses.show', $warned->slug))
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('consumer_warning.reason', 'incentivised')
+            ->where('consumer_warning.since', $warned->consumer_warning_at->toDateString())
+        );
+
+    $clean = Business::factory()->create();
+
+    $this->get(route('businesses.show', $clean->slug))
+        ->assertInertia(fn (AssertableInertia $page) => $page->where('consumer_warning', null));
 });
 
 it('404s for a slug that never existed', function () {

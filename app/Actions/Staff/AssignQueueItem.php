@@ -21,7 +21,11 @@ use Illuminate\Validation\ValidationException;
 class AssignQueueItem
 {
     /**
-     * @param  Review|Flag|ModerationIncident  $item
+     * $item is typed as the base `Model` rather than the `Review|Flag|
+     * ModerationIncident` union it's actually restricted to below,
+     * because that restriction is a runtime check every caller must
+     * still pass through — a PHPDoc union here would tell static
+     * analysis to trust it without the check ever running.
      *
      * @throws AuthorizationException
      * @throws ValidationException

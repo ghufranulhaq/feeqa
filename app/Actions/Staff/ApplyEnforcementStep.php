@@ -85,8 +85,8 @@ class ApplyEnforcementStep
         ]);
 
         match ($step) {
-            EnforcementStep::FeatureRestriction => $this->restrictLadderFeatures($subject),
-            EnforcementStep::ConsumerWarning => $this->applyConsumerWarning($subject, $reasonCode),
+            EnforcementStep::FeatureRestriction => $subject instanceof Business ? $this->restrictLadderFeatures($subject) : null,
+            EnforcementStep::ConsumerWarning => $subject instanceof Business ? $this->applyConsumerWarning($subject, $reasonCode) : null,
             EnforcementStep::AccountBlock => $subject->update(['blocked_at' => now(), 'blocked_reason' => $reasonCode->value]),
             default => null,
         };
@@ -114,7 +114,7 @@ class ApplyEnforcementStep
             foreach ($subject->owners() as $owner) {
                 $owner->notify($notification);
             }
-        } else {
+        } elseif ($subject instanceof User) {
             $subject->notify($notification);
         }
 

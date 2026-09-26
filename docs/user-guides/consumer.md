@@ -4,8 +4,9 @@ For anyone signing up to write and manage reviews. Business and staff
 guides land in this same folder once there's a dashboard/console UI for
 them to use (see `docs/system-overview/business-profiles.md`,
 `docs/system-overview/reviews.md`, `docs/system-overview/verification.md`,
-and `docs/system-overview/invitations.md` in the meantime for what a
-business owner, staff member, or reviewer can already do).
+`docs/system-overview/invitations.md`, and `docs/system-overview/moderation.md`
+in the meantime for what a business owner, staff member, or reviewer can
+already do).
 
 ## Creating an account
 
@@ -52,6 +53,29 @@ sign-in required) adds it by its website domain, or by name, country, and
 city if it has none. If it looks like something already listed, you're
 pointed at that profile instead of creating a duplicate. A category is
 required — pick "Other / Uncategorised" if nothing fits.
+
+If a business has confirmed serious misuse (buying reviews, coordinated
+fake reviews), its profile shows a **Consumer Warning** banner with the
+date it started. Its Review Score and Trust Index are hidden while the
+warning is active — it stays for at least 6 months.
+
+## Flagging content and appeals
+
+If you see a review that breaks the guidelines — hate speech or threats,
+someone's personal information, spam, or content that isn't about a real
+experience — you'll be able to flag it with a reason and, optionally,
+evidence. Flagging harmful content or personal information hides it right
+away once a trusted reporter (or a few people) has flagged the same item,
+while a moderator reviews it within a day; everything else is reviewed
+within a week. If a moderator removes or changes something of yours, you
+get an email explaining what happened, why, and that you can appeal —
+once, within 30 days — to a **different** moderator than the one who
+made the original call.
+
+**None of this is reachable from any page yet** — there's no flag button
+or appeal form anywhere today, only real, tested application logic behind
+it (see `docs/system-overview/moderation.md`), the same "no form in front
+of it yet" situation as this guide's other not-reachable-yet features.
 
 ## Reading reviews
 

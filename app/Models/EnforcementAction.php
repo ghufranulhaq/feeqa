@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
 
 /**
  * FR-006-14 through FR-006-17: one rung of either ladder ever applied to
@@ -21,6 +22,13 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property EnforcementLadder $ladder
  * @property EnforcementStep $step
  * @property ReasonCode $reason_code
+ * @property int $applied_by
+ * @property Carbon $applied_at
+ * @property Carbon|null $expires_at
+ * @property int|null $lifted_by
+ * @property Carbon|null $lifted_at
+ * @property string|null $lift_reason
+ * @property int|null $senior_approved_by
  */
 class EnforcementAction extends Model
 {

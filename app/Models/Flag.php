@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
 
 /**
  * FR-006-07: one notice against a piece of content, filed by a signed-in
@@ -17,6 +18,12 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property ReasonCode $reason_code
  * @property FlagStatus $status
  * @property array<int, string>|null $evidence_paths
+ * @property bool $is_business_flag
+ * @property int|null $reporter_id
+ * @property int|null $business_id
+ * @property int|null $decided_by
+ * @property Carbon|null $decided_at
+ * @property Carbon|null $sla_due_at
  */
 class Flag extends Model
 {

@@ -39,6 +39,9 @@ use Illuminate\Support\Str;
  * @property EmployeeSizeBand $employee_size_band
  * @property Carbon|null $claimed_at
  * @property Carbon|null $closed_at
+ * @property list<string>|null $restricted_features
+ * @property Carbon|null $consumer_warning_at
+ * @property string|null $consumer_warning_reason
  */
 class Business extends Model
 {
