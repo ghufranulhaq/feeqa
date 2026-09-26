@@ -1,7 +1,9 @@
 # Consumer guide
 
 For anyone signing up to write and manage reviews. Business and staff
-guides land in this same folder once those parts of spec 001 are built.
+guides land in this same folder once there's a dashboard/console UI for
+them to use (see `docs/system-overview/business-profiles.md` in the
+meantime for what a business owner or staff member can already do).
 
 ## Creating an account
 
@@ -37,10 +39,11 @@ anyone — it never shows your email address.
 
 Every business has a public profile at `/business/{slug}` — you don't need
 an account to see it. It shows the business's name, logo, description,
-contact details, and whether it's **Claimed** or **Unclaimed** (an
-unclaimed profile says so plainly). Reviews, scores, and everything else
-aren't wired up to this page yet — sections for those show as "coming
-soon" until their own specs land.
+contact details, whether it's **Claimed** or **Unclaimed** (an unclaimed
+profile says so plainly), and links to its branch locations if it has
+any. Reviews, scores, and everything else aren't wired up to this page
+yet — sections for those show as "coming soon" until their own specs
+land.
 
 If a business isn't listed, **Add a business** (`/businesses/new`,
 sign-in required) adds it by its website domain, or by name, country, and

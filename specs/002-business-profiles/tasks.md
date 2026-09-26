@@ -104,7 +104,7 @@ spec owns and extends it.
       score today — the actual tagging happens when a review is submitted
       (spec 003 FR-003-31), same "built now, filled later" pattern as
       spec 001 T5's review count. FR-002-27.
-- [ ] **T14. Docs pass.** README, `docs/user-guides/`,
+- [x] **T14. Docs pass.** README, `docs/user-guides/`,
       `docs/system-overview/` updated for everything above (constitution
       §8 rule 9); `make docs-check` passes.
 - [ ] **T15. Acceptance sweep.** Re-check every box in spec.md §6 against
