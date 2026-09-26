@@ -60,12 +60,21 @@ wired), same pattern as spec 002.
       (validated as belonging to the Business) so location reviews
       (FR-003-01) actually store `location_id`. FR-003-05, FR-003-01,
       edge case row (question-set answer for a question not in the set).
-- [ ] **T5. Draft autosave.** `review_drafts` table (user_id, business_id,
-      location_id nullable, payload json) + save/restore actions and
-      endpoints for signed-in users; device-local autosave is a frontend
-      concern (localStorage) with no server test needed. Unauthenticated
-      submission keeps the draft and requires sign-in before submit.
-      FR-003-10, edge case row.
+- [x] **T5. Draft autosave.** `review_drafts` table (user_id, business_id,
+      location_id nullable, payload json) + `SaveReviewDraft`/
+      `RestoreReviewDraft` actions and a `ReviewDraftController` (POST/GET
+      `businesses/{business}/review-draft`, `auth` middleware) for
+      signed-in users; one draft per user per Business (or per
+      Business+Location). No review submission form reaches these
+      endpoints yet — same "real endpoint, not linked from anywhere"
+      situation as spec 002's claim/location endpoints. Device-local
+      autosave (localStorage) is a frontend concern with no server test.
+      The unauthenticated-submission edge case ("Draft kept. Sign-in
+      required before submit.") is satisfied by the `auth` middleware
+      itself (proven by an HTTP test) plus frontend localStorage — no
+      further server behaviour was needed. Clearing a draft after a real
+      submission is deferred to whichever task wires the submission HTTP
+      endpoint (not built yet). FR-003-10, edge case row.
 - [ ] **T6. Publication & profile display.** Public review list replaces
       the business profile's "coming soon" reviews placeholder; each review
       gets a permanent URL; review card fields per FR-003-26 that exist

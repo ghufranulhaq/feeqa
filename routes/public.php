@@ -5,6 +5,7 @@ use App\Http\Controllers\Public\BusinessClosureController;
 use App\Http\Controllers\Public\BusinessCreateController;
 use App\Http\Controllers\Public\BusinessProfileController;
 use App\Http\Controllers\Public\LocationProfileController;
+use App\Http\Controllers\Public\ReviewDraftController;
 use App\Http\Controllers\Public\ReviewerProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,11 @@ Route::middleware('auth')->group(function () {
 
     // Edge cases table: reachable by an Owner or any staff member.
     Route::post('businesses/{business}/close', [BusinessClosureController::class, 'store'])->name('businesses.close');
+
+    // FR-003-10: server-side draft autosave/restore. No submission form
+    // reaches this yet, same situation as the claim/location endpoints above.
+    Route::post('businesses/{business}/review-draft', [ReviewDraftController::class, 'store'])->name('businesses.review-draft.store');
+    Route::get('businesses/{business}/review-draft', [ReviewDraftController::class, 'show'])->name('businesses.review-draft.show');
 });
 
 // FR-002-16.
