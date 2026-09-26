@@ -19,7 +19,7 @@ class ReviewCard
      *     business: array{name: string, slug: string},
      *     author: array{name: string, avatar: ?string, country: ?string, published_reviews_count: int},
      *     star_rating: int, title: string, text: string,
-     *     date_of_experience: string, published_at: ?string, source_label: string,
+     *     date_of_experience: string, published_at: ?string, edited_at: ?string, source_label: string,
      *     useful_count: int,
      *     question_answers: list<array{label: string, type: string, value: mixed}>,
      * }
@@ -47,6 +47,8 @@ class ReviewCard
             'text' => $review->text,
             'date_of_experience' => $review->date_of_experience->toDateString(),
             'published_at' => $review->published_at?->toIso8601String(),
+            // FR-003-23: "the card shows Edited with the date."
+            'edited_at' => $review->edited_at?->toIso8601String(),
             'source_label' => $review->source_label->value,
             // T9's listing query eager-loads this via withCount() to avoid
             // an N+1 across a full page; a single-review view (no count

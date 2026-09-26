@@ -120,12 +120,17 @@ wired), same pattern as spec 002.
       along the way: it stored `slug` as a `Stringable` instead of a plain
       string, which `route()`'s query-string builder silently drops.
       FR-003-28, FR-003-29.
-- [ ] **T10. Edit & delete.** `UpdateReview`/`DeleteReview` — author only
-      (403 for anyone else, including a business member — tested via API);
-      an edit is re-screened through T2 and shows "Edited" with a date; a
-      delete soft-deletes the review, removing it from public view
-      immediately. FR-003-23 through FR-003-25, edge case (business user
-      403).
+- [x] **T10. Edit & delete.** `UpdateReview`/`DeleteReview` — author only
+      (403 for anyone else, including a business member — tested via API,
+      both actions and real `PATCH`/`DELETE reviews/{review}` HTTP
+      endpoints); an edit is re-screened through T2 (via the same
+      `ScreenReviewSubmission`) and shows "Edited" with a date on the
+      review card; a delete soft-deletes the review (T1's `SoftDeletes`),
+      removing it from public view immediately (the default scope already
+      excludes trashed rows everywhere). Field guards (rating/title/text/
+      date/reference-number) extracted from `SubmitReview` into a shared
+      `ReviewFieldGuards` class so submission and editing enforce identical
+      limits. FR-003-23 through FR-003-25, edge case (business user 403).
 - [ ] **T11. Lifecycle updates.** Milestone window math from `published_at`
       (opens on the milestone day, closes when the next opens; the 1-year
       window stays open 90 days); `SubmitLifecycleUpdate` (author only,

@@ -29,6 +29,7 @@ export interface ReviewCardData {
     text: string;
     date_of_experience: string;
     published_at: string | null;
+    edited_at: string | null;
     source_label: string;
     useful_count: number;
     question_answers: ReviewCardQuestionAnswer[];
@@ -134,6 +135,7 @@ export function ReviewCard({
             <p className="mt-2 text-xs text-neutral-500">
                 Experienced {formatDate(review.date_of_experience)}
                 {review.published_at && ` · Published ${formatDate(review.published_at)}`}
+                {review.edited_at && ` · Edited ${formatDate(review.edited_at)}`}
                 {' · '}
                 <TooltipProvider delayDuration={0}>
                     <Tooltip>

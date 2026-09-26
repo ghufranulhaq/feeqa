@@ -37,6 +37,10 @@ Route::middleware('auth')->group(function () {
 
     // FR-003-27.
     Route::post('reviews/{review}/useful-vote', [ReviewUsefulVoteController::class, 'store'])->name('reviews.useful-vote.store');
+
+    // FR-003-23 through FR-003-25: author-only edit/delete.
+    Route::patch('reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
+    Route::delete('reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 });
 
 // FR-002-16.
