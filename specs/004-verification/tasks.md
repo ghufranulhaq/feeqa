@@ -102,7 +102,7 @@ wires them up rather than creating them.
       and share the reference / ignore — ignoring never hides or
       down-ranks the review). Notifications both ways. FR-004-18 through
       FR-004-21.
-- [ ] **T8. Verification percentage.** A pure, tested
+- [x] **T8. Verification percentage.** A pure, tested
       `Business::verificationPercentage()` (verified published customer
       reviews ÷ all published customer reviews, rolling 12 months),
       exposed as a hook for specs 008/015 to read later — same "built now,
