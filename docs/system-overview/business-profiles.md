@@ -103,9 +103,18 @@ profile editing above, there's no claim-flow UI yet — every step here is
 a real, working endpoint under `/businesses/{business}/claim` and
 `/business-claims/{claim}/...`.
 
+## Locations
+
+A **claimed** business can have branch locations, each with its own name,
+address, optional phone/coordinates/opening hours, and its own public
+sub-page (`/business/{slug}/locations/{location-slug}`, linked from the
+main profile once there's at least one). Adding, editing, or removing a
+location needs the same Owner/Admin permission as editing the profile
+(FR-002-16). A location's own Review Score is spec 008 — "coming soon"
+for now, same as the main profile.
+
 ## What's not built yet
 
-There are no locations, no question sets are attached to a review form
-yet, and there's no staff console for industries/categories or for the
-profile-change/claim queues above. All of that is still on spec 002's
-`tasks.md`.
+No question sets are attached to a review form yet, and there's no staff
+console for industries/categories or for the profile-change/claim queues
+above. All of that is still on spec 002's `tasks.md`.

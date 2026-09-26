@@ -57,6 +57,13 @@ class BusinessProfileController extends Controller
                     ->map(fn ($category) => ['slug' => $category->slug, 'name' => $category->localisedName()])
                     ->values(),
             ],
+            // FR-002-16 scenario 4: a multi-location business links out to
+            // each branch's own sub-page.
+            'locations' => $business->locations->map(fn ($location) => [
+                'slug' => $location->slug,
+                'name' => $location->name,
+                'city' => $location->address['city'] ?? null,
+            ])->values(),
             'pending_features' => [
                 ['key' => 'review_score', 'label' => 'Review Score & Trust Index', 'spec' => '008'],
                 ['key' => 'reviews', 'label' => 'Reviews', 'spec' => '003'],

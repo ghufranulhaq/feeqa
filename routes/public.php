@@ -3,6 +3,7 @@
 use App\Http\Controllers\Public\BusinessClaimController;
 use App\Http\Controllers\Public\BusinessCreateController;
 use App\Http\Controllers\Public\BusinessProfileController;
+use App\Http\Controllers\Public\LocationProfileController;
 use App\Http\Controllers\Public\ReviewerProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +23,10 @@ Route::middleware('auth')->group(function () {
     Route::post('business-claims/{claim}/verify-domain', [BusinessClaimController::class, 'verifyDomain'])->name('business-claims.verify-domain');
     Route::post('business-claims/{claim}/respond', [BusinessClaimController::class, 'respond'])->name('business-claims.respond');
 });
+
+// FR-002-16.
+Route::get('business/{businessSlug}/locations/{locationSlug}', [LocationProfileController::class, 'show'])
+    ->name('businesses.locations.show');
 
 // FR-002-02: {slug}, not an implicit {business} model binding — a slug
 // that no longer matches any Business still needs to reach the

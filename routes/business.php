@@ -3,6 +3,7 @@
 use App\Http\Controllers\Business\BusinessInvitationAcceptController;
 use App\Http\Controllers\Business\BusinessProfileController;
 use App\Http\Controllers\Business\InvitationController;
+use App\Http\Controllers\Business\LocationController;
 use App\Http\Middleware\SetPermissionTeam;
 use Illuminate\Support\Facades\Route;
 
@@ -26,4 +27,9 @@ Route::middleware(['auth', SetPermissionTeam::class])->prefix('business/{busines
         ->name('business.profile.update');
     Route::post('logo', [BusinessProfileController::class, 'updateLogo'])
         ->name('business.logo.update');
+
+    // FR-002-16.
+    Route::post('locations', [LocationController::class, 'store'])->name('business.locations.store');
+    Route::patch('locations/{location}', [LocationController::class, 'update'])->name('business.locations.update');
+    Route::delete('locations/{location}', [LocationController::class, 'destroy'])->name('business.locations.destroy');
 });

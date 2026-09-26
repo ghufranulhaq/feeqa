@@ -1,8 +1,14 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 
 interface Category {
     slug: string;
     name: string;
+}
+
+interface LocationSummary {
+    slug: string;
+    name: string;
+    city: string | null;
 }
 
 interface Business {
@@ -30,7 +36,15 @@ interface PendingFeature {
     spec: string;
 }
 
-export default function BusinessProfile({ business, pending_features: pendingFeatures }: { business: Business; pending_features: PendingFeature[] }) {
+export default function BusinessProfile({
+    business,
+    locations,
+    pending_features: pendingFeatures,
+}: {
+    business: Business;
+    locations: LocationSummary[];
+    pending_features: PendingFeature[];
+}) {
     const categories = [business.primary_category, ...business.secondary_categories].filter((category): category is Category => category !== null);
 
     return (
@@ -80,6 +94,22 @@ export default function BusinessProfile({ business, pending_features: pendingFea
                     {business.phone && <p>Phone: {business.phone}</p>}
                     {business.country && <p>Country: {business.country}</p>}
                 </section>
+
+                {locations.length > 0 && (
+                    <section className="mt-8">
+                        <h2 className="text-lg font-medium">Locations</h2>
+                        <ul className="mt-2 space-y-1 text-sm text-neutral-700">
+                            {locations.map((location) => (
+                                <li key={location.slug}>
+                                    <Link href={route('businesses.locations.show', [business.slug, location.slug])} className="underline">
+                                        {location.name}
+                                    </Link>
+                                    {location.city && ` · ${location.city}`}
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+                )}
 
                 <section className="mt-8">
                     <h2 className="text-lg font-medium">Coming soon</h2>

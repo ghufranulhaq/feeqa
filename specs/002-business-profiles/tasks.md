@@ -55,7 +55,7 @@ spec owns and extends it.
       goes in now so later specs can't regress it); re-claim request flow
       with a 7-day Owner response window falling through to staff review.
       FR-002-11 through FR-002-15.
-- [ ] **T7. Locations.** `locations` table (business_id, name, address,
+- [x] **T7. Locations.** `locations` table (business_id, name, address,
       lat/lng, phone, hours) with its own sub-page; multi-location
       businesses get a company-wide profile plus per-location pages (their
       own Review Score is spec 008 — placeholder for now, same pattern as
