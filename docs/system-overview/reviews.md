@@ -124,6 +124,12 @@ it" situation as the rest of this page). Spec 007's own notification
 preference rules don't apply yet — this is the platform's own first
 opt-out, not tied into 007.
 
+In the demo environment, `REVIEW_LIFECYCLE_WINDOWS_ALWAYS_OPEN=true`
+(constitution §5.6) skips this date math entirely: the next unused
+milestone counts as open immediately, so a demo reviewer doesn't have to
+wait 30 real days to show off the feature. It's off by default and
+always ignored in production, whatever `.env` says.
+
 ## Score recalculation (hook only)
 
 Every submission, edit, delete, and lifecycle update calls a
@@ -145,17 +151,6 @@ lands, only a formula to fill in.
   (spec 004), replies and the tagged business's one reply (spec 007),
   case tracking (spec 010), and both scores (spec 008) are all "coming
   soon" placeholders wherever they'd otherwise appear.
-- Constitution §5.6 lists the demo environment's review-update windows as
-  "always open" — that relaxation isn't implemented yet; the windows in
-  `docs/system-overview/reviews.md` above apply in every environment
-  today, including a demo deployment. Noted here rather than silently
-  built, since fixing it means the demo behaves consistently with every
-  other listed relaxation without weakening the production rule.
-- Spec 002's `MergeDuplicateBusinesses` predates reviews existing and
-  still doesn't move them to the surviving profile on a merge — its own
-  code comment says "reviews move to the surviving profile" as the
-  intended rule, but a merge today would cascade-delete the losing
-  business's reviews along with the row itself (the reviews table's
-  foreign key to `businesses` is `cascadeOnDelete()`). Flagged here as a
-  cross-spec gap for spec 002/003 to close together, not fixed as part
-  of this spec's own tasks.
+- Spec 002's `MergeDuplicateBusinesses` moves reviews to the surviving
+  business on a merge (T16) — see
+  `docs/system-overview/business-profiles.md`'s merge section.

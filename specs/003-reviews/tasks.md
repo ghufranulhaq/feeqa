@@ -213,7 +213,31 @@ wired), same pattern as spec 002.
       known gaps in `docs/system-overview/reviews.md` rather than fixed
       here, since each needs its own scoped fix and test rewrite, not a
       docs-pass change. `make docs-check` passes.
-- [ ] **T15. Acceptance sweep.** Re-check every box in spec.md §6 against
+- [x] **T15. Demo relaxation: review-update windows always open.**
+      Constitution §5.6 requires this relaxation and requires it to be
+      impossible in production, proved by a test — same shape as the
+      existing `Environment::checkBreachedPasswords()` relaxation: a new
+      `REVIEW_LIFECYCLE_WINDOWS_ALWAYS_OPEN` `.env` flag (default off, so
+      every existing T11 window test keeps its real date math), read
+      through a new `Environment::lifecycleUpdateWindowsAlwaysOpen()`
+      that always returns `false` in production whatever the flag says.
+      `SubmitLifecycleUpdate` skips its window-date check entirely when
+      this is true, offering the next not-yet-used milestone immediately.
+      Constitution §5.6.
+- [ ] **T16. Fix: reviews move to the surviving business on a merge.**
+      Spec 002's `MergeDuplicateBusinesses` predates reviews existing —
+      today it hard-deletes the losing business, and since
+      `reviews.business_id` is `cascadeOnDelete()`, that silently deletes
+      every review of the merged-away business instead of moving them (its
+      own code comment already says "reviews move to the surviving
+      profile" as the intended rule, per the edge case table). Fix:
+      reassign `business_id` (and `location_id` to `null` if the source's
+      locations don't also exist on the target — locations already move
+      with the merge, so this should rarely trigger) and `tagged_business_id`
+      on any review tagging the source, before the source is deleted.
+      Invariance test: none of a moved review's own fields (rating, text,
+      status, dates) change, only its business/location pointers.
+- [ ] **T17. Acceptance sweep.** Re-check every box in spec.md §6 against
       what's actually built; mark fully-satisfied criteria `[x]` and
       partially-satisfied ones `[~]` with an inline note naming the
       dependent spec, same convention as specs 001/002's own sweeps. Fix

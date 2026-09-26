@@ -53,6 +53,25 @@ it('follows the config toggle outside production', function (string $env, bool $
     ['demo', true],
 ]);
 
+it('always keeps lifecycle-update windows real in production, whatever .env says (constitution §5.6)', function () {
+    app()['env'] = 'production';
+    config(['platform.reviews.lifecycle_updates.always_open_windows' => true]);
+
+    expect(Environment::lifecycleUpdateWindowsAlwaysOpen())->toBeFalse();
+});
+
+it('follows the lifecycle-update-windows config toggle outside production', function (string $env, bool $configured) {
+    app()['env'] = $env;
+    config(['platform.reviews.lifecycle_updates.always_open_windows' => $configured]);
+
+    expect(Environment::lifecycleUpdateWindowsAlwaysOpen())->toBe($configured);
+})->with([
+    ['local', true],
+    ['local', false],
+    ['testing', false],
+    ['demo', true],
+]);
+
 it('does nothing outside production, even with fake drivers configured', function () {
     app()['env'] = 'demo';
     config(['platform.ai.driver' => 'fake']);

@@ -10,6 +10,7 @@ use App\Models\CategoryQuestion;
 use App\Models\Review;
 use App\Models\ReviewLifecycleUpdate;
 use App\Models\User;
+use App\Support\Environment;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -73,15 +74,22 @@ class SubmitLifecycleUpdate
 
     /**
      * FR-003-18: the one milestone (if any) whose window is open right
-     * now and hasn't already received an update.
+     * now and hasn't already received an update. Constitution §5.6: in
+     * the demo environment, the next unused milestone counts as open
+     * immediately, skipping the date math entirely.
      */
     private function openMilestone(Review $review): ?LifecycleMilestone
     {
         $now = now();
+        $alwaysOpen = Environment::lifecycleUpdateWindowsAlwaysOpen();
 
         foreach (LifecycleMilestone::cases() as $milestone) {
             if ($review->lifecycleUpdates()->where('milestone', $milestone)->exists()) {
                 continue;
+            }
+
+            if ($alwaysOpen) {
+                return $milestone;
             }
 
             $opensAt = $milestone->windowOpensAt($review->published_at);

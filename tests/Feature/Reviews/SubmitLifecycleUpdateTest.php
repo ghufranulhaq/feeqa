@@ -236,3 +236,38 @@ it('shows the timeline, current rating, and durability signal on the review card
             ->where('review.lifecycle_updates.0.star_rating', 3)
         );
 });
+
+// Constitution §5.6 demo relaxation.
+
+it('accepts an update the moment it publishes when the demo relaxation is on (constitution §5.6)', function () {
+    config(['platform.reviews.lifecycle_updates.always_open_windows' => true]);
+    $publishedAt = Carbon::parse('2026-01-01')->startOfDay();
+    $review = publishedReviewAt($publishedAt);
+    $this->travelTo($publishedAt);
+
+    $update = (new SubmitLifecycleUpdate(new ScreenReviewSubmission))->handle($review->reviewer, $review, validLifecycleUpdateData());
+
+    expect($update->milestone)->toBe(LifecycleMilestone::Day30);
+});
+
+it('offers each milestone once the previous one is used, with the relaxation on', function () {
+    config(['platform.reviews.lifecycle_updates.always_open_windows' => true]);
+    $publishedAt = Carbon::parse('2026-01-01')->startOfDay();
+    $review = publishedReviewAt($publishedAt);
+    $this->travelTo($publishedAt);
+
+    (new SubmitLifecycleUpdate(new ScreenReviewSubmission))->handle($review->reviewer, $review, validLifecycleUpdateData());
+    $second = (new SubmitLifecycleUpdate(new ScreenReviewSubmission))->handle($review->reviewer, $review->fresh(), validLifecycleUpdateData());
+
+    expect($second->milestone)->toBe(LifecycleMilestone::Month6);
+});
+
+it('ignores the demo relaxation in production, still enforcing the real window', function () {
+    app()['env'] = 'production';
+    config(['platform.reviews.lifecycle_updates.always_open_windows' => true]);
+    $publishedAt = Carbon::parse('2026-01-01')->startOfDay();
+    $review = publishedReviewAt($publishedAt);
+    $this->travelTo($publishedAt);
+
+    (new SubmitLifecycleUpdate(new ScreenReviewSubmission))->handle($review->reviewer, $review, validLifecycleUpdateData());
+})->throws(ValidationException::class);

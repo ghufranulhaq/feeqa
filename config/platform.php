@@ -176,6 +176,15 @@ return [
             'near_identical_window_days' => (int) env('REVIEW_SCREENING_NEAR_IDENTICAL_WINDOW_DAYS', 30),
             'near_identical_similarity_threshold' => (int) env('REVIEW_SCREENING_NEAR_IDENTICAL_THRESHOLD', 90),
         ],
+        'lifecycle_updates' => [
+            // Constitution §5.6: "Review-update windows: always open" in
+            // the demo environment. Off by default so every existing
+            // date-math test keeps testing real windows — `App\Support\
+            // Environment::lifecycleUpdateWindowsAlwaysOpen()` is what
+            // actually enforces this being impossible in production,
+            // whatever this flag says.
+            'always_open_windows' => (bool) env('REVIEW_LIFECYCLE_WINDOWS_ALWAYS_OPEN', false),
+        ],
     ],
 
 ];

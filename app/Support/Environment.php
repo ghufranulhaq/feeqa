@@ -62,6 +62,23 @@ class Environment
     }
 
     /**
+     * Whether a lifecycle update (003) can be added to a review the
+     * moment its next milestone is unused, skipping the real 30-day/
+     * 6-month/1-year window math (constitution §5.6). Always false in
+     * production, whatever `.env` says — elsewhere it follows
+     * `platform.reviews.lifecycle_updates.always_open_windows`, off by
+     * default so every date-math test keeps testing real windows.
+     */
+    public static function lifecycleUpdateWindowsAlwaysOpen(): bool
+    {
+        if (self::isProduction()) {
+            return false;
+        }
+
+        return (bool) config('platform.reviews.lifecycle_updates.always_open_windows', false);
+    }
+
+    /**
      * Refuses to boot in production if a demo-only `fake` driver is
      * configured (constitution §5.6, plan D26). Call from a service
      * provider's boot() method.
