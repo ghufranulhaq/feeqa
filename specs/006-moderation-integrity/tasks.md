@@ -33,7 +33,7 @@ guessed at for content that isn't there yet.
       history, both audiences) — the first piece of the Transparency
       Center (FR-006-21a), with no page rendering it yet. FR-006-01,
       FR-006-02.
-- [x] **T2. Screening engine v2: signals, risk score, auto-reject
+- [ ] **T2. Screening engine v2: signals, risk score, auto-reject
       precision gate.** Replaces the placeholder single-blocklist-check
       inside `ScreenReviewSubmission` (003) with the full signal set
       FR-006-04 asks for, computed from data already on hand (no new
@@ -71,7 +71,7 @@ guessed at for content that isn't there yet.
       examples); every other signal only ever pushes the recommendation to
       `hold`, never `reject`, over a configurable risk-score threshold.
       FR-006-03, FR-006-04, FR-006-05.
-- [x] **T3. Business anomaly detection and incidents.** `moderation_
+- [ ] **T3. Business anomaly detection and incidents.** `moderation_
       incidents` table (business_id, type, detected_at, metrics json,
       status: open/investigating/resolved/dismissed, frozen_until
       nullable, resolved_by nullable, resolved_at, resolution_notes,
