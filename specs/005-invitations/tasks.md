@@ -146,7 +146,7 @@ in this codebase has with its own missing UI.
       `queued_reason = 'plan_limit'`, never dropped, released by a
       scheduled sweep once the next period starts or an upgrade is
       recorded. FR-005-20.
-- [ ] **T10. Neutrality report, anti-gaming alerts, and analytics.** A
+- [x] **T10. Neutrality report, anti-gaming alerts, and analytics.** A
       daily per-Business neutrality report (invitations per trigger,
       cancellation rate, percentage of known transactions invited, invited
       vs. organic rating comparison) with the two staff alerts (>20%
