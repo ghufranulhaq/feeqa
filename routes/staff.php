@@ -8,6 +8,7 @@ use App\Http\Controllers\Staff\CategoryController;
 use App\Http\Controllers\Staff\EmployeeSizeBandDisputeController as StaffEmployeeSizeBandDisputeController;
 use App\Http\Controllers\Staff\StaffAccountController;
 use App\Http\Controllers\Staff\UncategorisedBusinessesController;
+use App\Http\Controllers\Staff\VerificationProofReviewController;
 use App\Http\Middleware\StaffIpAllowList;
 use Illuminate\Support\Facades\Route;
 
@@ -55,4 +56,12 @@ Route::middleware(['auth', StaffIpAllowList::class])->prefix('staff')->group(fun
     // FR-002-25 edge case.
     Route::post('employee-size-band-disputes/{dispute}/resolve', [StaffEmployeeSizeBandDisputeController::class, 'resolve'])
         ->name('staff.employee-size-band-disputes.resolve');
+
+    // FR-004-08: T5's minimal verification proof queue (list + decide).
+    Route::get('review-verifications', [VerificationProofReviewController::class, 'index'])
+        ->name('staff.review-verifications.index');
+    Route::post('review-verifications/{verification}/approve', [VerificationProofReviewController::class, 'approve'])
+        ->name('staff.review-verifications.approve');
+    Route::post('review-verifications/{verification}/reject', [VerificationProofReviewController::class, 'reject'])
+        ->name('staff.review-verifications.reject');
 });
