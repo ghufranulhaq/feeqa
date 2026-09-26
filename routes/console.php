@@ -28,3 +28,6 @@ Schedule::command('review-invitations:send-reminders')->daily();
 
 // FR-005-10, FR-005-11.
 Schedule::command('review-invitations:expire')->daily();
+
+// FR-005-20.
+Schedule::command('review-invitations:release-plan-limited')->daily();

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Actions\Businesses\RecalculateBusinessScore;
 use App\Domain\Businesses\BusinessPermission;
+use App\Domain\Businesses\BusinessPlan;
 use App\Domain\Businesses\BusinessRole;
 use App\Domain\Businesses\BusinessStatus;
 use App\Domain\Businesses\EmployeeSizeBand;
@@ -32,6 +33,7 @@ use Illuminate\Support\Str;
  * mid-request would be fragile and easy to get wrong).
  *
  * @property BusinessStatus $status
+ * @property BusinessPlan $plan
  * @property EmployeeSizeBand $employee_size_band
  * @property Carbon|null $claimed_at
  * @property Carbon|null $closed_at
@@ -50,6 +52,7 @@ class Business extends Model
      */
     protected $attributes = [
         'status' => 'unclaimed',
+        'plan' => 'free',
         'employee_size_band' => 'unknown',
     ];
 
@@ -64,6 +67,7 @@ class Business extends Model
         'country',
         'city',
         'status',
+        'plan',
         'claimed_at',
         'closed_at',
         'description',
@@ -100,6 +104,7 @@ class Business extends Model
             'address' => 'array',
             'social_links' => 'array',
             'status' => BusinessStatus::class,
+            'plan' => BusinessPlan::class,
             'employee_size_band' => EmployeeSizeBand::class,
             'claimed_at' => 'datetime',
             'closed_at' => 'datetime',

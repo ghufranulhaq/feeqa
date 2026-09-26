@@ -239,6 +239,22 @@ return [
         ],
         // FR-005-08: "reminder ... sent 3-7 days after an unopened invitation."
         'reminder_after_days' => (int) env('INVITATIONS_REMINDER_AFTER_DAYS', 3),
+        // FR-005-20: 017 (Plans & Billing) doesn't exist yet — this mirrors
+        // its draft entitlement matrix (specs/017-billing-monetization/
+        // spec.md FR-017-02) as a config placeholder, same "data-driven,
+        // not hard-coded" shape FR-017-01 itself asks for. A null limit
+        // means uncapped — Enterprise is "custom" per that matrix, so
+        // there's no default number to guess at.
+        'plan_limits' => [
+            'monthly_invitations' => [
+                'free' => (int) env('INVITATIONS_MONTHLY_LIMIT_FREE', 50),
+                'starter' => (int) env('INVITATIONS_MONTHLY_LIMIT_STARTER', 500),
+                'pro' => (int) env('INVITATIONS_MONTHLY_LIMIT_PRO', 5000),
+                'enterprise' => env('INVITATIONS_MONTHLY_LIMIT_ENTERPRISE') !== null
+                    ? (int) env('INVITATIONS_MONTHLY_LIMIT_ENTERPRISE')
+                    : null,
+            ],
+        ],
     ],
 
 ];

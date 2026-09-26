@@ -19,6 +19,10 @@ use Illuminate\Support\Facades\Notification;
  * newly-suppressed invitation is never sent, just moved straight to
  * `suppressed` instead (never silently dropped). Scheduled daily — see
  * routes/console.php.
+ *
+ * FR-005-20: a `queued_reason = 'plan_limit'` row is excluded — it's
+ * `queued` but not actually due until ReleasePlanLimitedInvitations
+ * clears the reason.
  */
 #[Signature('review-invitations:send-due')]
 #[Description('Send every queued review invitation whose scheduled time has arrived')]
@@ -31,6 +35,7 @@ class SendDueReviewInvitations extends Command
 
         ReviewInvitation::where('status', InvitationStatus::Queued)
             ->where('scheduled_at', '<=', now())
+            ->whereNull('queued_reason')
             ->with('business')
             ->chunkById(200, function ($invitations) use (&$sent, &$suppressed) {
                 foreach ($invitations as $invitation) {

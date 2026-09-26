@@ -179,6 +179,48 @@ it('suppresses an invitation to a globally suppressed recipient regardless of bu
     expect($invitation->status)->toBe(InvitationStatus::Suppressed);
 });
 
+it('holds a new invitation as queued/plan_limit once the plan\'s monthly limit is reached (FR-005-20)', function () {
+    config(['platform.invitations.plan_limits.monthly_invitations.free' => 1]);
+    $business = Business::factory()->create();
+
+    $first = (new CreateInvitation)->handle($business, InvitationMethod::Manual, [
+        'recipient_email' => 'consumer-1@example.com',
+    ]);
+    $second = (new CreateInvitation)->handle($business, InvitationMethod::Manual, [
+        'recipient_email' => 'consumer-2@example.com',
+    ]);
+
+    expect($first->status)->toBe(InvitationStatus::Queued)
+        ->and($first->queued_reason)->toBeNull()
+        ->and($second->status)->toBe(InvitationStatus::Queued)
+        ->and($second->queued_reason)->toBe('plan_limit');
+});
+
+it('never blocks a suppressed recipient behind the plan limit (FR-005-20)', function () {
+    config(['platform.invitations.plan_limits.monthly_invitations.free' => 0]);
+    $business = Business::factory()->create();
+    InvitationSuppression::factory()->for($business)->create([
+        'recipient_email_hash' => TransactionRecordHash::email('consumer@example.com'),
+    ]);
+
+    $invitation = (new CreateInvitation)->handle($business, InvitationMethod::Manual, [
+        'recipient_email' => 'consumer@example.com',
+    ]);
+
+    expect($invitation->status)->toBe(InvitationStatus::Suppressed)
+        ->and($invitation->queued_reason)->toBeNull();
+});
+
+it('never enforces a plan limit configured as unlimited (FR-005-20)', function () {
+    config(['platform.invitations.plan_limits.monthly_invitations.free' => null]);
+    $business = Business::factory()->create();
+
+    (new CreateInvitation)->handle($business, InvitationMethod::Manual, ['recipient_email' => 'consumer-1@example.com']);
+    $second = (new CreateInvitation)->handle($business, InvitationMethod::Manual, ['recipient_email' => 'consumer-2@example.com']);
+
+    expect($second->queued_reason)->toBeNull();
+});
+
 it('suppresses an invitation whose recipient is a member of the business being invited (edge case table)', function () {
     $this->seed(BusinessRolesSeeder::class);
     $business = Business::factory()->create();

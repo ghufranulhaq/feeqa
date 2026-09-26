@@ -5,6 +5,7 @@ namespace App\Actions\Invitations;
 use App\Domain\Invitations\DefaultSendDelay;
 use App\Domain\Invitations\InvitationMethod;
 use App\Domain\Invitations\InvitationStatus;
+use App\Domain\Invitations\MonthlyInvitationLimit;
 use App\Domain\Verification\TransactionRecordHash;
 use App\Models\Business;
 use App\Models\InvitationSuppression;
@@ -72,6 +73,13 @@ class CreateInvitation
 
         $isSuppressed = $isBusinessMember || $this->isSuppressed($business, $emailHash);
 
+        // FR-005-20: a suppressed row is already terminal and never
+        // competed for a plan slot, so the limit check only applies to
+        // one that would otherwise actually queue for sending.
+        $queuedReason = (! $isSuppressed && MonthlyInvitationLimit::reached($business))
+            ? 'plan_limit'
+            : null;
+
         if (isset($data['scheduled_at'])) {
             // FR-005-01 (api): the caller already computed an absolute send
             // time (e.g. "1 day after this flight") rather than asking us
@@ -100,6 +108,7 @@ class CreateInvitation
             'product_skus' => $data['product_skus'] ?? null,
             'token' => Str::random(48),
             'scheduled_at' => $scheduledAt,
+            'queued_reason' => $queuedReason,
             'expires_at' => now()->addDays(60),
         ]);
     }

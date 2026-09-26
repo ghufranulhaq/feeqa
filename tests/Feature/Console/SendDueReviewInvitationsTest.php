@@ -29,6 +29,20 @@ it('sends every queued invitation whose scheduled time has arrived (FR-005-08, F
     Notification::assertSentOnDemand(ReviewInvitationNotification::class);
 });
 
+it('does not send a due invitation still held by the plan limit (FR-005-20)', function () {
+    Notification::fake();
+    $held = ReviewInvitation::factory()->create([
+        'status' => InvitationStatus::Queued,
+        'scheduled_at' => now()->subMinute(),
+        'queued_reason' => 'plan_limit',
+    ]);
+
+    $this->artisan('review-invitations:send-due');
+
+    expect($held->fresh()->status)->toBe(InvitationStatus::Queued);
+    Notification::assertNothingSent();
+});
+
 it('suppresses a due invitation instead of sending if the recipient was suppressed after it was queued', function () {
     Notification::fake();
     $business = Business::factory()->create();

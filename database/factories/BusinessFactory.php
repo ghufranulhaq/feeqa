@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Domain\Businesses\BusinessPlan;
 use App\Domain\Businesses\BusinessStatus;
 use App\Models\Business;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -38,5 +39,10 @@ class BusinessFactory extends Factory
     public function pending(): static
     {
         return $this->state(fn () => ['status' => BusinessStatus::Pending]);
+    }
+
+    public function onPlan(BusinessPlan $plan): static
+    {
+        return $this->state(fn () => ['plan' => $plan]);
     }
 }
