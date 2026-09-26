@@ -40,8 +40,13 @@ an account to see it. It shows the business's name, logo, description,
 contact details, and whether it's **Claimed** or **Unclaimed** (an
 unclaimed profile says so plainly). Reviews, scores, and everything else
 aren't wired up to this page yet — sections for those show as "coming
-soon" until their own specs land. You can't add a missing business
-yourself yet either.
+soon" until their own specs land.
+
+If a business isn't listed, **Add a business** (`/businesses/new`,
+sign-in required) adds it by its website domain, or by name, country, and
+city if it has none. If it looks like something already listed, you're
+pointed at that profile instead of creating a duplicate. A category is
+required — pick "Other / Uncategorised" if nothing fits.
 
 ## Sessions
 

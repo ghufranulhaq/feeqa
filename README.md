@@ -107,6 +107,11 @@ default already or is documented inline in that file.
 - **Social sign-in** (`GOOGLE_*`, `FACEBOOK_*`, `APPLE_*`): FR-001-01. Each
   provider's button only appears once its `_CLIENT_ID` is set — all three
   are blank by default, so none show up until you add real credentials.
+- **`BUSINESS_LISTING_CHECKER`**: `fake` (default) approves every
+  newly-created business immediately; `dns` (production) checks the domain
+  actually resolves and isn't on the `BUSINESS_LISTING_BLOCKLIST_DOMAINS` /
+  `_KEYWORDS` lists first (FR-002-10). Not one of the constitution §5.1
+  providers, so it isn't covered by `Environment::assertProductionIsSafe()`.
 
 ## Testing
 

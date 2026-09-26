@@ -48,7 +48,7 @@ class CategoriesSeeder extends Seeder
         }
 
         Category::updateOrCreate(
-            ['slug' => 'other-uncategorised'],
+            ['slug' => Category::OTHER_UNCATEGORISED_SLUG],
             [
                 'parent_id' => null,
                 'name' => ['en-GB' => 'Other / Uncategorised'],

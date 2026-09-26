@@ -121,4 +121,21 @@ return [
         'supported' => ['en-GB'],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Business listing checks (FR-002-10)
+    |--------------------------------------------------------------------------
+    | Not one of constitution §5.1's named external providers (no vendor to
+    | swap), so it isn't covered by Environment::assertProductionIsSafe() —
+    | but it still defaults to `fake` locally/demo, `dns` in production.
+    */
+    'business_listing' => [
+        'checker' => env('BUSINESS_LISTING_CHECKER', 'fake'),
+        'blocklist_domains' => array_filter(explode(',', env('BUSINESS_LISTING_BLOCKLIST_DOMAINS', ''))),
+        'blocklist_keywords' => array_filter(explode(',', env(
+            'BUSINESS_LISTING_BLOCKLIST_KEYWORDS',
+            'porn,xxx,casino,escort',
+        ))),
+    ],
+
 ];

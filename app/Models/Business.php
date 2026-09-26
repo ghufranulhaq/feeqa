@@ -55,6 +55,7 @@ class Business extends Model
         'primary_domain',
         'additional_domains',
         'country',
+        'city',
         'status',
         'claimed_at',
         'description',
@@ -109,6 +110,19 @@ class Business extends Model
         }
 
         return $slug;
+    }
+
+    /**
+     * FR-002-08 scenario 1: a consumer adding a business by domain alone
+     * isn't asked for a name too — "skyhop-travel.com" becomes
+     * "Skyhop Travel".
+     */
+    public static function guessNameFromDomain(string $domain): string
+    {
+        $withoutTld = str_contains($domain, '.') ? substr($domain, 0, strrpos($domain, '.')) : $domain;
+        $words = trim(preg_replace('/[-_.]+/', ' ', $withoutTld) ?? '');
+
+        return $words === '' ? $domain : Str::title($words);
     }
 
     /**

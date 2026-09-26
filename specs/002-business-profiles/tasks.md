@@ -31,7 +31,7 @@ spec owns and extends it.
       later spec (scores, reviews, cases, similar businesses) shows an
       explicit placeholder, not a fake value. Old-slug redirect on slug
       change. FR-002-01, FR-002-02, FR-002-04, FR-002-05.
-- [ ] **T4. Consumer creates an unclaimed business.** Domain normalisation
+- [x] **T4. Consumer creates an unclaimed business.** Domain normalisation
       (protocol/path stripped, `www.` removed, IDN → punycode) or name +
       country + city when there's no website; duplicate detection by
       normalised domain and fuzzy name+city match, suggesting the existing

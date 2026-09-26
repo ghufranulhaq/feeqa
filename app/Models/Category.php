@@ -24,6 +24,12 @@ class Category extends Model
 
     public const MAX_DEPTH = 3;
 
+    /**
+     * FR-002-29/FR-002-35: the fallback a consumer picks when nothing
+     * else fits, seeded by CategoriesSeeder.
+     */
+    public const OTHER_UNCATEGORISED_SLUG = 'other-uncategorised';
+
     protected $fillable = [
         'parent_id',
         'slug',

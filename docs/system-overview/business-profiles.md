@@ -44,9 +44,27 @@ If a business's slug ever changes, the old one keeps working as a
 permanent redirect to the new profile page — there's no dead link left
 behind.
 
+## Adding a missing business
+
+A signed-in consumer who can't find a business (`/businesses/new`) adds it
+either by its website domain, or — if it has no website — by name,
+country, and city. Before creating anything, the platform checks for an
+existing match: the same normalised domain (protocol, path, and a leading
+`www.` are stripped; a different subdomain like `shop.brand.com` still
+counts as a different business from `brand.com`), or a typo-tolerant match
+on name + city + country. If it finds one, it points the consumer at that
+profile instead of creating a duplicate.
+
+A newly-created business always needs a category — every category is
+selectable, including ones not yet launched, or the "Other / Uncategorised"
+fallback when nothing fits (that fallback queues it for staff to sort out
+later). It's reviewable immediately, but sits in a brief `pending` state
+until an automated check confirms the domain resolves and isn't on a
+blocklist, at which point it becomes an ordinary unclaimed profile.
+
 ## What's not built yet
 
-Consumers can't yet add a missing business themselves, businesses can't
-yet claim or edit a profile, there are no locations, no question sets are
-attached to a review form yet, and there's no staff console for
-industries/categories. All of that is still on spec 002's `tasks.md`.
+Businesses can't yet claim or edit a profile, there are no locations, no
+question sets are attached to a review form yet, and there's no staff
+console for industries/categories. All of that is still on spec 002's
+`tasks.md`.
