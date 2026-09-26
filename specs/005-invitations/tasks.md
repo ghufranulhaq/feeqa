@@ -139,7 +139,7 @@ in this codebase has with its own missing UI.
       confirmation step (the business's own validated channel is the
       proof). FR-005-02, closes 004's own `transaction_invitation` gap
       from its T10 acceptance sweep.
-- [ ] **T9. Plan limits (017 placeholder).** Monthly invitation limits by
+- [x] **T9. Plan limits (017 placeholder).** Monthly invitation limits by
       plan, read from a config-driven placeholder (017 doesn't exist yet,
       same honest-placeholder relationship 004 T9 had with unbuilt specs):
       a Business at its limit keeps new invitations `queued` with
