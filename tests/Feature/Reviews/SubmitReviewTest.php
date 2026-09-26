@@ -12,6 +12,7 @@ use App\Drivers\Signing\SigningService;
 use App\Models\Business;
 use App\Models\Review;
 use App\Models\ReviewInvitation;
+use App\Models\Screening;
 use App\Models\User;
 use Database\Seeders\Base\BusinessRolesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -66,6 +67,20 @@ it('publishes a clean review with Organic source label and en language (FR-003-0
         ->and($review->language)->toBe('en')
         ->and($review->confirmed_genuine)->toBeTrue()
         ->and($review->published_at)->not->toBeNull();
+});
+
+it('writes a Screening record for the review (FR-006-03)', function () {
+    $reviewer = User::factory()->create();
+    $business = Business::factory()->create();
+
+    $review = (new SubmitReview(new ScreenReviewSubmission))->handle($reviewer, $business, validReviewData());
+
+    $screening = Screening::where('screenable_type', $review->getMorphClass())
+        ->where('screenable_id', $review->id)
+        ->sole();
+
+    expect($screening->recommendation)->toBe(ReviewStatus::Published)
+        ->and($screening->risk_score)->toBeFloat();
 });
 
 it('rejects when the confirmation checkbox is not true (FR-003-06)', function () {

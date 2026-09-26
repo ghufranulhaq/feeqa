@@ -67,6 +67,19 @@ final class GuardNeutralTemplate
     ];
 
     /**
+     * FR-006-04: the review-screening engine (006) reuses this lexicon for
+     * its own "incentive language" signal rather than maintaining a
+     * second one — one list to keep current, for two features that both
+     * care whether a reward for a review is being mentioned.
+     *
+     * @return list<string>
+     */
+    public static function incentiveTerms(string $locale = 'en-GB'): array
+    {
+        return self::INCENTIVE_LEXICON[$locale] ?? [];
+    }
+
+    /**
      * @param  list<string>  $allowedDomains  the business's own registered domains (normalised)
      * @return list<string> validation errors; empty means the template passes
      */

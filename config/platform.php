@@ -202,6 +202,26 @@ return [
             // held for fraud review (006), not rejected outright.
             'near_identical_window_days' => (int) env('REVIEW_SCREENING_NEAR_IDENTICAL_WINDOW_DAYS', 30),
             'near_identical_similarity_threshold' => (int) env('REVIEW_SCREENING_NEAR_IDENTICAL_THRESHOLD', 90),
+            // FR-006-04, FR-006-05, User Scenario 1: near-identical text
+            // (not exact) shared by several distinct reviewers on the same
+            // Business within a short window is held as coordinated fraud.
+            // Exact text shared by accounts is a separate, auto-reject-
+            // eligible rule below with its own, wider window.
+            'coordinated_cluster_window_hours' => (int) env('REVIEW_SCREENING_COORDINATED_CLUSTER_WINDOW_HOURS', 1),
+            'coordinated_cluster_min_accounts' => (int) env('REVIEW_SCREENING_COORDINATED_CLUSTER_MIN_ACCOUNTS', 3),
+            // FR-006-05's own example: "exact duplicate text across >= 3
+            // accounts" is one of the few rules allowed to auto-reject.
+            'exact_duplicate_window_hours' => (int) env('REVIEW_SCREENING_EXACT_DUPLICATE_WINDOW_HOURS', 24),
+            'exact_duplicate_min_accounts' => (int) env('REVIEW_SCREENING_EXACT_DUPLICATE_MIN_ACCOUNTS', 3),
+            // FR-006-04: account age/history and velocity signals.
+            'new_account_days' => (int) env('REVIEW_SCREENING_NEW_ACCOUNT_DAYS', 2),
+            'reviewer_velocity_24h_threshold' => (int) env('REVIEW_SCREENING_REVIEWER_VELOCITY_24H_THRESHOLD', 5),
+            'business_velocity_1h_threshold' => (int) env('REVIEW_SCREENING_BUSINESS_VELOCITY_1H_THRESHOLD', 10),
+            // FR-006-05: everything that isn't a registered auto-reject
+            // rule only ever pushes the recommendation to `hold`, once the
+            // weighted risk score (0-1) from every signal below reaches
+            // this line.
+            'hold_risk_score_threshold' => (float) env('REVIEW_SCREENING_HOLD_RISK_SCORE_THRESHOLD', 0.5),
         ],
         'lifecycle_updates' => [
             // Constitution §5.6: "Review-update windows: always open" in
@@ -254,6 +274,23 @@ return [
                     ? (int) env('INVITATIONS_MONTHLY_LIMIT_ENTERPRISE')
                     : null,
             ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Moderation & integrity (spec 006)
+    |--------------------------------------------------------------------------
+    | Network reputation is rules-only, same reasoning as reviews.screening
+    | above: there's no external provider configured yet (a real IP-
+    | reputation lookup is future work, same honest gap 006 T2 documents
+    | for the missing IP address itself at every current screening call
+    | site) — just a configured list of ranges to treat as suspicious,
+    | matching User Scenario 1's "known VPN".
+    */
+    'moderation' => [
+        'network' => [
+            'known_bad_ranges' => array_filter(explode(',', env('MODERATION_NETWORK_KNOWN_BAD_RANGES', ''))),
         ],
     ],
 

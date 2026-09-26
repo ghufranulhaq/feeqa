@@ -33,7 +33,7 @@ guessed at for content that isn't there yet.
       history, both audiences) — the first piece of the Transparency
       Center (FR-006-21a), with no page rendering it yet. FR-006-01,
       FR-006-02.
-- [ ] **T2. Screening engine v2: signals, risk score, auto-reject
+- [x] **T2. Screening engine v2: signals, risk score, auto-reject
       precision gate.** Replaces the placeholder single-blocklist-check
       inside `ScreenReviewSubmission` (003) with the full signal set
       FR-006-04 asks for, computed from data already on hand (no new

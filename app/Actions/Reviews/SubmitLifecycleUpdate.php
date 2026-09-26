@@ -60,6 +60,8 @@ class SubmitLifecycleUpdate
             'published_at' => $outcome->status === ReviewStatus::Published ? now() : null,
         ]);
 
+        $this->screening->record($update, $outcome);
+
         if ($outcome->status === ReviewStatus::Published) {
             $this->recalculateDurabilitySignal($review);
         }

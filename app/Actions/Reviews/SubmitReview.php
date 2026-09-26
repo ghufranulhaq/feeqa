@@ -88,6 +88,8 @@ class SubmitReview
             'published_at' => $outcome->status === ReviewStatus::Published ? now() : null,
         ]);
 
+        $this->screening->record($review, $outcome);
+
         if ($outcome->status === ReviewStatus::Published && $taggedBusiness !== null) {
             Notification::send($taggedBusiness->members(), new ReviewTaggedNotification($review));
         }

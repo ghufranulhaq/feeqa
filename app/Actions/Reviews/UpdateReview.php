@@ -64,6 +64,8 @@ class UpdateReview
 
         $review = $review->fresh();
 
+        $this->screening->record($review, $outcome);
+
         // FR-003-32: only notify when the tag is newly set or changed to a
         // different business, and only once the review is actually
         // visible — an edit that doesn't touch the tag never re-notifies.
