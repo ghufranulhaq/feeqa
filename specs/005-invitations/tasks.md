@@ -57,7 +57,7 @@ in this codebase has with its own missing UI.
       rejection reasons and the three non-English lexicons. FR-005-13,
       FR-005-14, edge cases (incentive in a non-English template,
       unauthorized Responder).
-- [ ] **T3. Core invitation engine: manual method.** `CreateInvitation`
+- [x] **T3. Core invitation engine: manual method.** `CreateInvitation`
       action every method funnels through: guards recipient-is-a-business-
       member (suppress + fraud-signal log, edge case), suppression-list
       check (business-level and global), the 30-day-per-recipient-per-
