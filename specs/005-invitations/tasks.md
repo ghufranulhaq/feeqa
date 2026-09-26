@@ -71,7 +71,7 @@ in this codebase has with its own missing UI.
       action + business dashboard endpoint (`manual` method, FR-005-01) and
       `CancelInvitation` (FR-005-12, queued-only, counted). FR-005-01
       (manual), FR-005-05, FR-005-08 through FR-005-12.
-- [ ] **T4. CSV upload method.** `ImportInvitationsFromCsv` action:
+- [x] **T4. CSV upload method.** `ImportInvitationsFromCsv` action:
       UTF-8-only, ≤ 20 MB, ≤ 50,000 rows, required-column check, row-level
       validation (malformed email → reject that row; duplicate rows in one
       file collapse to one) through a downloadable error report, each valid
