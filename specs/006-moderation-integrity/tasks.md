@@ -313,24 +313,41 @@ guessed at for content that isn't there yet.
       or enforcement decision against a user). One weekly scheduled
       command, `moderation:weekly-audit`, runs both actions in sequence
       (routes/console.php). FR-006-20.
-- [ ] **T9. Transparency Center.** `ComputeTransparencyReport` action:
-      a quarterly, reproducible aggregation straight from `compliance_log`,
-      `flags`, `appeals`, and `screenings` (FR-006-22 — no numbers stored
-      that don't reconcile back to those tables) covering every figure
-      FR-006-21(e) lists (submitted/published/removed by reason,
-      automated-vs-flagged detection split, flags received/handled by
-      reporter type, median time-to-action, appeal/overturn rates,
-      Consumer Warnings issued, accounts blocked, legal requests — the
-      last one a manually-entered count with no source table yet, the
-      same "recorded, not derived" honest gap 005 left for FR-005-16).
-      `transparency_reports` table (period_start, period_end, figures
-      json, generated_at). Public read actions for (a) guidelines — T1 —
-      (b) the enforcement policy (the ladder text itself, versioned like
-      guidelines), (c) links out to 008/009's methodology pages (not
-      built yet — a documented placeholder, not a guess), (d) 004's
-      verification methodology (already public at 004's own routes), (e)
-      the generated reports, and (f) currently-warned businesses (a
-      `Business::underConsumerWarning()` scope). FR-006-21, FR-006-22.
+- [x] **T9. Transparency Center.** `GuidelineAudience` gains a third case,
+      `EnforcementPolicy` — FR-006-21(b)'s enforcement policy reuses
+      `GuidelineVersion`/`PublishGuidelineVersion`/`ListGuidelineVersions`
+      as-is rather than a parallel table, since it's "versioned like
+      guidelines," not a different kind of document (v1's body, the
+      ladder text itself, added to `GuidelineVersionsSeeder`); this also
+      means (a) and (b) share one action, T1's own `ListGuidelineVersions`,
+      once the enum grew a case. `transparency_reports` table
+      (period_start, period_end, figures json, generated_at; unique on the
+      period). `ComputeTransparencyReport` (`App\Actions\Staff`, since
+      generating one is a staff/scheduled act, not a public read): a
+      reproducible aggregation straight from `compliance_log`, `flags`,
+      `appeals`, `screenings`, and the enforcement ledger (FR-006-22 — no
+      number stored that doesn't reconcile back to those tables; calling
+      it twice for the same period `updateOrCreate`s the same row)
+      covering every figure FR-006-21(e) lists: reviews submitted/
+      published (the period's *submission* cohort) and removed by reason
+      (staff *actions taken* in the period, from the compliance log —
+      the only honest reading once the source is the log rather than the
+      review), the automated-vs-flagged detection split, flags received/
+      handled by reporter type plus the median hours to action, appeal
+      decided/overturned counts and rate, Consumer Warnings issued,
+      accounts blocked, and legal/government requests — a manually-
+      entered `int $legalRequestsCount` parameter with no source table,
+      an honest gap rather than building a request-tracking feature this
+      spec never asked for. `ListMethodologyLinks` (`App\Actions\
+      Moderation`) covers (c) and (d) together: `review_score`/
+      `trust_index` are `null` (008/009 don't exist), `verification`
+      points at 004's own public attestation check page — 004's own
+      tasks.md already noted there's no separate methodology page, so
+      this doesn't invent one. `ListTransparencyReports` (same namespace,
+      same public/no-auth shape as `ListGuidelineVersions`) covers (e).
+      (f) is exactly the scope tasks.md's own sketch named —
+      `Business::scopeUnderConsumerWarning()` — with no action wrapper,
+      since a one-line scope needs none. FR-006-21, FR-006-22.
 - [ ] **T10. Docs pass + acceptance sweep.** `docs/system-overview/
       moderation.md` written (screening, flagging, the ladder, Consumer
       Warning, appeals, Transparency Center — and what isn't reachable

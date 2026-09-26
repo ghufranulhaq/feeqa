@@ -7,10 +7,14 @@ use App\Models\GuidelineVersion;
 use Illuminate\Database\Seeder;
 
 /**
- * FR-006-01: v1 of both guideline audiences, needed in every environment
- * (a Business or Reviewer must always be able to read the rules they
- * agreed to). Safe to run every deploy: updateOrCreate by
- * [audience, version], and it never touches a version once published.
+ * FR-006-01, FR-006-21(b): v1 of all three `GuidelineAudience`s — the
+ * Reviewer and Business guidelines, and the enforcement policy (the
+ * ladder itself, published the same way since it's "versioned like
+ * guidelines," not a different kind of document). Needed in every
+ * environment (a Business, Reviewer, or the Transparency Center must
+ * always be able to read the current rules). Safe to run every deploy:
+ * updateOrCreate by [audience, version], and it never touches a version
+ * once published.
  */
 class GuidelineVersionsSeeder extends Seeder
 {
@@ -87,6 +91,39 @@ class GuidelineVersionsSeeder extends Seeder
 
             Every enforcement action against your account comes with a
             statement of reasons and a right to appeal.
+            MD);
+
+        $this->upsert(GuidelineAudience::EnforcementPolicy, 1, <<<'MD'
+            # Enforcement Policy (v1)
+
+            When a business or reviewer breaks the guidelines, we act in
+            steps, not all at once, unless the case is severe or proven
+            fraud.
+
+            ## Business ladder
+
+            1. **Educational notice** — a first, informal heads-up.
+            2. **Warning** — a formal warning on the record.
+            3. **Final notice** — the last step before restrictions.
+            4. **Feature restriction** — invitations and profile edits are
+               switched off; replying and flagging still work.
+            5. **Consumer Warning** — a public banner on the profile, the
+               Review Score and Trust Index hidden, every feature except
+               flagging switched off, and paid features suspended, for at
+               least 6 months.
+            6. **Termination** — the listing is removed from the Platform.
+
+            ## Reviewer ladder
+
+            1. **Educational notice**
+            2. **Warning**
+            3. **Account block** — the account can no longer submit content.
+
+            A Senior Moderator can approve skipping ahead for severe or
+            proven fraud. A moderator with a declared conflict of interest
+            on a business never acts on it. Every step comes with a
+            statement of reasons and a right to appeal to a different staff
+            member.
             MD);
     }
 

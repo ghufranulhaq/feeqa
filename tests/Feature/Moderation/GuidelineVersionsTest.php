@@ -29,6 +29,14 @@ it('publishes v1 as current for both audiences from the seeder (FR-006-01)', fun
         ->and($result[GuidelineAudience::Business->value]['current']->version)->toBe(1);
 });
 
+it('publishes the enforcement policy as v1 too, the same way as guidelines (FR-006-21b)', function () {
+    $this->seed(GuidelineVersionsSeeder::class);
+
+    $result = (new ListGuidelineVersions)->handle();
+
+    expect($result[GuidelineAudience::EnforcementPolicy->value]['current']->version)->toBe(1);
+});
+
 it('publishes a new version, keeps the old one, and flips is_current (FR-006-01)', function () {
     GuidelineVersion::factory()->create([
         'audience' => GuidelineAudience::Reviewer,

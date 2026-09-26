@@ -10,6 +10,7 @@ use App\Domain\Businesses\BusinessStatus;
 use App\Domain\Businesses\EmployeeSizeBand;
 use App\Domain\Businesses\RestrictableFeature;
 use Database\Factories\BusinessFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -185,6 +186,18 @@ class Business extends Model
     public function trustSignalsHidden(): bool
     {
         return $this->consumer_warning_at !== null;
+    }
+
+    /**
+     * FR-006-21(f): the Transparency Center's list of businesses currently
+     * showing a Consumer Warning.
+     *
+     * @param  Builder<Business>  $query
+     * @return Builder<Business>
+     */
+    public function scopeUnderConsumerWarning(Builder $query): Builder
+    {
+        return $query->whereNotNull('consumer_warning_at');
     }
 
     public static function uniqueSlugFor(string $name, ?int $excludingId = null): string
