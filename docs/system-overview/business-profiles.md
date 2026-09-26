@@ -25,6 +25,21 @@ Agencies underneath), and Airports — is launched; Hotels, Car Hire, and
 Tour Operators exist under Travel but aren't launched yet, per
 `travel-content.md`.
 
+### Question sets
+
+Travel, Airlines, Travel Agencies & OTAs, and Airports each have their
+own set of context-aware review questions (FR-002-19), seeded from
+`travel-content.md` — e.g. Travel's "Would you use them again?" applies
+everywhere underneath it, and Airlines adds its own on-time/baggage/crew
+questions on top. A leaf category inherits every ancestor's questions,
+root first; if it redefines the same question key itself, its own
+version wins without creating a duplicate. Nothing consumes these yet
+(the review form is spec 003) — only the versioned data model and the
+inheritance itself exist so far. A question set is never edited in
+place: publishing a change (staff Admin or Senior Moderator only) always
+creates a new version, and an existing review keeps citing whichever
+version it originally answered (FR-002-20).
+
 ## Business profiles
 
 Every business has a unique slug and public profile page at

@@ -60,7 +60,7 @@ spec owns and extends it.
       businesses get a company-wide profile plus per-location pages (their
       own Review Score is spec 008 — placeholder for now, same pattern as
       T3). FR-002-16.
-- [ ] **T8. Category question sets, versioned.** `category_question_sets`
+- [x] **T8. Category question sets, versioned.** `category_question_sets`
       (category_id, version, published_at) + `category_questions` (key,
       label, type, required, order); parent-to-leaf inheritance; seed the
       Travel/Airlines/Agencies/Airports sets from `travel-content.md`.

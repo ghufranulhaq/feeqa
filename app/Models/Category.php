@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 /**
  * A node in the category tree (FR-002-18), up to 3 levels deep
@@ -69,6 +70,57 @@ class Category extends Model
     public function isIndustry(): bool
     {
         return $this->parent_id === null;
+    }
+
+    /**
+     * @return HasMany<CategoryQuestionSet, $this>
+     */
+    public function questionSets(): HasMany
+    {
+        return $this->hasMany(CategoryQuestionSet::class);
+    }
+
+    /**
+     * FR-002-20: the highest version is the current one.
+     */
+    public function currentQuestionSet(): ?CategoryQuestionSet
+    {
+        return $this->questionSets()->orderByDesc('version')->first();
+    }
+
+    /**
+     * FR-002-19: "Leaf categories inherit questions from their parents."
+     * Walks root-to-leaf so a more specific category's question
+     * overrides an ancestor's with the same key, in the ancestor's
+     * original position, rather than duplicating it.
+     *
+     * @return Collection<int, CategoryQuestion>
+     */
+    public function effectiveQuestions(): Collection
+    {
+        $chain = [];
+        $node = $this;
+
+        while ($node !== null) {
+            $chain[] = $node;
+            $node = $node->parent;
+        }
+
+        $byKey = [];
+
+        foreach (array_reverse($chain) as $category) {
+            $questionSet = $category->currentQuestionSet();
+
+            if ($questionSet === null) {
+                continue;
+            }
+
+            foreach ($questionSet->questions()->orderBy('order')->get() as $question) {
+                $byKey[$question->key] = $question;
+            }
+        }
+
+        return collect(array_values($byKey));
     }
 
     /**
