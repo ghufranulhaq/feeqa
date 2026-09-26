@@ -34,3 +34,6 @@ Schedule::command('review-invitations:release-plan-limited')->daily();
 
 // FR-005-18.
 Schedule::command('review-invitations:neutrality-report')->daily();
+
+// FR-006-06.
+Schedule::command('moderation:detect-anomalies')->hourly();

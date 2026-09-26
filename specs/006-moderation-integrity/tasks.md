@@ -71,7 +71,7 @@ guessed at for content that isn't there yet.
       examples); every other signal only ever pushes the recommendation to
       `hold`, never `reject`, over a configurable risk-score threshold.
       FR-006-03, FR-006-04, FR-006-05.
-- [ ] **T3. Business anomaly detection and incidents.** `moderation_
+- [x] **T3. Business anomaly detection and incidents.** `moderation_
       incidents` table (business_id, type, detected_at, metrics json,
       status: open/investigating/resolved/dismissed, frozen_until
       nullable, resolved_by nullable, resolved_at, resolution_notes,
@@ -125,9 +125,8 @@ guessed at for content that isn't there yet.
       business incidents from T3; appeals from T7; profile-change requests,
       already listed from 002) filterable by priority/SLA/category and
       assignable to a staff member (`assigned_to` nullable column added to
-      `reviews`, `flags`, and `moderation_incidents`; a shared
-      `AssignableToStaff` trait rather than three copies of the same two
-      columns). `ModerateReview` action covering FR-006-12's verbs that
+      `reviews` and `flags` — `moderation_incidents` already has one from
+      T3). `ModerateReview` action covering FR-006-12's verbs that
       apply to a review today (publish, remove, redact a span with
       `[removed]`, mark not genuine, request verification — delegates to
       004's existing `RequestDocumentVerification` rather than

@@ -48,6 +48,12 @@ class ScreenReviewSubmission
 
     public function handle(User $reviewer, Business $business, string $title, string $text, ?string $ipAddress = null): ScreeningOutcome
     {
+        // FR-006-06: a staff-ordered freeze holds everything on this
+        // Business, full stop — no other signal is even computed.
+        if ($business->hasActiveModerationFreeze()) {
+            return ScreeningOutcome::held("We're checking unusual activity on this profile.", 0.0, ['business_frozen']);
+        }
+
         $signals = $this->computeSignals($reviewer, $business, $title, $text, $ipAddress);
         $exportSignals = collect($signals)->except('triggered_rules')->all();
         $riskScore = $this->riskScore($signals);

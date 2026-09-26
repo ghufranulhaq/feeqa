@@ -125,6 +125,27 @@ class Business extends Model
         return $this->closed_at->diffInMonths(now()) < 12;
     }
 
+    /**
+     * FR-006-06: true while a staff-ordered freeze (`FreezeBusinessReviews`)
+     * is active on this Business — `ScreenReviewSubmission` (006) holds
+     * every new submission while this is true, without running its other
+     * signals.
+     */
+    public function hasActiveModerationFreeze(): bool
+    {
+        return $this->moderationIncidents()
+            ->where('frozen_until', '>', now())
+            ->exists();
+    }
+
+    /**
+     * @return HasMany<ModerationIncident, $this>
+     */
+    public function moderationIncidents(): HasMany
+    {
+        return $this->hasMany(ModerationIncident::class);
+    }
+
     public static function uniqueSlugFor(string $name, ?int $excludingId = null): string
     {
         $base = Str::slug($name) ?: 'business';

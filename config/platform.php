@@ -292,6 +292,18 @@ return [
         'network' => [
             'known_bad_ranges' => array_filter(explode(',', env('MODERATION_NETWORK_KNOWN_BAD_RANGES', ''))),
         ],
+        // FR-006-06's own numbers, run at least hourly (routes/console.php).
+        'anomalies' => [
+            'review_spike_multiplier' => (float) env('MODERATION_REVIEW_SPIKE_MULTIPLIER', 5),
+            'review_spike_min_reviews' => (int) env('MODERATION_REVIEW_SPIKE_MIN_REVIEWS', 20),
+            // Not in the FR text — a documented implementation choice,
+            // same shape as 005/006's own arbitrary-but-recorded constants.
+            'rating_shift_threshold' => (float) env('MODERATION_RATING_SHIFT_THRESHOLD', 1.5),
+            'rating_shift_min_reviews' => (int) env('MODERATION_RATING_SHIFT_MIN_REVIEWS', 10),
+            'new_account_cluster_min_reviews' => (int) env('MODERATION_NEW_ACCOUNT_CLUSTER_MIN_REVIEWS', 5),
+            'new_account_cluster_account_age_days' => (int) env('MODERATION_NEW_ACCOUNT_CLUSTER_ACCOUNT_AGE_DAYS', 7),
+            'max_freeze_hours' => (int) env('MODERATION_MAX_FREEZE_HOURS', 72),
+        ],
     ],
 
 ];
