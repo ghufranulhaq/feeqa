@@ -18,6 +18,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $email_verified_at
  * @property Carbon|null $date_of_birth_confirmed_at
  * @property Carbon|null $deletion_requested_at
+ * @property-read string|null $avatar
  */
 class User extends Authenticatable
 {

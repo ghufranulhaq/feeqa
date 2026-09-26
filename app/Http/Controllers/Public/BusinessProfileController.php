@@ -6,6 +6,8 @@ use App\Domain\Businesses\BusinessStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Business;
 use App\Models\BusinessSlugRedirect;
+use App\Models\Review;
+use App\Support\Reviews\ReviewCard;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -15,10 +17,11 @@ class BusinessProfileController extends Controller
 {
     /**
      * FR-002-01, FR-002-02, FR-002-04, FR-002-05. Everything owned by a
-     * later spec (scores, reviews, AI summary, replies, cases, similar
-     * businesses, Consumer Warnings) is listed in `pending_features`
-     * instead of being faked — the profile page shows those sections as
-     * "coming soon" rather than pretending the data exists.
+     * later spec (scores, AI summary, replies, cases, similar businesses,
+     * Consumer Warnings) is listed in `pending_features` instead of being
+     * faked — the profile page shows those sections as "coming soon"
+     * rather than pretending the data exists. Reviews (spec 003 T6) are
+     * real.
      */
     public function show(string $slug): Response|RedirectResponse
     {
@@ -69,9 +72,18 @@ class BusinessProfileController extends Controller
             // Business's own reviews — always empty until spec 003 exists,
             // not a "coming soon" placeholder like the list below.
             'mentions' => $business->mentions(),
+            // FR-003-26, FR-003-29: real reviews, paginated (max page size
+            // 50 — 20 here, well under the cap). Sorting/filtering beyond
+            // "most recent" is spec 003 T9, not built yet.
+            'reviews' => $business->reviews()
+                ->publiclyVisible()
+                ->with('reviewer')
+                ->latest('published_at')
+                ->paginate(20)
+                ->withQueryString()
+                ->through(fn (Review $review) => ReviewCard::present($review)),
             'pending_features' => [
                 ['key' => 'review_score', 'label' => 'Review Score & Trust Index', 'spec' => '008'],
-                ['key' => 'reviews', 'label' => 'Reviews', 'spec' => '003'],
                 ['key' => 'ai_summary', 'label' => 'AI summary', 'spec' => '011'],
                 ['key' => 'reply_behaviour', 'label' => 'Reply-behaviour signals', 'spec' => '007'],
                 ['key' => 'case_stats', 'label' => 'Case statistics', 'spec' => '010'],

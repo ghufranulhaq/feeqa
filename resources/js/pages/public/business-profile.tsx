@@ -1,4 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
+import { ReviewCard, type ReviewCardData } from '@/components/review-card';
 
 interface Category {
     slug: string;
@@ -37,15 +38,26 @@ interface PendingFeature {
     spec: string;
 }
 
+interface ReviewsPage {
+    data: ReviewCardData[];
+    current_page: number;
+    last_page: number;
+    total: number;
+    next_page_url: string | null;
+    prev_page_url: string | null;
+}
+
 export default function BusinessProfile({
     business,
     locations,
     mentions,
+    reviews,
     pending_features: pendingFeatures,
 }: {
     business: Business;
     locations: LocationSummary[];
     mentions: unknown[];
+    reviews: ReviewsPage;
     pending_features: PendingFeature[];
 }) {
     const categories = [business.primary_category, ...business.secondary_categories].filter((category): category is Category => category !== null);
@@ -117,6 +129,35 @@ export default function BusinessProfile({
                         </ul>
                     </section>
                 )}
+
+                <section className="mt-8">
+                    <h2 className="text-lg font-medium">Reviews ({reviews.total})</h2>
+
+                    {reviews.data.length === 0 ? (
+                        <p className="mt-2 text-sm text-neutral-600">No published reviews yet.</p>
+                    ) : (
+                        <div className="mt-2 space-y-4">
+                            {reviews.data.map((review) => (
+                                <ReviewCard key={review.id} review={review} />
+                            ))}
+                        </div>
+                    )}
+
+                    {(reviews.prev_page_url || reviews.next_page_url) && (
+                        <div className="mt-4 flex gap-4 text-sm">
+                            {reviews.prev_page_url && (
+                                <Link href={reviews.prev_page_url} className="underline" preserveScroll>
+                                    Previous
+                                </Link>
+                            )}
+                            {reviews.next_page_url && (
+                                <Link href={reviews.next_page_url} className="underline" preserveScroll>
+                                    Next
+                                </Link>
+                            )}
+                        </div>
+                    )}
+                </section>
 
                 <section className="mt-8">
                     <h2 className="text-lg font-medium">Mentioned in reviews</h2>

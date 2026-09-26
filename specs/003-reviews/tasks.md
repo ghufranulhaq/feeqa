@@ -75,15 +75,21 @@ wired), same pattern as spec 002.
       further server behaviour was needed. Clearing a draft after a real
       submission is deferred to whichever task wires the submission HTTP
       endpoint (not built yet). FR-003-10, edge case row.
-- [ ] **T6. Publication & profile display.** Public review list replaces
+- [x] **T6. Publication & profile display.** Public review list replaces
       the business profile's "coming soon" reviews placeholder; each review
-      gets a permanent URL; review card fields per FR-003-26 that exist
-      today (author name/avatar/country/published review count, rating,
-      title, text, dates, question answers) — reply/case/Verified
-      Experience stay "coming soon" (007/010/004). Wires spec 001 T5's
+      gets a permanent URL (`ReviewController@show`, `businesses.reviews.show`);
+      review card fields per FR-003-26 that exist today (author name/
+      avatar/country/published review count, rating, title, text, dates,
+      source label, question answers), built as a shared `ReviewCard`
+      support class + React component — reply/case/Verified Experience/
+      Useful count stay "coming soon" (007/010/004/T8). Wires spec 001 T5's
       hardcoded `reviews_count`/`reviews` on the reviewer profile to real
-      data. Reviews by an author with a pending account deletion are
-      excluded from public view. FR-003-26, FR-003-29, ties to FR-001-07.
+      data (capped at 50, not fully paginated — that page isn't one of
+      T9's "Business/Location" lists). Reviews by an author with a pending
+      account deletion are excluded from public view (`Review::
+      scopePubliclyVisible()`/`isPubliclyVisible()`). Business profile list
+      paginated at 20/page (under FR-003-29's 50 cap); sorting/filtering
+      beyond "most recent" is T9. FR-003-26, FR-003-29, ties to FR-001-07.
 - [ ] **T7. Source labels.** `SourceLabel` is set by the system only, never
       user-editable — every write path is tested to prove it. Every review
       is `Organic` today because Invited/Redirected both require the

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Domain\Reviews\ReviewStatus;
 use App\Domain\Reviews\SourceLabel;
 use Database\Factories\ReviewFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -113,5 +114,32 @@ class Review extends Model
     public function usefulVotes(): HasMany
     {
         return $this->hasMany(ReviewUsefulVote::class);
+    }
+
+    /**
+     * @param  Builder<Review>  $query
+     * @return Builder<Review>
+     */
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('status', ReviewStatus::Published);
+    }
+
+    /**
+     * FR-003-26: what a public review list may show — published, and not
+     * by an author whose account deletion is pending (FR-001-20, "public
+     * content is hidden right away").
+     *
+     * @param  Builder<Review>  $query
+     * @return Builder<Review>
+     */
+    public function scopePubliclyVisible(Builder $query): Builder
+    {
+        return $query->published()->whereHas('reviewer', fn (Builder $reviewer) => $reviewer->whereNull('deletion_requested_at'));
+    }
+
+    public function isPubliclyVisible(): bool
+    {
+        return $this->status === ReviewStatus::Published && ! $this->reviewer->hasPendingDeletion();
     }
 }

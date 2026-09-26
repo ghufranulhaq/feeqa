@@ -1,4 +1,5 @@
 import { Head } from '@inertiajs/react';
+import { ReviewCard, type ReviewCardData } from '@/components/review-card';
 
 interface Reviewer {
     id: number;
@@ -7,7 +8,7 @@ interface Reviewer {
     country: string | null;
     member_since: string;
     reviews_count: number;
-    reviews: unknown[];
+    reviews: ReviewCardData[];
 }
 
 export default function ReviewerProfile({ reviewer }: { reviewer: Reviewer }) {
@@ -42,7 +43,15 @@ export default function ReviewerProfile({ reviewer }: { reviewer: Reviewer }) {
                 <section className="mt-8">
                     <h2 className="text-lg font-medium">{reviewer.reviews_count} published reviews</h2>
 
-                    {reviewer.reviews.length === 0 && <p className="mt-2 text-sm text-neutral-600">No published reviews yet.</p>}
+                    {reviewer.reviews.length === 0 ? (
+                        <p className="mt-2 text-sm text-neutral-600">No published reviews yet.</p>
+                    ) : (
+                        <div className="mt-2 space-y-4">
+                            {reviewer.reviews.map((review) => (
+                                <ReviewCard key={review.id} review={review} showAuthor={false} showBusiness />
+                            ))}
+                        </div>
+                    )}
                 </section>
             </main>
         </>

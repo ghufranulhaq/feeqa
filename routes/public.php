@@ -5,6 +5,7 @@ use App\Http\Controllers\Public\BusinessClosureController;
 use App\Http\Controllers\Public\BusinessCreateController;
 use App\Http\Controllers\Public\BusinessProfileController;
 use App\Http\Controllers\Public\LocationProfileController;
+use App\Http\Controllers\Public\ReviewController;
 use App\Http\Controllers\Public\ReviewDraftController;
 use App\Http\Controllers\Public\ReviewerProfileController;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,10 @@ Route::middleware('auth')->group(function () {
 // FR-002-16.
 Route::get('business/{businessSlug}/locations/{locationSlug}', [LocationProfileController::class, 'show'])
     ->name('businesses.locations.show');
+
+// FR-003-29: a permanent URL for one review, independent of the business
+// profile's review list pagination.
+Route::get('business/{slug}/reviews/{review}', [ReviewController::class, 'show'])->name('businesses.reviews.show');
 
 // FR-002-02: {slug}, not an implicit {business} model binding — a slug
 // that no longer matches any Business still needs to reach the
