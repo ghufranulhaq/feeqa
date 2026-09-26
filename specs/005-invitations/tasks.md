@@ -81,7 +81,7 @@ in this codebase has with its own missing UI.
       by hand (FR-005-03). FR-005-01 (csv), FR-005-03, edge cases (empty/
       wrong encoding/missing columns/oversized file or row count,
       malformed emails, duplicate rows).
-- [ ] **T5. API and BCC methods.** `RequestApiInvitation` (idempotent by
+- [x] **T5. API and BCC methods.** `RequestApiInvitation` (idempotent by
       reference — a repeat call with the same reference returns the
       existing invitation rather than creating a second one; a past send
       time is clamped to the next allowed send window) covering the
