@@ -18,6 +18,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $email_verified_at
  * @property Carbon|null $date_of_birth_confirmed_at
  * @property Carbon|null $deletion_requested_at
+ * @property Carbon|null $lifecycle_reminders_opted_out_at
  * @property-read string|null $avatar
  */
 class User extends Authenticatable
@@ -38,6 +39,7 @@ class User extends Authenticatable
         'locale',
         'avatar_path',
         'date_of_birth_confirmed_at',
+        'lifecycle_reminders_opted_out_at',
     ];
 
     /**
@@ -66,6 +68,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'date_of_birth_confirmed_at' => 'datetime',
             'deletion_requested_at' => 'datetime',
+            'lifecycle_reminders_opted_out_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -147,5 +150,13 @@ class User extends Authenticatable
     public function hasPendingDeletion(): bool
     {
         return $this->deletion_requested_at !== null;
+    }
+
+    /**
+     * FR-003-19.
+     */
+    public function hasOptedOutOfLifecycleReminders(): bool
+    {
+        return $this->lifecycle_reminders_opted_out_at !== null;
     }
 }

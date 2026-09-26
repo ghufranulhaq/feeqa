@@ -19,6 +19,13 @@ export interface ReviewCardQuestionAnswer {
     value: unknown;
 }
 
+export interface ReviewCardLifecycleUpdate {
+    milestone: string;
+    star_rating: number;
+    text: string;
+    published_at: string | null;
+}
+
 export interface ReviewCardData {
     id: number;
     url: string;
@@ -32,6 +39,9 @@ export interface ReviewCardData {
     edited_at: string | null;
     source_label: string;
     useful_count: number;
+    current_rating: number;
+    durability_signal: string | null;
+    lifecycle_updates: ReviewCardLifecycleUpdate[];
     question_answers: ReviewCardQuestionAnswer[];
 }
 
@@ -52,6 +62,19 @@ const SOURCE_LABEL_DESCRIPTIONS: Record<string, string> = {
 
 function formatSourceLabel(value: string): string {
     return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+/**
+ * FR-003-21: the dated timeline's per-entry label.
+ */
+const MILESTONE_LABELS: Record<string, string> = {
+    day_30: '30-day update',
+    month_6: '6-month update',
+    year_1: '1-year update',
+};
+
+function formatMilestone(value: string): string {
+    return MILESTONE_LABELS[value] ?? value;
 }
 
 function formatAnswer(answer: ReviewCardQuestionAnswer): string {
@@ -124,9 +147,9 @@ export function ReviewCard({
                 </p>
             )}
 
-            <p className="mt-2 text-sm font-medium" aria-label={`${review.star_rating} out of 5 stars`}>
-                {'★'.repeat(review.star_rating)}
-                {'☆'.repeat(5 - review.star_rating)}
+            <p className="mt-2 text-sm font-medium" aria-label={`${review.current_rating} out of 5 stars`}>
+                {'★'.repeat(review.current_rating)}
+                {'☆'.repeat(5 - review.current_rating)}
             </p>
 
             <h3 className="mt-1 font-medium">{title}</h3>
@@ -152,6 +175,25 @@ export function ReviewCard({
             <p className="mt-2 text-xs text-neutral-500">
                 {review.useful_count} {review.useful_count === 1 ? 'person' : 'people'} found this useful
             </p>
+
+            {review.lifecycle_updates.length > 0 && (
+                <ol className="mt-3 space-y-3 border-l border-neutral-200 pl-4 text-sm">
+                    <li>
+                        <p className="text-xs font-medium text-neutral-500">
+                            Original · {formatDate(review.date_of_experience)} · {review.star_rating}★
+                        </p>
+                    </li>
+                    {review.lifecycle_updates.map((update) => (
+                        <li key={update.milestone}>
+                            <p className="text-xs font-medium text-neutral-500">
+                                {formatMilestone(update.milestone)}
+                                {update.published_at && ` · ${formatDate(update.published_at)}`} · {update.star_rating}★
+                            </p>
+                            <p className="mt-1 whitespace-pre-line text-neutral-700">{update.text}</p>
+                        </li>
+                    ))}
+                </ol>
+            )}
 
             {review.question_answers.length > 0 && (
                 <dl className="mt-3 space-y-1 text-sm">

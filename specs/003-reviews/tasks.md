@@ -131,16 +131,25 @@ wired), same pattern as spec 002.
       date/reference-number) extracted from `SubmitReview` into a shared
       `ReviewFieldGuards` class so submission and editing enforce identical
       limits. FR-003-23 through FR-003-25, edge case (business user 403).
-- [ ] **T11. Lifecycle updates.** Milestone window math from `published_at`
-      (opens on the milestone day, closes when the next opens; the 1-year
-      window stays open 90 days); `SubmitLifecycleUpdate` (author only,
-      inside its window, 1–5 stars, 20–2,000 characters, optional answers,
-      re-screened); current rating = latest published update's rating, or
-      the original; derived `DurabilitySignal`; one reminder
-      (email + in-app, opt-out respected) dispatched when a window opens.
-      Time-travel tests at days 29/30/179/180/364/365/455. FR-003-17
-      through FR-003-22, edge cases (update outside window, update on a
-      deleted review).
+- [x] **T11. Lifecycle updates.** `LifecycleMilestone::windowOpensAt/
+      windowClosesAt` do the window math from `published_at` (opens on
+      the milestone day, closes when the next opens; the 1-year window
+      stays open 90 days). `SubmitLifecycleUpdate` (author only, inside
+      its window, 1–5 stars, 20–2,000 characters, optional answers,
+      re-screened through T2) rejects a second update for an already-used
+      milestone, a submission outside every window ("Your next update
+      opens on <date>"), and one on a deleted/unpublished review. Current
+      rating (`Review::currentRating()`) = latest published update's
+      rating, or the original; `DurabilitySignal` is derived and stored
+      after every published update. A new `SendReviewLifecycleReminders`
+      daily command emails + in-app-notifies (new `notifications` table)
+      the author when a window opens for the first time, tracked by a new
+      `review_lifecycle_reminders` table so a re-run never double-sends;
+      a new `users.lifecycle_reminders_opted_out_at` column lets an
+      author opt out. The review card now shows the original + updates as
+      a dated timeline. Time-travel tests at days 29/30/179/180/364/365/
+      455. FR-003-17 through FR-003-22, edge cases (update outside
+      window, update on a deleted review).
 - [ ] **T12. Tagging a second business.** Tag validation (must exist, can't
       be the reviewed business, at most one — reject otherwise); wires
       spec 002's `Business::mentions()` placeholder to a real query;

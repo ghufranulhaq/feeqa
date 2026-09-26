@@ -8,6 +8,7 @@ use App\Http\Controllers\Public\LocationProfileController;
 use App\Http\Controllers\Public\ReviewController;
 use App\Http\Controllers\Public\ReviewDraftController;
 use App\Http\Controllers\Public\ReviewerProfileController;
+use App\Http\Controllers\Public\ReviewLifecycleUpdateController;
 use App\Http\Controllers\Public\ReviewUsefulVoteController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +42,10 @@ Route::middleware('auth')->group(function () {
     // FR-003-23 through FR-003-25: author-only edit/delete.
     Route::patch('reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
     Route::delete('reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+
+    // FR-003-17 through FR-003-22.
+    Route::post('reviews/{review}/lifecycle-updates', [ReviewLifecycleUpdateController::class, 'store'])
+        ->name('reviews.lifecycle-updates.store');
 });
 
 // FR-002-16.

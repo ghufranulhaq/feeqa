@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Domain\Reviews\DurabilitySignal;
 use App\Domain\Reviews\ReviewStatus;
 use App\Domain\Reviews\SourceLabel;
 use Database\Factories\ReviewFactory;
@@ -23,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $date_of_experience
  * @property Carbon|null $published_at
  * @property Carbon|null $edited_at
+ * @property DurabilitySignal|null $durability_signal
  */
 class Review extends Model
 {
@@ -50,6 +52,7 @@ class Review extends Model
         'idempotency_key',
         'published_at',
         'edited_at',
+        'durability_signal',
     ];
 
     protected function casts(): array
@@ -62,6 +65,7 @@ class Review extends Model
             'confirmed_genuine' => 'boolean',
             'published_at' => 'datetime',
             'edited_at' => 'datetime',
+            'durability_signal' => DurabilitySignal::class,
         ];
     }
 
@@ -141,5 +145,23 @@ class Review extends Model
     public function isPubliclyVisible(): bool
     {
         return $this->status === ReviewStatus::Published && ! $this->reviewer->hasPendingDeletion();
+    }
+
+    /**
+     * FR-003-21: "the latest published update's rating, or the original
+     * rating if there are no updates."
+     */
+    public function currentRating(): int
+    {
+        $latestPublished = $this->lifecycleUpdates()
+            ->where('status', ReviewStatus::Published)
+            ->latest('published_at')
+            ->first();
+
+        if ($latestPublished === null) {
+            return $this->star_rating;
+        }
+
+        return $latestPublished->star_rating;
     }
 }

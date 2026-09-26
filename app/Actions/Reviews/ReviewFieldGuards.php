@@ -62,6 +62,22 @@ class ReviewFieldGuards
     }
 
     /**
+     * FR-003-20: a lifecycle update's text has its own bounds (20-2,000
+     * characters), separate from a review's own (FR-003-02's 30-5,000).
+     */
+    public static function lifecycleUpdateText(string $raw): string
+    {
+        $text = ReviewText::sanitize($raw);
+        $length = mb_strlen($text);
+
+        if ($length < 20 || $length > 2000) {
+            throw ValidationException::withMessages(['text' => 'The update text must be between 20 and 2,000 characters.']);
+        }
+
+        return $text;
+    }
+
+    /**
      * FR-003-04, edge case: "Date of experience in the future or > 12
      * months ago".
      */

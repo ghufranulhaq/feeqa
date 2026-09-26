@@ -13,4 +13,13 @@ enum DurabilitySignal: string
     case Improved = 'improved';
     case Unchanged = 'unchanged';
     case Declined = 'declined';
+
+    public static function fromRatings(int $original, int $current): self
+    {
+        return match (true) {
+            $current > $original => self::Improved,
+            $current < $original => self::Declined,
+            default => self::Unchanged,
+        };
+    }
 }

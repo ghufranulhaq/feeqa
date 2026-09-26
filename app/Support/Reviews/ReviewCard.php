@@ -2,8 +2,10 @@
 
 namespace App\Support\Reviews;
 
+use App\Domain\Reviews\ReviewStatus;
 use App\Models\CategoryQuestion;
 use App\Models\Review;
+use App\Models\ReviewLifecycleUpdate;
 
 /**
  * FR-003-26: the fields a review card shows today. Reply, case summary,
@@ -21,6 +23,8 @@ class ReviewCard
      *     star_rating: int, title: string, text: string,
      *     date_of_experience: string, published_at: ?string, edited_at: ?string, source_label: string,
      *     useful_count: int,
+     *     current_rating: int, durability_signal: ?string,
+     *     lifecycle_updates: list<array{milestone: string, star_rating: int, text: string, published_at: ?string}>,
      *     question_answers: list<array{label: string, type: string, value: mixed}>,
      * }
      */
@@ -54,8 +58,34 @@ class ReviewCard
             // an N+1 across a full page; a single-review view (no count
             // loaded) falls back to counting directly.
             'useful_count' => $review->useful_votes_count ?? $review->usefulVotes()->count(),
+            // FR-003-21: "the current rating is the latest published
+            // update's rating, or the original rating."
+            'current_rating' => $review->currentRating(),
+            'durability_signal' => $review->durability_signal?->value,
+            'lifecycle_updates' => self::lifecycleUpdates($review),
             'question_answers' => self::questionAnswers($review),
         ];
+    }
+
+    /**
+     * FR-003-21: "the review card must show the original and all updates
+     * as a dated timeline" — published updates only, oldest first.
+     *
+     * @return list<array{milestone: string, star_rating: int, text: string, published_at: ?string}>
+     */
+    private static function lifecycleUpdates(Review $review): array
+    {
+        return $review->lifecycleUpdates()
+            ->where('status', ReviewStatus::Published)
+            ->orderBy('published_at')
+            ->get()
+            ->map(fn (ReviewLifecycleUpdate $update) => [
+                'milestone' => $update->milestone->value,
+                'star_rating' => $update->star_rating,
+                'text' => $update->text,
+                'published_at' => $update->published_at?->toIso8601String(),
+            ])
+            ->all();
     }
 
     /**
