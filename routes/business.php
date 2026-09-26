@@ -6,6 +6,7 @@ use App\Http\Controllers\Business\EmployeeSizeBandDisputeController;
 use App\Http\Controllers\Business\InvitationController;
 use App\Http\Controllers\Business\LocationController;
 use App\Http\Controllers\Business\TransactionRecordController;
+use App\Http\Controllers\Business\VerificationRequestController;
 use App\Http\Middleware\SetPermissionTeam;
 use Illuminate\Support\Facades\Route;
 
@@ -43,4 +44,8 @@ Route::middleware(['auth', SetPermissionTeam::class])->prefix('business/{busines
     // transaction records, reachable from the dashboard today.
     Route::post('transaction-records', [TransactionRecordController::class, 'store'])
         ->name('business.transaction-records.store');
+
+    // FR-004-18, FR-004-21.
+    Route::post('reviews/{review}/verification-request', [VerificationRequestController::class, 'store'])
+        ->name('business.reviews.verification-request.store');
 });

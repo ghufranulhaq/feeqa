@@ -14,6 +14,7 @@ use App\Http\Controllers\Public\ReviewReferenceMatchController;
 use App\Http\Controllers\Public\ReviewUsefulVoteController;
 use App\Http\Controllers\Public\ReviewVerificationController;
 use App\Http\Controllers\Public\VerificationAttestationController;
+use App\Http\Controllers\Public\VerificationRequestResponseController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('reviewers/{user}', [ReviewerProfileController::class, 'show'])->name('reviewers.show');
@@ -65,6 +66,10 @@ Route::middleware('auth')->group(function () {
     // FR-004-13: author-only, review must be published.
     Route::post('reviews/{review}/reference-match', [ReviewReferenceMatchController::class, 'store'])
         ->name('reviews.reference-match.store');
+
+    // FR-004-19: the reviewer's response to a business's verification request.
+    Route::post('verification-requests/{verificationRequest}/respond', [VerificationRequestResponseController::class, 'store'])
+        ->name('verification-requests.respond');
 });
 
 // FR-002-16.
