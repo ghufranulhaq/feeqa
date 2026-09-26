@@ -121,6 +121,14 @@ class Review extends Model
     }
 
     /**
+     * @return HasMany<ReviewVerification, $this>
+     */
+    public function verifications(): HasMany
+    {
+        return $this->hasMany(ReviewVerification::class);
+    }
+
+    /**
      * @param  Builder<Review>  $query
      * @return Builder<Review>
      */
