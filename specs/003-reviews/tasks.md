@@ -90,11 +90,15 @@ wired), same pattern as spec 002.
       scopePubliclyVisible()`/`isPubliclyVisible()`). Business profile list
       paginated at 20/page (under FR-003-29's 50 cap); sorting/filtering
       beyond "most recent" is T9. FR-003-26, FR-003-29, ties to FR-001-07.
-- [ ] **T7. Source labels.** `SourceLabel` is set by the system only, never
-      user-editable — every write path is tested to prove it. Every review
-      is `Organic` today because Invited/Redirected both require the
+- [x] **T7. Source labels.** `SourceLabel` is set by the system only, never
+      user-editable — every write path is tested to prove it (the only
+      write path is `SubmitReview`, which hardcodes `Organic` and ignores
+      any `source_label` smuggled into its input). Every review is
+      `Organic` today because Invited/Redirected both require the
       invitation/redirect-link system (005), not built yet — documented as
-      pending. FR-003-14, FR-003-15, FR-003-16.
+      pending. Source label shown on every review card with a tooltip
+      explaining what it means (FR-003-16's Verified Experience badge stays
+      "coming soon", 004). FR-003-14, FR-003-15, FR-003-16.
 - [ ] **T8. Useful votes.** `ToggleUsefulVote` action: any signed-in user
       except the author, tapping again removes the vote. Excluding
       fraud-flagged accounts' votes (edge case) is noted as pending spec

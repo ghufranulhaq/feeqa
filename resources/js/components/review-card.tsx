@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export interface ReviewCardAuthor {
     name: string;
@@ -36,6 +37,19 @@ const dateFormatter = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' });
 
 function formatDate(value: string): string {
     return dateFormatter.format(new Date(value));
+}
+
+/**
+ * FR-003-15: the tooltip explaining what each source label means.
+ */
+const SOURCE_LABEL_DESCRIPTIONS: Record<string, string> = {
+    organic: 'Written without any involvement from the business.',
+    invited: 'Submitted through a unique invitation tied to a customer record.',
+    redirected: "Submitted through the business's generic review link or QR code.",
+};
+
+function formatSourceLabel(value: string): string {
+    return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 function formatAnswer(answer: ReviewCardQuestionAnswer): string {
@@ -116,7 +130,17 @@ export function ReviewCard({
             <p className="mt-2 text-xs text-neutral-500">
                 Experienced {formatDate(review.date_of_experience)}
                 {review.published_at && ` · Published ${formatDate(review.published_at)}`}
-                {` · ${review.source_label.charAt(0).toUpperCase()}${review.source_label.slice(1)}`}
+                {' · '}
+                <TooltipProvider delayDuration={0}>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <span tabIndex={0} className="underline decoration-dotted">
+                                {formatSourceLabel(review.source_label)}
+                            </span>
+                        </TooltipTrigger>
+                        <TooltipContent>{SOURCE_LABEL_DESCRIPTIONS[review.source_label] ?? formatSourceLabel(review.source_label)}</TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             </p>
 
             {review.question_answers.length > 0 && (

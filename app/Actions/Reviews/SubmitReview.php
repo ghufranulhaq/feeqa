@@ -16,9 +16,10 @@ use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 
 /**
- * FR-003-02, FR-003-04 through FR-003-09: the core submission rules that
- * apply before drafts (T5) or proper source labelling (T7) exist. Source
- * label is always `Organic` here — T7 wires the invitation/redirect paths.
+ * FR-003-02, FR-003-04 through FR-003-09: the core submission rules.
+ * FR-003-14, FR-003-15: source label is set here, by the system only, and
+ * is always `Organic` — `Invited`/`Redirected` both need the invitation/
+ * generic-link system (005), not built yet.
  */
 class SubmitReview
 {
