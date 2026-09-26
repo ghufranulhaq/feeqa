@@ -114,7 +114,7 @@ in this codebase has with its own missing UI.
       suppression check. Hard bounces and spam complaints add the address
       to suppression automatically (`RecordBounce`/`RecordComplaint`,
       FR-005-17). FR-005-04, FR-005-15, FR-005-17.
-- [ ] **T7. Sending, engagement tracking, and link resolution.** A
+- [x] **T7. Sending, engagement tracking, and link resolution.** A
       scheduled command sends every due `queued` invitation through
       Mailpit/the configured mailer (`queued`→`sent`), a 1-pixel open
       tracker and a redirecting click-through link move status forward
