@@ -94,7 +94,7 @@ wires them up rather than creating them.
       job, same dependency relationship as spec 005 has with `bcc`/`api`
       invitation methods. FR-004-12, FR-004-13, edge cases (plaintext
       email batch, oversized batch, duplicate records).
-- [ ] **T7. Business verification requests.** `RequestReviewVerification`
+- [x] **T7. Business verification requests.** `RequestReviewVerification`
       (business side, Responder+, once per review, rate-limited 20 per
       1,000 published reviews per rolling 30 days with a 5-request floor,
       disproportionate-1★/2★-targeting flagged to a staff-visible list) and
