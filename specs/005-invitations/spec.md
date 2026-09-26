@@ -86,15 +86,16 @@ Help businesses collect reviews from **all** their real customers, automatically
 
 ## 6. Acceptance Criteria
 
-- [ ] Every method creates invitations with correct method metadata, and the resulting reviews get the correct source label and verification.
-- [ ] Recipient, reference, and suppression rules (FR-005-09, -15, -17) are enforced (tests per rule).
-- [ ] Templates with incentives, rating suggestions, gating, or foreign links are rejected (test corpus of ≥ 50 negative examples in launch locales).
-- [ ] BCC rejects emails that fail SPF/DKIM and discards bodies after parsing.
-- [ ] Neutrality report and alerts fire on the seeded threshold fixtures.
-- [ ] Plan limits queue invitations and never drop them.
-- [ ] One-click unsubscribe works without sign-in, both per-business and globally.
+- [x] Every method creates invitations with correct method metadata, and the resulting reviews get the correct source label and verification.
+- [x] Recipient, reference, and suppression rules (FR-005-09, -15, -17) are enforced (tests per rule).
+- [x] Templates with incentives, rating suggestions, gating, or foreign links are rejected (test corpus of ≥ 50 negative examples in launch locales).
+- [x] BCC rejects emails that fail SPF/DKIM and discards bodies after parsing.
+- [x] Neutrality report and alerts fire on the seeded threshold fixtures.
+- [x] Plan limits queue invitations and never drop them.
+- [x] One-click unsubscribe works without sign-in, both per-business and globally.
 
 ## 7. Dependencies & Open Questions
 
 - **Decided (2026-09-24):** Phase 1 methods are `bcc`, `api`, `csv`, `manual`, and `link`. The `integration` method (booking engines/GDS/e-commerce connectors) moves to **Phase 2**. Default send delay is set per category (travel-content.md §4).
 - **Q1:** Which booking-engine/GDS connectors come first in Phase 2?
+- **Q2 (found by T11's acceptance sweep, 2026-09-26):** FR-005-16's lawful-basis/consistent-invitation confirmation was never broken into a `tasks.md` task and isn't built. It touches legal compliance directly (constitution §4 L3/L4 — GDPR lawful basis, DSA/DMCC disclosure), so before it's implemented someone needs to decide: does an unconfirmed method actually block sending, or is it record-keeping only; is the confirmation per Business or per Business-and-method; and who signs it off (any Owner/Admin, or does it need the same legal sign-off gate as L5's insider/resolve-first features)? Not guessed at per constitution §8 rule 3.

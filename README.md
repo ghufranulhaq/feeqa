@@ -141,6 +141,18 @@ default already or is documented inline in that file.
   verification decision (FR-004-23). Production always deletes regardless
   of this value; the demo server sets it to `false` so proofs stay in
   place for repeat walkthroughs (constitution §5.6).
+- **`INVITATIONS_BCC_DOMAIN`**: the domain every Business's unique BCC
+  forwarding address is generated under (FR-005-06), `bcc.feeqa.appsarray.com`
+  by default. **`INVITATIONS_BCC_DEFAULT_REFERENCE_PATTERN`**: the regex
+  used to find a transaction reference in a BCC email's subject/body
+  (FR-005-07) when a Business hasn't configured its own.
+- **`INVITATIONS_REMINDER_AFTER_DAYS`**: how many days after an unopened
+  invitation its one allowed reminder sends (FR-005-08), 3 by default.
+- **`INVITATIONS_MONTHLY_LIMIT_FREE`** / **`_STARTER`** / **`_PRO`**: the
+  monthly invitation cap per plan (FR-005-20) — 50/500/5,000 by default,
+  a config placeholder for spec 017's real entitlement matrix, which
+  doesn't exist yet. **`INVITATIONS_MONTHLY_LIMIT_ENTERPRISE`**: unset
+  (uncapped) by default, since 017's own matrix calls Enterprise "custom."
 
 ## Testing
 

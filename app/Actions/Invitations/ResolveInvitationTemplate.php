@@ -13,7 +13,7 @@ use App\Models\InvitationTemplate;
 class ResolveInvitationTemplate
 {
     /**
-     * @return array{subject: string, body: string}
+     * @return array{subject: string, body: string, sender_name: ?string, reply_to: ?string}
      */
     public function handle(Business $business, string $locale): array
     {
@@ -23,9 +23,14 @@ class ResolveInvitationTemplate
             ->first();
 
         if ($template !== null) {
-            return ['subject' => $template->subject, 'body' => $template->body];
+            return [
+                'subject' => $template->subject,
+                'body' => $template->body,
+                'sender_name' => $template->sender_name,
+                'reply_to' => $template->reply_to,
+            ];
         }
 
-        return config('platform.invitations.default_template');
+        return [...config('platform.invitations.default_template'), 'sender_name' => null, 'reply_to' => null];
     }
 }

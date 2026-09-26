@@ -5,6 +5,7 @@ namespace App\Actions\Invitations;
 use App\Models\Business;
 use App\Models\ReviewInvitation;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as BaseCollection;
 
 /**
  * FR-005-19: "funnel, conversion, by method, by template, over time" for
@@ -65,10 +66,10 @@ class ComputeInvitationAnalytics
     }
 
     /**
-     * @param  Collection<int|string, Collection<int, ReviewInvitation>>  $groups
+     * @param  BaseCollection<array-key, Collection<int, ReviewInvitation>>  $groups
      * @return array<int|string, array{total: int, reviewed: int}>
      */
-    private function byGroup(Collection $groups): array
+    private function byGroup(BaseCollection $groups): array
     {
         return $groups->map(fn (Collection $group) => [
             'total' => $group->count(),

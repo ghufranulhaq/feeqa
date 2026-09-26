@@ -29,14 +29,14 @@ class ReviewInvitationNotification extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        [$subject, $body] = array_values(app(ResolveInvitationTemplate::class)->handle(
+        $resolved = app(ResolveInvitationTemplate::class)->handle(
             $this->invitation->business,
             $this->invitation->locale,
-        ));
+        );
 
         $rendered = RenderInvitationTemplate::render(
-            $subject,
-            $body,
+            $resolved['subject'],
+            $resolved['body'],
             route('review-invitations.show', $this->invitation->token),
             route('invitations.unsubscribe', $this->invitation->token),
         );
@@ -44,6 +44,13 @@ class ReviewInvitationNotification extends Notification
         $message = (new MailMessage)->subject(
             $this->isReminder ? "Reminder: {$rendered['subject']}" : $rendered['subject']
         );
+
+        // FR-005-08's "reply-to" and "sender name" — the platform's own
+        // From address never changes (deliverability/DMARC), but a
+        // Business's chosen reply-to routes replies back to them.
+        if ($resolved['reply_to'] !== null) {
+            $message->replyTo($resolved['reply_to'], $resolved['sender_name']);
+        }
 
         foreach (explode("\n", $rendered['body']) as $line) {
             $message->line($line);

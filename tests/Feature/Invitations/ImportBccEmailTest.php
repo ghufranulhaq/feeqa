@@ -59,6 +59,28 @@ it('imports an aligned transactional email as a Bcc invitation (FR-005-01 bcc, F
         ->and($result->invitation->recipient_name)->toBe('Jane Doe');
 });
 
+it('discards the email body and never persists it anywhere (spec.md §6 acceptance criterion, FR-005-07)', function () {
+    $business = Business::factory()->create();
+    $owner = bccImportOwner($business);
+    $marker = 'UNIQUE-BODY-MARKER-'.str()->random(16);
+    $eml = bccEml(
+        $business->primary_domain,
+        '"Jane Doe" <jane@example.com>',
+        'Your booking SK-123456',
+        "Reference: SK-123456\n\n{$marker}",
+    );
+    $file = UploadedFile::fake()->createWithContent('message.eml', $eml);
+
+    app(ImportBccEmail::class)->handle($business, $owner, $file);
+
+    $invitation = ReviewInvitation::sole();
+
+    expect($invitation->recipient_name)->not->toContain($marker)
+        ->and($invitation->recipient_email)->not->toContain($marker)
+        ->and($invitation->reference)->not->toContain($marker)
+        ->and(collect($invitation->getAttributes())->implode(''))->not->toContain($marker);
+});
+
 it('drops an email that fails SPF/DKIM alignment and counts it in diagnostics (FR-005-06)', function () {
     $business = Business::factory()->create();
     $owner = bccImportOwner($business);

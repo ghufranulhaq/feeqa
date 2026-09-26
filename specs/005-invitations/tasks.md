@@ -156,8 +156,25 @@ in this codebase has with its own missing UI.
       later shape as every other staff-facing signal in this spec and 004.
       `GET` funnel/conversion/by-method/by-template analytics endpoint for
       the Analyst role and above. FR-005-18, FR-005-19.
-- [ ] **T11. Docs pass + acceptance sweep.** `docs/system-overview/
-      invitations.md`; consumer-guide and business-guide notes for what's
-      reachable vs. not; README env vars for every setting this spec adds;
-      re-check every box in spec.md §6, fixing any real gap found rather
-      than only noting it. Full acceptance sweep.
+- [x] **T11. Docs pass + acceptance sweep.** `docs/system-overview/
+      invitations.md` written; `docs/user-guides/consumer.md` gets a
+      "Review invitations" section (source labels, unsubscribe, what's
+      not reachable yet) — no `docs/user-guides/business.md` created, same
+      "lands once there's a dashboard UI" rule consumer.md's own header
+      already states and specs 001/002/004 already followed;
+      `docs/system-overview/verification.md` updated too, since it was
+      left stale describing `transaction_invitation` as unbuilt after T8
+      shipped it; README `.env` reference covers every setting this spec
+      added. All 7 boxes in spec.md §6 re-checked and confirmed, closing
+      three real gaps the sweep found: a template's `sender_name`/
+      `reply_to` were captured but never applied to outgoing mail (wired
+      into `ReviewInvitationNotification`'s Reply-To header, tested); the
+      BCC body-discard acceptance criterion had no test proving it (added
+      one); FR-005-14 was implemented (the "gating" rejection) but not
+      tagged in any test (tagged). FR-005-16 (once-per-method lawful-basis
+      confirmation) was never broken into a task and still isn't built —
+      not guessed at, since it's a legal-compliance requirement
+      (constitution §4 L3/L4); recorded as spec.md §7 Q2 instead. FR-005-08's
+      per-Business send window (local hours) is a second known, documented
+      gap, same reasoning. `make ci` green (997 tests), `make docs-check`
+      passes.

@@ -2,9 +2,10 @@
 
 For anyone signing up to write and manage reviews. Business and staff
 guides land in this same folder once there's a dashboard/console UI for
-them to use (see `docs/system-overview/business-profiles.md` and
-`docs/system-overview/reviews.md` in the meantime for what a business
-owner, staff member, or reviewer can already do).
+them to use (see `docs/system-overview/business-profiles.md`,
+`docs/system-overview/reviews.md`, `docs/system-overview/verification.md`,
+and `docs/system-overview/invitations.md` in the meantime for what a
+business owner, staff member, or reviewer can already do).
 
 ## Creating an account
 
@@ -86,6 +87,24 @@ yet** — see `docs/system-overview/verification.md` for what already
 works behind the scenes (real, tested application logic with no form in
 front of it yet, the same situation this guide's other "not reachable
 yet" features are in).
+
+## Review invitations
+
+A business you've booked with may invite you to review them by email —
+its source label tells you how: **Invited** means a business asked you
+after a transaction it could show was real; **Redirected** means you
+followed a business's generic link or QR code; **Organic** means you
+wrote it without any invitation at all. Every invitation email includes
+an unsubscribe link — "don't send me invitations from this business" or
+"from any business on the platform" — that works with one click and no
+sign-in, and is permanent until you use the link again to reverse it.
+
+**None of this is reachable from any page yet** — receiving an actual
+invitation email needs a business to have set one up (see
+`docs/system-overview/invitations.md`), and clicking an invitation link
+today returns raw data rather than a pre-filled review form, the same
+"real, tested application logic with no form in front of it yet"
+situation as verification below.
 
 ## Sessions
 

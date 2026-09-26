@@ -8,12 +8,15 @@ the spec's `tasks.md` for exactly what's done.
 ## Methods
 
 Four methods are modelled (FR-004-01): `transaction_invitation`,
-`reference_match`, `document_proof`, and `payment_link`. Only the last
-two are usable today:
+`reference_match`, `document_proof`, and `payment_link`. All but the last
+are usable today:
 
-- **`transaction_invitation`** depends on spec 005's invitation system,
-  which doesn't exist yet — the method is defined so the data model is
-  ready, but nothing produces it.
+- **`transaction_invitation`** is issued directly when a review is
+  submitted through a transaction-linked invitation (`bcc`, `integration`,
+  or `api` — spec 005 FR-005-02) that carries a reference: no separate
+  consumer confirmation step, since the business's own already-validated
+  channel is the proof. See `docs/system-overview/invitations.md` for how
+  an invitation becomes transaction-linked in the first place.
 - **`payment_link`** is Phase 2 by design (spec.md §5) — modelled, never
   issued.
 
@@ -208,8 +211,7 @@ serves a raw proof file or its extracted fields to a business account.
 
 ## What's not built yet
 
-- **`transaction_invitation`** verification (spec 005's invitation system
-  isn't built), and **`payment_link`** (Phase 2 by design).
+- **`payment_link`** (Phase 2 by design) — modelled, never issued.
 - A full staff console for the verification queue (spec 006) — today it's
   a real, working JSON list + approve/reject endpoint, no UI.
 - No business dashboard UI for submitting transaction records or

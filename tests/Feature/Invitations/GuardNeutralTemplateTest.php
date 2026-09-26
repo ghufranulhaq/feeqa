@@ -155,7 +155,7 @@ function neutralityViolationCorpus(): array
     return $cases;
 }
 
-it('rejects every example in the ≥50-entry negative corpus (FR-005-13)', function (string $body, string $locale) {
+it('rejects every example in the ≥50-entry negative corpus (FR-005-13, FR-005-14 for the gating cases)', function (string $body, string $locale) {
     expect(GuardNeutralTemplate::check(NEUTRAL_SUBJECT, $body, $locale, []))->not->toBe([]);
 })->with('neutralityViolationCorpus');
 
