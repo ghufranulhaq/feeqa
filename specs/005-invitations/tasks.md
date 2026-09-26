@@ -104,7 +104,7 @@ in this codebase has with its own missing UI.
       flow. FR-005-01 (api, bcc), FR-005-02, FR-005-06, FR-005-07, edge
       cases (BCC multi-recipient, non-transactional email, API replay with
       same reference, API past send time).
-- [ ] **T6. Link method, unsubscribe, and suppression.** A stable, unique
+- [x] **T6. Link method, unsubscribe, and suppression.** A stable, unique
       per-Business review link and QR-encodable URL (`link` method,
       `Redirected` label, never auto-verified — FR-005-04) needing no
       `review_invitations` row per use, only a Business-level token.
